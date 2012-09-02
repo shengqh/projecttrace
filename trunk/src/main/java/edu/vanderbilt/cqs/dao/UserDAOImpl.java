@@ -6,13 +6,18 @@ import org.springframework.stereotype.Repository;
 import edu.vanderbilt.cqs.bean.User;
 
 @Repository
-public class UserDAOImpl extends GenericDAOImpl<User, Integer> implements
-		UserDAO {
+public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 	@Override
 	public User validateUser(User user) {
 		return (User) (getSession().createCriteria(getPersistentClass())
 				.add(Restrictions.eq("email", user.getEmail()))
-				.add(Restrictions.eq("md5password", user.getMd5password()))
+				.add(Restrictions.eq("password", user.getPassword()))
 				.uniqueResult());
+	}
+
+	@Override
+	public User findByEmail(String email) {
+		return (User) (getSession().createCriteria(getPersistentClass()).add(
+				Restrictions.eq("email", email)).uniqueResult());
 	}
 }

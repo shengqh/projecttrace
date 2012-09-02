@@ -19,9 +19,8 @@ public class ProjectTaskStatus implements Serializable {
 	private static final long serialVersionUID = -1921355876114740827L;
 
 	@Id
-	@Column(name = "ID")
 	@GeneratedValue
-	private Integer id;
+	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PROJECT_TASK_ID")
@@ -40,11 +39,11 @@ public class ProjectTaskStatus implements Serializable {
 	@Column(name = "INPUTDATE")
 	private Date inputDate;
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

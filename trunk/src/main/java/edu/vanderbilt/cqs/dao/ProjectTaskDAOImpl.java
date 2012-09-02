@@ -6,14 +6,14 @@ import org.springframework.stereotype.Repository;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 
 @Repository
-public class ProjectTaskDAOImpl extends GenericDAOImpl<ProjectTask, Integer>
+public class ProjectTaskDAOImpl extends GenericDAOImpl<ProjectTask, Long>
 		implements ProjectTaskDAO {
 
 	@Override
-	public Integer findProjecIdByTaskId(Integer taskid) {
+	public Long findProjecIdByTaskId(Long taskid) {
 		String sql = "Select m.project.id From ProjectTask as m where m.id=:taskid";
 		Query query = getSession().createQuery(sql);
-		query.setInteger("taskid", taskid);
-		return (Integer) query.uniqueResult();
+		query.setLong("taskid", taskid);
+		return (Long) query.uniqueResult();
 	}
 }

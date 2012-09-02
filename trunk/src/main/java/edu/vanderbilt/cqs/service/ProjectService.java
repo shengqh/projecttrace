@@ -18,10 +18,10 @@ public interface ProjectService {
 
 	List<User> listUser();
 
-	void removeUser(Integer id);
+	void removeUser(Long id);
 
 	// Project
-	Project findProject(Integer id);
+	Project findProject(Long id);
 
 	void addProject(Project project);
 
@@ -29,10 +29,10 @@ public interface ProjectService {
 
 	List<Project> listProject(User currentUser);
 
-	void removeProject(Integer id);
+	void removeProject(Long id);
 
 	// Pipeline
-	Pipeline findPipeline(Integer id);
+	Pipeline findPipeline(Long id);
 
 	void addPipeline(Pipeline pipeline);
 
@@ -40,29 +40,29 @@ public interface ProjectService {
 
 	List<Pipeline> listPipeline(User currentUser);
 
-	void removePipeline(Integer id);
+	void removePipeline(Long id);
 
 	// PipelineTask
-	PipelineTask findPipelineTask(Integer id);
+	PipelineTask findPipelineTask(Long id);
 
 	void addPipelineTask(PipelineTask task);
 
 	void updatePipelineTask(PipelineTask task);
 
-	void removePipelineTask(Integer id);
+	void removePipelineTask(Long id);
 
-	Integer findPipelineByTask(Integer taskid);
+	Long findPipelineByTask(Long taskid);
 
 	// ProjectTask
-	ProjectTask findProjectTask(Integer id);
+	ProjectTask findProjectTask(Long id);
 
 	void addProjectTask(ProjectTask task);
 
 	void updateProjectTask(ProjectTask task);
 
-	void removeProjectTask(Integer id);
+	void removeProjectTask(Long id);
 
-	Integer findProjectByTask(Integer taskid);
+	Long findProjectByTask(Long taskid);
 
 	// Other
 	void persist(Object obj);

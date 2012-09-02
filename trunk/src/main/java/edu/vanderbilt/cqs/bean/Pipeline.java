@@ -23,9 +23,8 @@ public class Pipeline implements Serializable {
 	private static final long serialVersionUID = -7429170184798325852L;
 
 	@Id
-	@Column(name = "ID")
 	@GeneratedValue
-	private Integer id;
+	private Long id;
 
 	@Column(name = "NAME")
 	private String name;
@@ -84,11 +83,11 @@ public class Pipeline implements Serializable {
 		Enabled = enabled;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

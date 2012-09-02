@@ -58,7 +58,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public void removeUser(Integer id) {
+	public void removeUser(Long id) {
 		userDAO.deleteById(id);
 	}
 
@@ -76,13 +76,13 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public void removeProject(Integer id) {
+	public void removeProject(Long id) {
 		projectDAO.deleteById(id);
 	}
 
 	@Transactional
 	@Override
-	public Pipeline findPipeline(Integer id) {
+	public Pipeline findPipeline(Long id) {
 		return pipelineDAO.findById(id, false);
 	}
 
@@ -100,7 +100,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public void removePipeline(Integer id) {
+	public void removePipeline(Long id) {
 		pipelineDAO.deleteById(id);
 	}
 
@@ -116,7 +116,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public PipelineTask findPipelineTask(Integer id) {
+	public PipelineTask findPipelineTask(Long id) {
 		return pipelineTaskDAO.findById(id, false);
 	}
 
@@ -128,13 +128,13 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public void removePipelineTask(Integer id) {
+	public void removePipelineTask(Long id) {
 		pipelineTaskDAO.deleteById(id);
 	}
 
 	@Transactional
 	@Override
-	public Integer findPipelineByTask(Integer taskid) {
+	public Long findPipelineByTask(Long taskid) {
 		return pipelineTaskDAO.findPipelineIdByTaskId(taskid);
 	}
 
@@ -146,7 +146,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public Project findProject(Integer id) {
+	public Project findProject(Long id) {
 		return projectDAO.findById(id, false);
 	}
 
@@ -158,7 +158,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public void removeProjectTask(Integer id) {
+	public void removeProjectTask(Long id) {
 		projectTaskDAO.deleteById(id);
 	}
 
@@ -188,7 +188,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public ProjectTask findProjectTask(Integer id) {
+	public ProjectTask findProjectTask(Long id) {
 		return projectTaskDAO.findById(id, false);
 	}
 
@@ -200,7 +200,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public Integer findProjectByTask(Integer taskid) {
+	public Long findProjectByTask(Long taskid) {
 		return projectTaskDAO.findProjecIdByTaskId(taskid);
 	}
 

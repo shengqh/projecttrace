@@ -18,9 +18,8 @@ public class PipelineTask implements ITask, Serializable {
 	private static final long serialVersionUID = -7027971400364281832L;
 
 	@Id
-	@Column(name = "ID")
 	@GeneratedValue
-	private Integer id;
+	private Long id;
 
 	@Column(name = "NAME")
 	private String name;
@@ -49,11 +48,11 @@ public class PipelineTask implements ITask, Serializable {
 		this.machineTime = aMachineTime;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

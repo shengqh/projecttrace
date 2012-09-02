@@ -6,13 +6,13 @@ import org.springframework.stereotype.Repository;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 
 @Repository
-public class PipelineTaskDAOImpl extends GenericDAOImpl<PipelineTask, Integer>
+public class PipelineTaskDAOImpl extends GenericDAOImpl<PipelineTask, Long>
 		implements PipelineTaskDAO {
 	@Override
-	public Integer findPipelineIdByTaskId(Integer taskid) {
+	public Long findPipelineIdByTaskId(Long taskid) {
 		String sql = "Select m.pipeline.id From PipelineTask as m where m.id=:taskid";
 		Query query = getSession().createQuery(sql);
-		query.setInteger("taskid", taskid);
-		return (Integer) query.uniqueResult();
+		query.setLong("taskid", taskid);
+		return (Long) query.uniqueResult();
 	}
 }

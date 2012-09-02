@@ -25,6 +25,7 @@ import edu.vanderbilt.cqs.service.ProjectService;
 
 @Controller
 @SessionAttributes({ "currentuser" })
+@RequestMapping("/")
 public class ProjectController {
 	private static final Logger logger = Logger
 			.getLogger(ProjectController.class);
@@ -32,34 +33,34 @@ public class ProjectController {
 	@Autowired
 	private ProjectService projectService;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String gohome(ModelMap model) {
-		return "redirect:/index";
+	@RequestMapping
+	public String gohome() {
+		return "list";
 	}
 
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String home(ModelMap model) {
-		if (model.containsAttribute("currentuser")) {
-			return "list";
-		} else {
-			model.put("user", new User());
-			return "login";
-		}
-	}
-
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String login(@ModelAttribute("user") User user, ModelMap model) {
-		User currentUser = projectService.validateUser(user);
-		model.put("currentuser", currentUser);
-		if (currentUser != null) {
-			logger.info(user.getEmail() + "login succeed.");
-			return "list";
-		} else {
-			logger.info(user.getEmail() + "login failed.");
-			return "redirect:/index";
-		}
-	}
-
+	// @RequestMapping("/index")
+	// public String home(ModelMap model) {
+	// if (model.containsAttribute("currentuser")) {
+	// return "list";
+	// } else {
+	// model.put("user", new User());
+	// return "login";
+	// }
+	// }
+	//
+	// @RequestMapping(value = "/login", method = RequestMethod.POST)
+	// public String login(@ModelAttribute("user") User user, ModelMap model) {
+	// User currentUser = projectService.validateUser(user);
+	// model.put("currentuser", currentUser);
+	// if (currentUser != null) {
+	// logger.info(user.getEmail() + "login succeed.");
+	// return "list";
+	// } else {
+	// logger.info(user.getEmail() + "login failed.");
+	// return "redirect:/index";
+	// }
+	// }
+	//
 	@RequestMapping("/user")
 	public String listUsers(ModelMap model) {
 
@@ -79,7 +80,7 @@ public class ProjectController {
 	}
 
 	@RequestMapping("/deleteuser/{userId}")
-	public String deleteUser(@PathVariable Integer userId) {
+	public String deleteUser(@PathVariable Long userId) {
 
 		projectService.removeUser(userId);
 
@@ -103,7 +104,7 @@ public class ProjectController {
 
 	@RequestMapping("/editpipeline")
 	public String editPipeline(@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Integer pipelineId, ModelMap model) {
+			@RequestParam("id") Long pipelineId, ModelMap model) {
 		logger.info(currentUser.getEmail() + " editPipeline.");
 
 		PipelineForm form = new PipelineForm();
@@ -138,7 +139,7 @@ public class ProjectController {
 	@RequestMapping("/deletepipeline")
 	public String deletePipeline(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Integer pipelineId) {
+			@RequestParam("id") Long pipelineId) {
 		logger.info(currentUser.getEmail() + " deletePipeline - update.");
 
 		projectService.removePipeline(pipelineId);
@@ -149,7 +150,7 @@ public class ProjectController {
 	@RequestMapping("/pipelinedetail")
 	public String listPipelineDetail(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Integer pipelineId, ModelMap model) {
+			@RequestParam("id") Long pipelineId, ModelMap model) {
 		logger.info(currentUser.getEmail() + " listPipelineDetail.");
 
 		Pipeline pl = projectService.findPipeline(pipelineId);
@@ -169,7 +170,7 @@ public class ProjectController {
 	@RequestMapping("/editpipelinetask")
 	public String editPipelineTask(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Integer taskid, ModelMap model) {
+			@RequestParam("id") Long taskid, ModelMap model) {
 		logger.info(currentUser.getEmail() + " editPipelineTask.");
 
 		PipelineTask task = projectService.findPipelineTask(taskid);
@@ -185,7 +186,7 @@ public class ProjectController {
 	@RequestMapping(value = "/savepipelinetask", method = RequestMethod.POST)
 	public String savePipelineTask(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("pipelineid") Integer pipelineId,
+			@RequestParam("pipelineid") Long pipelineId,
 			@ModelAttribute("pipelinetask") PipelineTask task) {
 		Pipeline pl = projectService.findPipeline(pipelineId);
 		task.setPipeline(pl);
@@ -202,15 +203,15 @@ public class ProjectController {
 	}
 
 	@RequestMapping("/deletepipelinetask/{pipelinetaskId}")
-	public String deletePipelineTask(@PathVariable Integer pipelinetaskId) {
-		Integer pipelineId = projectService.findPipelineByTask(pipelinetaskId);
+	public String deletePipelineTask(@PathVariable Long pipelinetaskId) {
+		Long pipelineId = projectService.findPipelineByTask(pipelinetaskId);
 
 		projectService.removePipelineTask(pipelinetaskId);
 
 		return getPipelineDetailRedirect(pipelineId);
 	}
 
-	private String getPipelineDetailRedirect(Integer pipelineId) {
+	private String getPipelineDetailRedirect(Long pipelineId) {
 		return "redirect:/pipelinedetail?id=" + pipelineId.toString();
 	}
 
@@ -233,7 +234,7 @@ public class ProjectController {
 
 	@RequestMapping("/editproject")
 	public String editProject(@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Integer projectId, ModelMap model) {
+			@RequestParam("id") Long projectId, ModelMap model) {
 		logger.info(currentUser.getEmail() + " editProject.");
 
 		ProjectForm form = new ProjectForm();
@@ -272,7 +273,7 @@ public class ProjectController {
 	@RequestMapping("/deleteproject")
 	public String deleteProject(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Integer projectId) {
+			@RequestParam("id") Long projectId) {
 		logger.info(currentUser.getEmail() + " deleteProject - update.");
 
 		projectService.removeProject(projectId);
@@ -283,7 +284,7 @@ public class ProjectController {
 	@RequestMapping("/projectdetail")
 	public String listProjectDetail(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Integer projectId, ModelMap model) {
+			@RequestParam("id") Long projectId, ModelMap model) {
 		logger.info(currentUser.getEmail() + " listProjectDetail.");
 
 		Project pl = projectService.findProject(projectId);
@@ -303,7 +304,7 @@ public class ProjectController {
 	@RequestMapping("/editprojecttask")
 	public String editProjectTask(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Integer taskid, ModelMap model) {
+			@RequestParam("id") Long taskid, ModelMap model) {
 		logger.info(currentUser.getEmail() + " editProjectTask.");
 
 		ProjectTask task = projectService.findProjectTask(taskid);
@@ -319,7 +320,7 @@ public class ProjectController {
 	@RequestMapping(value = "/saveprojecttask", method = RequestMethod.POST)
 	public String saveProjectTask(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("projectid") Integer projectId,
+			@RequestParam("projectid") Long projectId,
 			@ModelAttribute("projecttask") ProjectTask task) {
 		Project pl = projectService.findProject(projectId);
 		task.setProject(pl);
@@ -336,15 +337,15 @@ public class ProjectController {
 	}
 
 	@RequestMapping("/deleteprojecttask/{projecttaskId}")
-	public String deleteProjectTask(@PathVariable Integer projecttaskId) {
-		Integer projectId = projectService.findProjectByTask(projecttaskId);
+	public String deleteProjectTask(@PathVariable Long projecttaskId) {
+		Long projectId = projectService.findProjectByTask(projecttaskId);
 
 		projectService.removeProjectTask(projecttaskId);
 
 		return getProjectDetailRedirect(projectId);
 	}
 
-	private String getProjectDetailRedirect(Integer projectId) {
+	private String getProjectDetailRedirect(Long projectId) {
 		return "redirect:/projectdetail?id=" + projectId.toString();
 	}
 

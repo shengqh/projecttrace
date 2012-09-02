@@ -96,22 +96,6 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public Boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public Boolean isLocked() {
-		return locked;
-	}
-
-	public void setLocked(Boolean locked) {
-		this.locked = locked;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -136,4 +120,31 @@ public class User implements Serializable {
 		this.expired = expired;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Boolean getLocked() {
+		return locked;
+	}
+
+	public void setLocked(Boolean locked) {
+		this.locked = locked;
+	}
+
+	public String getName() {
+		if (this.getFirstname() != null && this.getLastname() != null) {
+			return this.getFirstname() + "," + this.getLastname();
+		} else if (this.getFirstname() != null) {
+			return this.getFirstname();
+		} else if (this.getLastname() != null) {
+			return this.getLastname();
+		} else {
+			return "";
+		}
+	}
 }

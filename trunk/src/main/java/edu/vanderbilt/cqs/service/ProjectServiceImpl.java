@@ -52,12 +52,6 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public User validateUser(User user) {
-		return userDAO.validateUser(user);
-	}
-
-	@Transactional
-	@Override
 	public void removeUser(Long id) {
 		userDAO.deleteById(id);
 	}
@@ -208,5 +202,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public boolean hasUser() {
 		return !userDAO.isEmpty();
+	}
+
+	@Transactional
+	@Override
+	public User findUserByEmail(String email) {
+		return userDAO.findByEmail(email);
 	}
 }

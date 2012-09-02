@@ -3,51 +3,50 @@ package edu.vanderbilt.cqs.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import edu.vanderbilt.cqs.Utils;
+import javax.persistence.OneToOne;
 
 @Entity
-@Table(name = "USER")
 public class User implements Serializable {
 	private static final long serialVersionUID = 7401126221031716368L;
 
 	@Id
-	@Column(name = "ID")
 	@GeneratedValue
-	private Integer id;
+	private Long id;
 
-	@Column(name = "FIRSTNAME")
+	@Column
 	private String firstname;
 
-	@Column(name = "LASTNAME")
+	@Column
 	private String lastname;
 
-	@Column(name = "EMAIL")
+	@Column(unique = true)
 	private String email;
 
-	@Column(name = "TELEPHONE")
+	@Column
 	private String telephone;
 
-	@Column(name = "CREATEDATE")
+	@Column
 	private Date createDate;
 
-	@Column(name = "ENABLED")
-	private Boolean Enabled = true;
+	@Column
+	private Boolean enabled = true;
 
-	@Column(name = "LOCKED")
-	private Boolean Locked = false;
+	@Column
+	private Boolean locked = false;
 
-	@Column(name = "MD5PASSWORD")
-	private String md5password;
+	@Column
+	private Boolean expired = false;
 
-	@Transient
+	@Column
 	private String password;
+
+	@OneToOne(mappedBy = "user", cascade = { CascadeType.ALL })
+	private Role role;
 
 	public String getEmail() {
 		return email;
@@ -89,45 +88,52 @@ public class User implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public String getMd5password() {
-		return md5password;
-	}
-
-	public void setMd5password(String md5password) {
-		this.md5password = md5password;
-	}
-
 	public String getPassword() {
 		return password;
 	}
 
 	public void setPassword(String password) {
 		this.password = password;
-		this.md5password = Utils.md5(password);
 	}
 
 	public Boolean isEnabled() {
-		return Enabled;
+		return enabled;
 	}
 
 	public void setEnabled(Boolean enabled) {
-		Enabled = enabled;
+		this.enabled = enabled;
 	}
 
 	public Boolean isLocked() {
-		return Locked;
+		return locked;
 	}
 
 	public void setLocked(Boolean locked) {
-		Locked = locked;
+		this.locked = locked;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public Boolean getExpired() {
+		return expired;
+	}
+
+	public void setExpired(Boolean expired) {
+		this.expired = expired;
 	}
 
 }

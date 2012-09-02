@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import edu.vanderbilt.cqs.bean.Project;
 
 @Repository
-public class ProjectDAOImpl extends GenericDAOImpl<Project, Integer> implements
+public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements
 		ProjectDAO {
 	@Override
 	public void clearTask(Project project) {
@@ -20,7 +20,7 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Integer> implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Project> getProjectByUser(Integer userid) {
+	public List<Project> getProjectByUser(Long userid) {
 		Criteria criteria = getSession().createCriteria(getPersistentClass());
 		criteria.createAlias("managers", "m").createAlias("users", "u")
 				.createAlias("observers", "o");

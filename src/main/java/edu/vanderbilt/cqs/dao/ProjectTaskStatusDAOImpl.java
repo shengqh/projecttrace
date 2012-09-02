@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 
 @Repository
-public class ProjectTaskStatusDAOImpl extends GenericDAOImpl<ProjectTaskStatus, Integer>
+public class ProjectTaskStatusDAOImpl extends GenericDAOImpl<ProjectTaskStatus, Long>
 		implements ProjectTaskStatusDAO {
 }

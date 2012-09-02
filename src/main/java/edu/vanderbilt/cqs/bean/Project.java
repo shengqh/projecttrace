@@ -24,9 +24,8 @@ public class Project implements Serializable {
 	private static final long serialVersionUID = -5677749261455648256L;
 
 	@Id
-	@Column(name = "ID")
 	@GeneratedValue
-	private Integer id;
+	private Long id;
 
 	@Column(name = "NAME")
 	private String name;
@@ -53,11 +52,11 @@ public class Project implements Serializable {
 	@OneToMany(mappedBy = "project")
 	private List<ProjectTask> tasks;
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

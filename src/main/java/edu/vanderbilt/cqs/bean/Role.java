@@ -13,6 +13,11 @@ public class Role implements Serializable {
 
 	private static final long serialVersionUID = 8773798041075554951L;
 
+	public static final Integer ADMIN = 1000;
+	public static final Integer MANAGER = 100;
+	public static final Integer USER = 10;
+	public static final Integer OBSERVER = 1;
+
 	@Id
 	@GeneratedValue
 	private Long id;

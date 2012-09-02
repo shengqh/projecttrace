@@ -25,17 +25,24 @@ public class ApplicationListenerImpl implements
 		if (bFirst) {
 			bFirst = false;
 			if (!projectService.hasUser()) {
-				Role role= new Role();
-				role.setRole(1);
-				User user = new User();
-				user.setEmail("admin@cqs");
-				user.setPassword(Utils.md5("vu2012cqs"));
-				user.setCreateDate(new Date());
-				user.setRole(role);
-				role.setUser(user);
-				
-				projectService.addUser(user);
+				addUser("yu.shyr@vanderbilt.edu", "cqs", Role.ADMIN);
+				addUser("yan.guo@vanderbilt.edu", "cqs", Role.MANAGER);
+				addUser("quanhu.sheng@vanderbilt.edu", "cqs", Role.USER);
+				addUser("test@vanderbilt.edu", "cqs", Role.OBSERVER);
 			}
 		}
+	}
+
+	private void addUser(String email, String password, Integer permission) {
+		Role role = new Role();
+		role.setRole(permission);
+		User user = new User();
+		user.setEmail(email);
+		user.setPassword(Utils.md5(password));
+		user.setCreateDate(new Date());
+		user.setRole(role);
+		role.setUser(user);
+
+		projectService.addUser(user);
 	}
 }

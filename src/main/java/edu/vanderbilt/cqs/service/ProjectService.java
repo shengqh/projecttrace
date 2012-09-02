@@ -14,11 +14,11 @@ public interface ProjectService {
 
 	void updateUser(User user);
 
-	User validateUser(User user);
-
 	List<User> listUser();
 
 	void removeUser(Long id);
+	
+	User findUserByEmail(String email);
 
 	// Project
 	Project findProject(Long id);

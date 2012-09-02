@@ -4,17 +4,30 @@
 <%@ page import="org.springframework.security.core.context.SecurityContextHolder" %>
 
 <c:url value="/" var="homeUrl"/>
+<c:url value="project" var="projectUrl"/>
 <c:url value="user" var="userUrl"/>
-<c:url value="admin" var="adminUrl"/>
+<c:url value="projectmanage" var="projectAdminUrl"/>
+<c:url value="usermanage" var="userAdminUrl"/>
 <c:url value="logout" var="logoutUrl"/>
 
 <div class="menu">
 	<ul>
 		<li><a href="${homeUrl}">Home</a></li>
+		
+		<sec:authorize access="hasRole('ROLE_OBSERVER')">
+		<li><a href="${projectUrl}">Project</a></li>
+		</sec:authorize>
+		
+		<sec:authorize access="hasRole('ROLE_USER')">
 		<li><a href="${userUrl}">User</a></li>
-
+		</sec:authorize>
+		
+		<sec:authorize access="hasRole('ROLE_MANAGER')">
+		<li><a href="${projectAdminUrl}">Project manage</a></li>
+		</sec:authorize>
+		
 		<sec:authorize access="hasRole('ROLE_ADMIN')">
-		<li><a href="${adminUrl}">Admin</a></li>
+		<li><a href="${userAdminUrl}">User manage</a></li>
 		</sec:authorize>
 
 		<li><a href="${logoutUrl}">Logout</a></li>

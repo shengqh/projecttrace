@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,7 +26,6 @@ import edu.vanderbilt.cqs.service.ProjectService;
 
 @Controller
 @SessionAttributes({ "currentuser" })
-@RequestMapping("/")
 public class ProjectController {
 	private static final Logger logger = Logger
 			.getLogger(ProjectController.class);
@@ -33,9 +33,14 @@ public class ProjectController {
 	@Autowired
 	private ProjectService projectService;
 
-	@RequestMapping
-	public String gohome() {
-		return "list";
+	@RequestMapping("/")
+	public String gohome(ModelMap model) {
+		String email = SecurityContextHolder.getContext().getAuthentication()
+				.getName();
+		User user = projectService.findUserByEmail(email);
+		model.put("currentuser", user);
+
+		return "home";
 	}
 
 	// @RequestMapping("/index")

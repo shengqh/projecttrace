@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.dao.UserDAO;
 
 /**
@@ -25,7 +26,7 @@ import edu.vanderbilt.cqs.dao.UserDAO;
 public class CustomUserDetailsService implements UserDetailsService {
 
 	@Autowired
-	private UserDAO userRepository;
+	private UserDAO userDAO;
 
 	/**
 	 * Returns a populated {@link UserDetails} object. The username is first
@@ -35,18 +36,20 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username)
 			throws UsernameNotFoundException {
 		try {
-			edu.vanderbilt.cqs.bean.User domainUser = userRepository
+			edu.vanderbilt.cqs.bean.User domainUser = userDAO
 					.findByEmail(username);
 
-			boolean enabled = true;
-			boolean accountNonExpired = true;
+			if (domainUser == null) {
+				throw new UsernameNotFoundException(username);
+			}
+
 			boolean credentialsNonExpired = true;
-			boolean accountNonLocked = true;
 
 			return new User(domainUser.getEmail(), domainUser.getPassword()
-					.toLowerCase(), enabled, accountNonExpired,
-					credentialsNonExpired, accountNonLocked,
-					getAuthorities(domainUser.getRole().getRole()));
+					.toLowerCase(), domainUser.getEnabled(),
+					!domainUser.getExpired(), credentialsNonExpired,
+					!domainUser.getLocked(), getAuthorities(domainUser
+							.getRole().getRole()));
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -76,15 +79,20 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public List<String> getRoles(Integer role) {
 		List<String> roles = new ArrayList<String>();
 
-		if (role.intValue() == 1) {
+		if (role.intValue() >= Role.OBSERVER) {
+			roles.add("ROLE_OBSERVER");
+		}
+
+		if (role.intValue() >= Role.USER) {
 			roles.add("ROLE_USER");
+		}
+
+		if (role.intValue() >= Role.MANAGER) {
 			roles.add("ROLE_MANAGER");
+		}
+
+		if (role.intValue() >= Role.ADMIN) {
 			roles.add("ROLE_ADMIN");
-		} else if (role.intValue() == 2) {
-			roles.add("ROLE_USER");
-			roles.add("ROLE_MANAGER");
-		} else if (role.intValue() == 3) {
-			roles.add("ROLE_USER");
 		}
 
 		return roles;

@@ -58,6 +58,24 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
+	public boolean hasUser() {
+		return !userDAO.isEmpty();
+	}
+
+	@Transactional
+	@Override
+	public User findUser(Long id) {
+		return userDAO.findById(id, false);
+	}
+
+	@Transactional
+	@Override
+	public User findUserByEmail(String email) {
+		return userDAO.findByEmail(email);
+	}
+
+	@Transactional
+	@Override
 	public void addProject(Project project) {
 		projectDAO.save(project);
 	}
@@ -196,17 +214,5 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Long findProjectByTask(Long taskid) {
 		return projectTaskDAO.findProjecIdByTaskId(taskid);
-	}
-
-	@Transactional
-	@Override
-	public boolean hasUser() {
-		return !userDAO.isEmpty();
-	}
-
-	@Transactional
-	@Override
-	public User findUserByEmail(String email) {
-		return userDAO.findByEmail(email);
 	}
 }

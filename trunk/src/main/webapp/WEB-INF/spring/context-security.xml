@@ -9,17 +9,13 @@
 		http://www.springframework.org/schema/util 
 		http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
+	<global-method-security secured-annotations="enabled" />
+
 	<http pattern="/resources" security="none" />
 
 	<http auto-config="true" use-expressions="true">
 		<intercept-url pattern="/login" access="permitAll" />
 		<intercept-url pattern="/logout" access="permitAll" />
-		<intercept-url pattern="/" access="hasRole('ROLE_OBSERVER')" />
-		<intercept-url pattern="/project" access="hasRole('ROLE_OBSERVER')" />
-		<intercept-url pattern="/user" access="hasRole('ROLE_USER')" />
-		<intercept-url pattern="/projectmanage" access="hasRole('ROLE_MANAGER')" />
-		<intercept-url pattern="/usermanage" access="hasRole('ROLE_ADMIN')" />
-
 		<form-login login-page="/login" authentication-failure-url="/login/failure"
 			default-target-url="/" always-use-default-target='true' />
 

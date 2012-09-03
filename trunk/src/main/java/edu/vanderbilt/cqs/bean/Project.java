@@ -109,10 +109,10 @@ public class Project implements Serializable {
 	}
 
 	public double getPeopleTime() {
-		return BeanUtils.getTotalPeopleTime(getTasks());
+		return CqsUtils.getTotalPeopleTime(getTasks());
 	}
 
 	public double getMachineTime() {
-		return BeanUtils.getTotalMachineTime(getTasks());
+		return CqsUtils.getTotalMachineTime(getTasks());
 	}
 }

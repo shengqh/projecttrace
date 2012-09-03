@@ -34,14 +34,11 @@ public class ApplicationListenerImpl implements
 	}
 
 	private void addUser(String email, String password, Integer permission) {
-		Role role = new Role();
-		role.setRole(permission);
 		User user = new User();
 		user.setEmail(email);
 		user.setPassword(Utils.md5(password));
 		user.setCreateDate(new Date());
-		user.setRole(role);
-		role.setUser(user);
+		user.setRole(permission);
 
 		projectService.addUser(user);
 	}

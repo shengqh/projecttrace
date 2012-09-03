@@ -136,7 +136,7 @@ public class User implements Serializable {
 
 	public String getName() {
 		if (this.getFirstname() != null && this.getLastname() != null) {
-			return this.getFirstname() + "," + this.getLastname();
+			return this.getFirstname() + " " + this.getLastname();
 		} else if (this.getFirstname() != null) {
 			return this.getFirstname();
 		} else if (this.getLastname() != null) {

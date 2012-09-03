@@ -20,6 +20,7 @@
 		<param-value>
 			/WEB-INF/spring/context-root.xml
 			/WEB-INF/spring/context-security.xml
+			/WEB-INF/spring/context-mail.xml
 		</param-value>
 	</context-param>
 

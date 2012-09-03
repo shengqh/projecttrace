@@ -3,6 +3,7 @@
 <c:url value="/" var="homeUrl"/>
 <c:url value="project" var="projectUrl"/>
 <c:url value="user" var="userUrl"/>
+<c:url value="changeownpassword" var="passwordUrl"/>
 <c:url value="logout" var="logoutUrl"/>
 
 <div class="menu">
@@ -16,6 +17,8 @@
 		<sec:authorize access="hasRole('ROLE_USER')">
 		<li><a href="${userUrl}">User</a></li>
 		</sec:authorize>
+		
+		<li><a href="${passwordUrl}">Change Password</a></li>
 		
 		<li><a href="${logoutUrl}">Logout</a></li>
 	</ul>

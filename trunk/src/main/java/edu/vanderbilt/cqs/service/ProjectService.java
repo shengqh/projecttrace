@@ -17,9 +17,9 @@ public interface ProjectService {
 	List<User> listUser();
 
 	void removeUser(Long id);
-	
+
 	User findUser(Long id);
-	
+
 	User findUserByEmail(String email);
 
 	// Project
@@ -70,6 +70,10 @@ public interface ProjectService {
 	void persist(Object obj);
 
 	void applyPipeline(Project project, Pipeline pipeline, int count);
-	
+
 	boolean hasUser();
+
+	boolean hasUser(Long id);
+
+	void updatePassword(Long id, String newPassword);
 }

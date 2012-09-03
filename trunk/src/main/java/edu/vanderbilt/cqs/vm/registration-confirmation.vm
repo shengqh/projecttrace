@@ -1,0 +1,13 @@
+<html>
+<body>
+<h3>Hi ${user.name}, welcome to the Project Trace System of CQS/VUMC!</h3>
+
+<div>
+	<p>
+   	Your login name is ${user.email}
+   	<p>
+   	Your password is: ${password} 
+</div>
+</body>
+
+</html>

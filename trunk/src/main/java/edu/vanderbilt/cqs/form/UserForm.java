@@ -11,10 +11,6 @@ public class UserForm implements Serializable {
 
 	private User user;
 
-	private String userPassword;
-
-	private String confirmPassword;
-
 	private Map<Integer, String> roles;
 
 	public User getUser() {
@@ -32,21 +28,4 @@ public class UserForm implements Serializable {
 	public void setRoles(Map<Integer, String> roles) {
 		this.roles = roles;
 	}
-
-	public String getConfirmPassword() {
-		return confirmPassword;
-	}
-
-	public void setConfirmPassword(String confirmPassword) {
-		this.confirmPassword = confirmPassword;
-	}
-
-	public String getUserPassword() {
-		return userPassword;
-	}
-
-	public void setUserPassword(String userPassword) {
-		this.userPassword = userPassword;
-	}
-
 }

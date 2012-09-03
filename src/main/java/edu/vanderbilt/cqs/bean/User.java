@@ -3,12 +3,10 @@ package edu.vanderbilt.cqs.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 @Entity
 public class User implements Serializable {
@@ -45,8 +43,8 @@ public class User implements Serializable {
 	@Column
 	private String password;
 
-	@OneToOne(mappedBy = "user", cascade = { CascadeType.ALL })
-	private Role role;
+	@Column
+	private Integer role;
 
 	public String getEmail() {
 		return email;
@@ -104,11 +102,11 @@ public class User implements Serializable {
 		this.id = id;
 	}
 
-	public Role getRole() {
+	public Integer getRole() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRole(Integer role) {
 		this.role = role;
 	}
 
@@ -146,5 +144,9 @@ public class User implements Serializable {
 		} else {
 			return "";
 		}
+	}
+
+	public String getRoleName() {
+		return CqsUtils.getRoleMap().get(this.role);
 	}
 }

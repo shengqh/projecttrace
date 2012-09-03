@@ -1,7 +1,7 @@
 package edu.vanderbilt.cqs.controller;
 
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +18,7 @@ public class AccessController {
 	}
 
 	@RequestMapping(value = "/denied")
+	@Secured("ROLE_OBSERVER")
 	public String denied() {
 		return "access/denied";
 	}

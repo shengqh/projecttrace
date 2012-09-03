@@ -18,6 +18,8 @@ public interface ProjectService {
 
 	void removeUser(Long id);
 	
+	User findUser(Long id);
+	
 	User findUserByEmail(String email);
 
 	// Project

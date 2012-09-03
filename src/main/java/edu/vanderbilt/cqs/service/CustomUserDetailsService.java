@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.vanderbilt.cqs.bean.CqsUtils;
 import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.dao.UserDAO;
 
@@ -48,8 +49,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 			return new User(domainUser.getEmail(), domainUser.getPassword()
 					.toLowerCase(), domainUser.getEnabled(),
 					!domainUser.getExpired(), credentialsNonExpired,
-					!domainUser.getLocked(), getAuthorities(domainUser
-							.getRole().getRole()));
+					!domainUser.getLocked(),
+					getAuthorities(domainUser.getRole()));
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -80,19 +81,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 		List<String> roles = new ArrayList<String>();
 
 		if (role.intValue() >= Role.OBSERVER) {
-			roles.add("ROLE_OBSERVER");
+			roles.add(CqsUtils.getRoleMap().get(Role.OBSERVER));
 		}
 
 		if (role.intValue() >= Role.USER) {
-			roles.add("ROLE_USER");
+			roles.add(CqsUtils.getRoleMap().get(Role.USER));
 		}
 
 		if (role.intValue() >= Role.MANAGER) {
-			roles.add("ROLE_MANAGER");
+			roles.add(CqsUtils.getRoleMap().get(Role.MANAGER));
 		}
 
 		if (role.intValue() >= Role.ADMIN) {
-			roles.add("ROLE_ADMIN");
+			roles.add(CqsUtils.getRoleMap().get(Role.ADMIN));
 		}
 
 		return roles;

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import edu.vanderbilt.cqs.bean.BeanUtils;
+import edu.vanderbilt.cqs.bean.CqsUtils;
 import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Project;
@@ -34,6 +35,7 @@ public class ProjectController {
 	private ProjectService projectService;
 
 	@RequestMapping("/")
+	@Secured("ROLE_OBSERVER")
 	public String gohome(ModelMap model) {
 		String email = SecurityContextHolder.getContext().getAuthentication()
 				.getName();
@@ -41,55 +43,6 @@ public class ProjectController {
 		model.put("currentuser", user);
 
 		return "home";
-	}
-
-	// @RequestMapping("/index")
-	// public String home(ModelMap model) {
-	// if (model.containsAttribute("currentuser")) {
-	// return "list";
-	// } else {
-	// model.put("user", new User());
-	// return "login";
-	// }
-	// }
-	//
-	// @RequestMapping(value = "/login", method = RequestMethod.POST)
-	// public String login(@ModelAttribute("user") User user, ModelMap model) {
-	// User currentUser = projectService.validateUser(user);
-	// model.put("currentuser", currentUser);
-	// if (currentUser != null) {
-	// logger.info(user.getEmail() + "login succeed.");
-	// return "list";
-	// } else {
-	// logger.info(user.getEmail() + "login failed.");
-	// return "redirect:/index";
-	// }
-	// }
-	//
-	@RequestMapping("/user")
-	public String listUsers(ModelMap model) {
-
-		model.addAttribute("user", new User());
-		model.addAttribute("userList", projectService.listUser());
-
-		return "user";
-	}
-
-	@RequestMapping(value = "/adduser", method = RequestMethod.POST)
-	public String addUser(@ModelAttribute("user") User user) {
-
-		user.setCreateDate(new Date());
-		projectService.addUser(user);
-
-		return "redirect:/user";
-	}
-
-	@RequestMapping("/deleteuser/{userId}")
-	public String deleteUser(@PathVariable Long userId) {
-
-		projectService.removeUser(userId);
-
-		return "redirect:/user";
 	}
 
 	@RequestMapping("/pipeline")
@@ -164,7 +117,7 @@ public class ProjectController {
 		task.setName("Task");
 		task.setPeopleTime(1.0);
 		task.setMachineTime(1.0);
-		task.setTaskIndex(BeanUtils.getNextTaskIndex(pl.getTasks()));
+		task.setTaskIndex(CqsUtils.getNextTaskIndex(pl.getTasks()));
 
 		model.addAttribute("pipelinetask", task);
 		model.addAttribute("pipeline", pl);
@@ -298,7 +251,7 @@ public class ProjectController {
 		task.setName("Task");
 		task.setPeopleTime(1.0);
 		task.setMachineTime(1.0);
-		task.setTaskIndex(BeanUtils.getNextTaskIndex(pl.getTasks()));
+		task.setTaskIndex(CqsUtils.getNextTaskIndex(pl.getTasks()));
 
 		model.addAttribute("projecttask", task);
 		model.addAttribute("project", pl);

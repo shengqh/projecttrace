@@ -76,6 +76,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
+	public boolean hasUser(Long id) {
+		return userDAO.hasUser(id);
+	}
+
+	@Transactional
+	@Override
 	public void addProject(Project project) {
 		projectDAO.save(project);
 	}
@@ -214,5 +220,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Long findProjectByTask(Long taskid) {
 		return projectTaskDAO.findProjecIdByTaskId(taskid);
+	}
+
+	@Transactional
+	@Override
+	public void updatePassword(Long id, String newPassword) {
+		userDAO.updatePassword(id, newPassword);
 	}
 }

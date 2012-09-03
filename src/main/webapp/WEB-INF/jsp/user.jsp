@@ -13,7 +13,7 @@
 	<h1 align="center">
 		<spring:message code="label.userlist" />
 		<sec:authorize access="hasRole('ROLE_ADMIN')">
-		|<a href="adduser"><spring:message code="label.newuser" /></a>
+		| <a href="adduser"><spring:message code="label.newuser" /></a>
 		</sec:authorize>
 	</h1>
 	<p>
@@ -30,6 +30,7 @@
 							<th scope="col"><spring:message code="label.enabled" /></th>
 							<th scope="col"><spring:message code="label.locked" /></th>
 							<th scope="col"><spring:message code="label.expired" /></th>
+							<th scope="col">&nbsp;</th>
 							<th scope="col">&nbsp;</th>
 							<th scope="col">&nbsp;</th>
 						</sec:authorize>
@@ -49,6 +50,8 @@
 								<td>${user.expired}</td>
 								<td><a href="edituser?id=${user.id}">edit</a></td>
 								<td><a href="deleteuser?id=${user.id}">delete</a></td>
+								<td><a href="resetpassword?id=${user.id}">reset
+										password</a></td>
 							</sec:authorize>
 						</tr>
 					</c:forEach>

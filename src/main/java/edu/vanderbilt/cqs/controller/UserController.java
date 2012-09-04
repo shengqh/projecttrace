@@ -11,7 +11,6 @@ import org.apache.velocity.app.VelocityEngine;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -26,9 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
+import edu.vanderbilt.cqs.Role;
 import edu.vanderbilt.cqs.Utils;
-import edu.vanderbilt.cqs.bean.CqsUtils;
-import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.form.ChangePasswordForm;
 import edu.vanderbilt.cqs.form.UserForm;
@@ -48,9 +46,6 @@ public class UserController {
 	private VelocityEngine velocityEngine;
 
 	@Autowired
-	private SimpleMailMessage templateMessage;
-
-	@Autowired
 	private ProjectService projectService;
 
 	@Autowired
@@ -59,7 +54,7 @@ public class UserController {
 	@Autowired
 	private UserValidator userValidator;
 
-	@RequestMapping("/user")
+	@RequestMapping("/users")
 	@Secured("ROLE_USER")
 	public String listUsers(ModelMap model) {
 		model.addAttribute("userList", projectService.listUser());
@@ -75,7 +70,7 @@ public class UserController {
 		user.setFirstname("firstname");
 		form.setUser(new User());
 		form.getUser().setRole(Role.USER);
-		form.setRoles(CqsUtils.getRoleMap());
+		form.setRoles(Utils.getRoleMap());
 		model.addAttribute("userForm", form);
 		return "edituser";
 	}
@@ -87,7 +82,7 @@ public class UserController {
 		if (user != null) {
 			UserForm form = new UserForm();
 			form.setUser(user);
-			form.setRoles(CqsUtils.getRoleMap());
+			form.setRoles(Utils.getRoleMap());
 			model.addAttribute("userForm", form);
 			return "edituser";
 		} else {
@@ -102,7 +97,7 @@ public class UserController {
 			SessionStatus status) {
 		userValidator.validate(form, result);
 		if (result.hasErrors()) {
-			form.setRoles(CqsUtils.getRoleMap());
+			form.setRoles(Utils.getRoleMap());
 			return "edituser";
 		} else {
 			if (form.getUser().getId() == null) {
@@ -198,43 +193,6 @@ public class UserController {
 					+ user.getEmail() + " password.");
 		}
 		return "redirect:/user";
-	}
-
-	@RequestMapping("/changepassword")
-	@Secured("ROLE_ADMIN")
-	public String changepassword(@RequestParam("id") Long userid, ModelMap model) {
-		User user = projectService.findUser(userid);
-		if (user != null) {
-			ChangePasswordForm form = new ChangePasswordForm();
-			form.setTargetUser(user);
-			model.put("changePasswordForm", form);
-			return "changepassword";
-		} else {
-			return "redirect:/user";
-		}
-	}
-
-	@RequestMapping("/savepassword")
-	@Secured("ROLE_ADMIN")
-	public String savepassword(@ModelAttribute("currentuser") User currentUser,
-			@ModelAttribute("changePasswordForm") ChangePasswordForm form,
-			ModelMap model, BindingResult result, SessionStatus status) {
-
-		form.setCurrentUser(currentUser);
-
-		passwordValidator.validate(form, result);
-
-		if (result.hasErrors()) {
-			return "changepassword";
-		} else {
-			String newPassword = Utils.md5(form.getNewPassword());
-			projectService.updatePassword(form.getTargetUser().getId(),
-					newPassword);
-			if (form.getTargetUser().getId() == currentUser.getId()) {
-				currentUser.setPassword(newPassword);
-			}
-			return "redirect:/user";
-		}
 	}
 
 	private void sendConfirmationEmail(final User user, final String password) {

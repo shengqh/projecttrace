@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.vanderbilt.cqs.Role;
 import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Project;
@@ -89,7 +90,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public List<Project> listProject(User currentUser) {
-		return projectDAO.findAll();
+		if (currentUser.getRole() >= Role.MANAGER) {
+			return projectDAO.findAll();
+		} else {
+			return projectDAO.getProjectByUser(currentUser.getId());
+		}
 	}
 
 	@Transactional
@@ -120,16 +125,6 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void removePipeline(Long id) {
 		pipelineDAO.deleteById(id);
-	}
-
-	@Transactional
-	@Override
-	public void applyPipeline(Project project, Pipeline pipeline, int count) {
-		projectDAO.clearTask(project);
-		for (PipelineTask task : pipeline.getTasks()) {
-			project.getTasks().add(new ProjectTask(task, count));
-		}
-		projectDAO.save(project);
 	}
 
 	@Transactional
@@ -226,5 +221,19 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void updatePassword(Long id, String newPassword) {
 		userDAO.updatePassword(id, newPassword);
+	}
+
+	@Override
+	public List<User> getActiveUsers() {
+		return userDAO.getActiveUsers();
+	}
+
+	@Override
+	public Integer getPermission(User user, Project project) {
+		if (user.getRole() >= Role.MANAGER) {
+			return user.getRole();
+		}
+
+		return projectDAO.getPermission(user.getId(), project.getId());
 	}
 }

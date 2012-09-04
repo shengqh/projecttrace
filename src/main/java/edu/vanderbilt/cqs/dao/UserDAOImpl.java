@@ -1,5 +1,7 @@
 package edu.vanderbilt.cqs.dao;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Projections;
@@ -39,5 +41,16 @@ public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 		query.setString("newPassword", newPassword);
 		query.setLong("id", id);
 		query.executeUpdate();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getActiveUsers() {
+		String hql = "from User where enabled=:enabled and (locked = :locked) and (expired = :expired)";
+		Query query = getSession().createQuery(hql);
+		query.setParameter("enabled", true);
+		query.setParameter("locked", false);
+		query.setParameter("expired", false);
+		return (List<User>) query.list();
 	}
 }

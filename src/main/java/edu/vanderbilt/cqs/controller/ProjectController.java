@@ -5,24 +5,23 @@ import java.util.Date;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import edu.vanderbilt.cqs.bean.CqsUtils;
-import edu.vanderbilt.cqs.bean.Pipeline;
-import edu.vanderbilt.cqs.bean.PipelineTask;
+import edu.vanderbilt.cqs.Role;
+import edu.vanderbilt.cqs.Status;
+import edu.vanderbilt.cqs.Utils;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.User;
-import edu.vanderbilt.cqs.form.PipelineForm;
+import edu.vanderbilt.cqs.form.ProjectDetailForm;
 import edu.vanderbilt.cqs.form.ProjectForm;
+import edu.vanderbilt.cqs.form.ProjectTaskForm;
 import edu.vanderbilt.cqs.service.ProjectService;
 
 @Controller
@@ -34,229 +33,134 @@ public class ProjectController {
 	@Autowired
 	private ProjectService projectService;
 
-	@RequestMapping("/")
-	@Secured("ROLE_OBSERVER")
-	public String gohome(ModelMap model) {
-		String email = SecurityContextHolder.getContext().getAuthentication()
-				.getName();
-		User user = projectService.findUserByEmail(email);
-		model.put("currentuser", user);
-
-		return "home";
-	}
-
-	@RequestMapping("/pipeline")
-	public String listPipeline(@ModelAttribute("currentuser") User currentUser,
-			ModelMap model) {
-		logger.info(currentUser.getEmail() + " listPipeline.");
-
-		PipelineForm form = new PipelineForm();
-		form.setPipeline(new Pipeline());
-		form.setPipelineList(projectService.listPipeline(currentUser));
-		form.setCanEdit(true);
-
-		model.addAttribute("pipelineForm", form);
-
-		return "pipeline";
-	}
-
-	@RequestMapping("/editpipeline")
-	public String editPipeline(@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Long pipelineId, ModelMap model) {
-		logger.info(currentUser.getEmail() + " editPipeline.");
-
-		PipelineForm form = new PipelineForm();
-		form.setPipeline(projectService.findPipeline(pipelineId));
-		form.setPipelineList(projectService.listPipeline(currentUser));
-		form.setCanEdit(true);
-
-		model.addAttribute("pipelineForm", form);
-
-		return "pipeline";
-	}
-
-	@RequestMapping(value = "/savepipeline", method = RequestMethod.POST)
-	public String savePipeline(@ModelAttribute("currentuser") User currentUser,
-			@ModelAttribute("pipelineForm") PipelineForm pipelineForm) {
-		Pipeline pipeline = pipelineForm.getPipeline();
-		if (pipeline.getId() != null) {
-			Pipeline old = projectService.findPipeline(pipeline.getId());
-			old.setName(pipeline.getName());
-			logger.info(currentUser.getEmail() + " savePipeline - update.");
-			projectService.updatePipeline(old);
-		} else {
-			logger.info(currentUser.getEmail() + " savePipeline - new.");
-			pipeline.setCreateDate(new Date());
-			pipeline.setCreator(currentUser);
-			projectService.addPipeline(pipeline);
-		}
-
-		return "redirect:/pipeline";
-	}
-
-	@RequestMapping("/deletepipeline")
-	public String deletePipeline(
-			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Long pipelineId) {
-		logger.info(currentUser.getEmail() + " deletePipeline - update.");
-
-		projectService.removePipeline(pipelineId);
-
-		return "redirect:/pipeline";
-	}
-
-	@RequestMapping("/pipelinedetail")
-	public String listPipelineDetail(
-			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Long pipelineId, ModelMap model) {
-		logger.info(currentUser.getEmail() + " listPipelineDetail.");
-
-		Pipeline pl = projectService.findPipeline(pipelineId);
-
-		PipelineTask task = new PipelineTask();
-		task.setName("Task");
-		task.setPeopleTime(1.0);
-		task.setMachineTime(1.0);
-		task.setTaskIndex(CqsUtils.getNextTaskIndex(pl.getTasks()));
-
-		model.addAttribute("pipelinetask", task);
-		model.addAttribute("pipeline", pl);
-
-		return "pipelinedetail";
-	}
-
-	@RequestMapping("/editpipelinetask")
-	public String editPipelineTask(
-			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Long taskid, ModelMap model) {
-		logger.info(currentUser.getEmail() + " editPipelineTask.");
-
-		PipelineTask task = projectService.findPipelineTask(taskid);
-
-		Pipeline pl = task.getPipeline();
-
-		model.addAttribute("pipelinetask", task);
-		model.addAttribute("pipeline", pl);
-
-		return "pipelinedetail";
-	}
-
-	@RequestMapping(value = "/savepipelinetask", method = RequestMethod.POST)
-	public String savePipelineTask(
-			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("pipelineid") Long pipelineId,
-			@ModelAttribute("pipelinetask") PipelineTask task) {
-		Pipeline pl = projectService.findPipeline(pipelineId);
-		task.setPipeline(pl);
-
-		if (task.getId() != null) {
-			logger.info(currentUser.getEmail() + " updating pipeline task.");
-			projectService.updatePipelineTask(task);
-		} else {
-			logger.info(currentUser.getEmail() + " adding pipeline task.");
-			projectService.addPipelineTask(task);
-		}
-
-		return getPipelineDetailRedirect(pipelineId);
-	}
-
-	@RequestMapping("/deletepipelinetask/{pipelinetaskId}")
-	public String deletePipelineTask(@PathVariable Long pipelinetaskId) {
-		Long pipelineId = projectService.findPipelineByTask(pipelinetaskId);
-
-		projectService.removePipelineTask(pipelinetaskId);
-
-		return getPipelineDetailRedirect(pipelineId);
-	}
-
-	private String getPipelineDetailRedirect(Long pipelineId) {
-		return "redirect:/pipelinedetail?id=" + pipelineId.toString();
-	}
-
 	@RequestMapping("/project")
+	@Secured("ROLE_OBSERVER")
 	public String listProject(@ModelAttribute("currentuser") User currentUser,
 			ModelMap model) {
-		logger.info(currentUser.getEmail() + " listProject.");
+		logger.info(currentUser.getEmail() + " projectList.");
 
-		ProjectForm form = new ProjectForm();
-		form.setProject(new Project());
-		form.setProjectList(projectService.listProject(currentUser));
-		form.setAllPipelines(projectService.listPipeline(currentUser));
-		form.setAllUsers(projectService.listUser());
-		form.setCanEdit(true);
-
-		model.addAttribute("projectForm", form);
+		model.addAttribute("projectList",
+				projectService.listProject(currentUser));
 
 		return "project";
 	}
 
+	@RequestMapping("/addproject")
+	@Secured("ROLE_ADMIN")
+	public String addProject(@ModelAttribute("currentuser") User currentUser,
+			ModelMap model) {
+		logger.info(currentUser.getEmail() + " addProject.");
+
+		ProjectForm form = new ProjectForm();
+		form.setProject(new Project());
+		form.setAllUsers(projectService.listUser());
+
+		model.addAttribute("projectForm", form);
+
+		return "projectedit";
+	}
+
 	@RequestMapping("/editproject")
+	@Secured("ROLE_MANAGER")
 	public String editProject(@ModelAttribute("currentuser") User currentUser,
 			@RequestParam("id") Long projectId, ModelMap model) {
 		logger.info(currentUser.getEmail() + " editProject.");
 
-		ProjectForm form = new ProjectForm();
-		form.setProject(projectService.findProject(projectId));
-		form.setProjectList(projectService.listProject(currentUser));
-		if (form.getProject().getTasks().size() == 0) {
-			form.setAllPipelines(projectService.listPipeline(currentUser));
+		Project project = projectService.findProject(projectId);
+		if (project != null) {
+			ProjectForm form = new ProjectForm();
+			form.setProject(project);
+			form.setAllUsers(projectService.getActiveUsers());
+
+			model.addAttribute("projectForm", form);
+
+			return "projectedit";
+		} else {
+			return "redirect:/project";
 		}
-		form.setAllUsers(projectService.listUser());
-		form.setCanEdit(true);
-
-		model.addAttribute("projectForm", form);
-
-		return "project";
 	}
 
 	@RequestMapping(value = "/saveproject", method = RequestMethod.POST)
+	@Secured("ROLE_MANAGER")
 	public String saveProject(@ModelAttribute("currentuser") User currentUser,
 			@ModelAttribute("projectForm") ProjectForm projectForm) {
 		Project project = projectForm.getProject();
 		if (project.getId() != null) {
 			Project old = projectService.findProject(project.getId());
 			old.setName(project.getName());
-			logger.info(currentUser.getEmail() + " savePipeline - update.");
+			old.setDescription(project.getDescription());
 			projectService.updateProject(old);
+			logger.info(currentUser.getEmail() + " saveProject - update.");
 		} else {
-			logger.info(currentUser.getEmail() + " savePipeline - new.");
 			project.setCreateDate(new Date());
 			project.setCreator(currentUser);
 			projectService.addProject(project);
+			logger.info(currentUser.getEmail() + " saveProject - new.");
 		}
 
 		return "redirect:/project";
 	}
 
 	@RequestMapping("/deleteproject")
+	@Secured("ROLE_ADMIN")
 	public String deleteProject(
 			@ModelAttribute("currentuser") User currentUser,
 			@RequestParam("id") Long projectId) {
-		logger.info(currentUser.getEmail() + " deleteProject - update.");
-
 		projectService.removeProject(projectId);
+
+		logger.info(currentUser.getEmail() + " deleteProject.");
 
 		return "redirect:/project";
 	}
 
-	@RequestMapping("/projectdetail")
-	public String listProjectDetail(
-			@ModelAttribute("currentuser") User currentUser,
+	@RequestMapping("/showproject")
+	@Secured("ROLE_OBSERVER")
+	public String showProject(@ModelAttribute("currentuser") User currentUser,
 			@RequestParam("id") Long projectId, ModelMap model) {
-		logger.info(currentUser.getEmail() + " listProjectDetail.");
+		logger.info(currentUser.getEmail() + " showProject.");
 
-		Project pl = projectService.findProject(projectId);
+		Project project = projectService.findProject(projectId);
+		if (project != null) {
+			Integer permission = projectService.getPermission(currentUser,
+					project);
+			if (permission >= Role.OBSERVER) {
+				ProjectDetailForm form = new ProjectDetailForm();
+				form.setProject(project);
+				form.setCanManage(permission >= Role.MANAGER);
+				form.setCanEdit(permission >= Role.USER);
+				model.addAttribute("projectDetailForm", form);
+				return "projectshow";
+			} else {
+				return "project";
+			}
+		} else {
+			return "project";
+		}
+	}
 
-		ProjectTask task = new ProjectTask();
-		task.setName("Task");
-		task.setPeopleTime(1.0);
-		task.setMachineTime(1.0);
-		task.setTaskIndex(CqsUtils.getNextTaskIndex(pl.getTasks()));
+	@RequestMapping("/addprojecttask")
+	public String addProjectTask(
+			@ModelAttribute("currentuser") User currentUser,
+			@RequestParam("id") Long projectid, ModelMap model) {
+		logger.info(currentUser.getEmail() + " addProjectTask.");
 
-		model.addAttribute("projecttask", task);
-		model.addAttribute("project", pl);
-
-		return "projectdetail";
+		Project project = projectService.findProject(projectid);
+		if (project == null) {
+			return "projectshow";
+		} else {
+			ProjectTaskForm form = new ProjectTaskForm();
+			ProjectTask task = new ProjectTask();
+			task.setProject(project);
+			task.setMachineTime(1.0);
+			task.setPeopleTime(1.0);
+			task.setName("Task");
+			task.setStatus(Status.PENDING);
+			task.setTaskIndex(Utils.getNextTaskIndex(project.getTasks()));
+			form.setTask(task);
+			form.setProjectId(project.getId());
+			model.addAttribute("projectTaskForm", form);
+			return "projecttaskedit";
+		}
 	}
 
 	@RequestMapping("/editprojecttask")
@@ -267,21 +171,22 @@ public class ProjectController {
 
 		ProjectTask task = projectService.findProjectTask(taskid);
 
-		Project pl = task.getProject();
-
-		model.addAttribute("projecttask", task);
-		model.addAttribute("project", pl);
-
-		return "projectdetail";
+		ProjectTaskForm form = new ProjectTaskForm();
+		form.setTask(task);
+		form.setProjectId(task.getProject().getId());
+		model.addAttribute("projectTaskForm", form);
+		return "projecttaskedit";
 	}
 
 	@RequestMapping(value = "/saveprojecttask", method = RequestMethod.POST)
 	public String saveProjectTask(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("projectid") Long projectId,
-			@ModelAttribute("projecttask") ProjectTask task) {
-		Project pl = projectService.findProject(projectId);
-		task.setProject(pl);
+			@ModelAttribute("projectTaskForm") ProjectTaskForm form) {
+		Project project = projectService.findProject(form.getProjectId());
+		ProjectTask task = form.getTask();
+		task.setProject(project);
+		task.setUpdateDate(new Date());
+		task.setUpdateUser(currentUser.getEmail());
 
 		if (task.getId() != null) {
 			logger.info(currentUser.getEmail() + " updating project task.");
@@ -291,20 +196,20 @@ public class ProjectController {
 			projectService.addProjectTask(task);
 		}
 
-		return getProjectDetailRedirect(projectId);
+		return getProjectDetailRedirect(project.getId());
 	}
 
-	@RequestMapping("/deleteprojecttask/{projecttaskId}")
-	public String deleteProjectTask(@PathVariable Long projecttaskId) {
-		Long projectId = projectService.findProjectByTask(projecttaskId);
+	@RequestMapping("/deleteprojecttask")
+	public String deleteProjectTask(@RequestParam("id") Long taskid) {
+		Long projectId = projectService.findProjectByTask(taskid);
 
-		projectService.removeProjectTask(projecttaskId);
+		projectService.removeProjectTask(taskid);
 
 		return getProjectDetailRedirect(projectId);
 	}
 
 	private String getProjectDetailRedirect(Long projectId) {
-		return "redirect:/projectdetail?id=" + projectId.toString();
+		return "redirect:/showproject?id=" + projectId.toString();
 	}
 
 }

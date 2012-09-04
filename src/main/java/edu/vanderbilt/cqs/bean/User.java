@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import edu.vanderbilt.cqs.Utils;
+
 @Entity
 public class User implements Serializable {
 	private static final long serialVersionUID = 7401126221031716368L;
@@ -147,6 +149,6 @@ public class User implements Serializable {
 	}
 
 	public String getRoleName() {
-		return CqsUtils.getRoleMap().get(this.role);
+		return Utils.getRoleMap().get(this.role);
 	}
 }

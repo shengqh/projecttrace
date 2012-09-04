@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,44 +25,33 @@ public class ProjectTask implements ITask, Serializable {
 	@GeneratedValue
 	private Long id;
 
-	@Column(name = "NAME")
+	@Column
 	private String name;
 
-	@Column(name = "TASK_INDEX")
+	@Column
 	private Integer taskIndex;
 
-	@Column(name = "PEOPLE_TIME")
+	@Column
 	private Double peopleTime;
 
-	@Column(name = "MACHINE_TIME")
+	@Column
 	private Double machineTime;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PROJECT_ID")
 	private Project project;
 
-	// /0:open, 1:finished
-	@Column(name = "LAST_STATUS")
-	private Integer lastStatus = 0;
+	@Column
+	private String status;
 
-	@Column(name = "LAST_USER")
-	private User lastUser;
+	@Column
+	private String updateUser;
 
-	@Column(name = "LAST_DATE")
-	private Date lastDate;
+	@Column
+	private Date updateDate;
 
-	@OneToMany(mappedBy = "task")
+	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
 	private List<ProjectTaskStatus> statuses;
-
-	public ProjectTask() {
-	}
-
-	public ProjectTask(PipelineTask source, int count) {
-		this.name = source.getName();
-		this.taskIndex = source.getTaskIndex();
-		this.machineTime = source.getMachineTime() * count;
-		this.peopleTime = source.getPeopleTime() * count;
-	}
 
 	public Long getId() {
 		return id;
@@ -111,30 +101,6 @@ public class ProjectTask implements ITask, Serializable {
 		this.project = project;
 	}
 
-	public Integer getLastStatus() {
-		return lastStatus;
-	}
-
-	public void setLastStatus(Integer lastStatus) {
-		this.lastStatus = lastStatus;
-	}
-
-	public User getLastUser() {
-		return lastUser;
-	}
-
-	public void setLastUser(User lastUser) {
-		this.lastUser = lastUser;
-	}
-
-	public Date getLastDate() {
-		return lastDate;
-	}
-
-	public void setLastDate(Date lastDate) {
-		this.lastDate = lastDate;
-	}
-
 	public List<ProjectTaskStatus> getStatuses() {
 		return statuses;
 	}
@@ -143,4 +109,27 @@ public class ProjectTask implements ITask, Serializable {
 		this.statuses = statuses;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getUpdateUser() {
+		return updateUser;
+	}
+
+	public void setUpdateUser(String updateUser) {
+		this.updateUser = updateUser;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
 }

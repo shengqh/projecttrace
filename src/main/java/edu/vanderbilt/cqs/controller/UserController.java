@@ -54,7 +54,7 @@ public class UserController {
 	@Autowired
 	private UserValidator userValidator;
 
-	@RequestMapping("/users")
+	@RequestMapping("/user")
 	@Secured("ROLE_USER")
 	public String listUsers(ModelMap model) {
 		model.addAttribute("userList", projectService.listUser());
@@ -77,7 +77,7 @@ public class UserController {
 
 	@RequestMapping("/edituser")
 	@Secured("ROLE_ADMIN")
-	public String editUser(@RequestParam("id") Long userid, ModelMap model) {
+	public String editUser(@RequestParam("userid") Long userid, ModelMap model) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			UserForm form = new UserForm();
@@ -135,7 +135,7 @@ public class UserController {
 	@RequestMapping("/deleteuser")
 	@Secured("ROLE_ADMIN")
 	public String deleteUser(@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Long userid) {
+			@RequestParam("userid") Long userid) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			projectService.removeUser(userid);
@@ -179,7 +179,7 @@ public class UserController {
 	@Secured("ROLE_ADMIN")
 	public String resetpassword(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("id") Long userid, ModelMap model) {
+			@RequestParam("userid") Long userid, ModelMap model) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			String password = RandomStringUtils.randomAlphanumeric(8);

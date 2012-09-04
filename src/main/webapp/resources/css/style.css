@@ -1,12 +1,16 @@
 body {
 	font-family: Arial, sans-serif;
-	width: 800px;
+	width: 1024px;
 	margin: auto;
 }
 
 h1, hr {
 	margin: 0px;
 	padding: 0px;
+}
+
+textarea, #txt {
+   width : 100% 
 }
 
 #banner {
@@ -34,7 +38,7 @@ h1, hr {
     background-color: #333; 
     color: white;
 	padding: 5px;
-	width: 300px;
+	width: 400px;
 	height: 160px;
 	margin: auto;
 	text-align: center;
@@ -204,7 +208,7 @@ h1, hr {
 	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
 	font-size: 12px;
 	margin: auto;
-	width: 800px;
+	width: 100%;
 	text-align: left;
 	border-collapse: collapse;
 }
@@ -232,6 +236,9 @@ h1, hr {
 	color: #339;
 }
 
+#box-table-a select {
+   width: 100%;
+}
 
 #box-table-b
 {

@@ -1,10 +1,12 @@
 package edu.vanderbilt.cqs.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
+import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Repository;
 
 import edu.vanderbilt.cqs.Role;
@@ -23,50 +25,46 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Project> getProjectByUser(Long userid) {
-		Criteria criteria = getSession()
-				.createCriteria(getPersistentClass())
-				.createAlias("managers", "m")
-				.createAlias("users", "u")
-				.createAlias("observers", "o")
-				.add(Restrictions.or(Restrictions.or(
-						Restrictions.eq("m.id", userid),
-						Restrictions.eq("u.id", userid)), Restrictions.eq(
-						"o.id", userid)));
-
-		return criteria.list();
+		String sql = "select distinct(p.id) from PROJECT p, PROJECT_MANAGER as m, PROJECT_USER as u, PROJECT_OBSERVER as o where (m.USER_ID=:id and p.id=m.PROJECT_ID) or (u.USER_ID=:id and p.id=u.PROJECT_ID) or (o.USER_ID=:id and p.id=o.PROJECT_ID)";
+		Query qry = getSession().createSQLQuery(sql).addScalar("ID",
+				StandardBasicTypes.LONG);
+		qry.setLong("id", userid);
+		List<Long> ids = qry.list();
+		if (ids.size() == 0) {
+			return new ArrayList<Project>();
+		} else {
+			Criteria criteria = getSession().createCriteria(
+					getPersistentClass()).add(Restrictions.in("id", ids));
+			return criteria.list();
+		}
 	}
 
 	@Override
 	public Integer getPermission(Long userid, Long projectid) {
-		Criteria criteria;
-
-		criteria = getSession().createCriteria(getPersistentClass())
-				.createAlias("managers", "m")
-				.add(Restrictions.eq("m.id", userid))
-				.add(Restrictions.eq("id", projectid))
-				.setProjection(Projections.rowCount());
-		if (((Long) criteria.list().get(0)).longValue() > 0) {
+		if (hasEntry("PROJECT_MANAGER", projectid, userid)) {
 			return Role.MANAGER;
 		}
 
-		criteria = getSession().createCriteria(getPersistentClass())
-				.createAlias("users", "m").add(Restrictions.eq("m.id", userid))
-				.add(Restrictions.eq("id", projectid))
-				.setProjection(Projections.rowCount());
-		if (((Long) criteria.list().get(0)).longValue() > 0) {
+		if (hasEntry("PROJECT_USER", projectid, userid)) {
 			return Role.USER;
 		}
 
-		criteria = getSession().createCriteria(getPersistentClass())
-				.createAlias("observers", "m")
-				.add(Restrictions.eq("m.id", userid))
-				.add(Restrictions.eq("id", projectid))
-				.setProjection(Projections.rowCount());
-
-		if (((Long) criteria.list().get(0)).longValue() > 0) {
+		if (hasEntry("PROJECT_OBSERVER", projectid, userid)) {
 			return Role.OBSERVER;
 		}
 
 		return Role.NONE;
+	}
+
+	private boolean hasEntry(String table, Long projectid, Long userid) {
+		String sql = String
+				.format("select count(*) as c from %s as m where m.PROJECT_ID=:pid and m.USER_ID=:uid",
+						table);
+		Query qry = getSession().createSQLQuery(sql).addScalar("c",
+				StandardBasicTypes.LONG);
+		qry.setLong("pid", projectid);
+		qry.setLong("uid", userid);
+		Long count = (Long) qry.uniqueResult();
+		return count > 0;
 	}
 }

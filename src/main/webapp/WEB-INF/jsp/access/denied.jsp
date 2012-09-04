@@ -1,5 +1,4 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="org.springframework.security.core.context.SecurityContextHolder" %>
+<%@ include file="../include.jsp"%>
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" media="screen" href="resources/css/style.css"/>

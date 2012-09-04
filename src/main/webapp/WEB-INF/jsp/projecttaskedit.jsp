@@ -56,18 +56,31 @@
 					<td><form:errors path="task.machineTime" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<c:choose>
-						<c:when test="${projectTaskForm.task.id == null}">
-							<td colspan="3"><input type="submit"
-								value="<spring:message code="label.add"/>" /></td>
-						</c:when>
-						<c:otherwise>
-							<td colspan="3"><input type="submit"
-								value="<spring:message code="label.update"/>" /></td>
-						</c:otherwise>
-					</c:choose>
+					<td><form:label path="task.status">
+							<spring:message code="label.taskstatus" />
+						</form:label></td>
+					<td><form:select path="task.status"
+							items="${projectTaskForm.statusList}" /></td>
+					<td><form:errors path="task.status" cssClass="error" /></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center"><c:choose>
+							<c:when test="${projectTaskForm.task.id == null}">
+								<input type="submit" value="<spring:message code="label.add"/>" />
+							</c:when>
+							<c:otherwise>
+								<input type="submit"
+									value="<spring:message code="label.update"/>" />
+							</c:otherwise>
+						</c:choose>
+						<form>
+							<input type="button" value="<spring:message code="label.back" />"
+								onClick="parent.location='showproject?projectid=${projectTaskForm.projectId}'" />
+						</form></td>
+					<td></td>
 				</tr>
 			</table>
 		</form:form>
+	<p class="message">${message}</p>
 </body>
 </html>

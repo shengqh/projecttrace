@@ -28,7 +28,7 @@ public class HomeController {
 				.getName();
 		if (!model.containsAttribute("currentuser")) {
 			User user = projectService.findUserByEmail(email);
-			model.put("currentuser", user);
+			model.addAttribute("currentuser", user);
 			logger.info("User " + email + " logged in.");
 		}
 		return "home";

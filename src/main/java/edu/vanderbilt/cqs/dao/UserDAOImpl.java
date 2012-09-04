@@ -53,4 +53,16 @@ public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 		query.setParameter("expired", false);
 		return (List<User>) query.list();
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getActiveUsers(Integer role) {
+		String hql = "from User where enabled=:enabled and (locked = :locked) and (expired = :expired) and (role=:role)";
+		Query query = getSession().createQuery(hql);
+		query.setParameter("enabled", true);
+		query.setParameter("locked", false);
+		query.setParameter("expired", false);
+		query.setParameter("role", role);
+		return (List<User>) query.list();
+	}
 }

@@ -102,5 +102,6 @@
 				</tr>
 			</table>
 		</form:form>
+	<p class="message">${message}</p>
 </body>
 </html>

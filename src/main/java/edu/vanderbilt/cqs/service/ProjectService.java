@@ -77,5 +77,7 @@ public interface ProjectService {
 
 	List<User> getActiveUsers();
 
-	Integer getPermission(User user, Project project);
+	List<User> getActiveUsers(Integer role);
+
+	Integer getPermission(User user, Long projectid);
 }

@@ -223,17 +223,25 @@ public class ProjectServiceImpl implements ProjectService {
 		userDAO.updatePassword(id, newPassword);
 	}
 
+	@Transactional
 	@Override
 	public List<User> getActiveUsers() {
 		return userDAO.getActiveUsers();
 	}
 
+	@Transactional
 	@Override
-	public Integer getPermission(User user, Project project) {
+	public Integer getPermission(User user, Long projectId) {
 		if (user.getRole() >= Role.MANAGER) {
 			return user.getRole();
 		}
 
-		return projectDAO.getPermission(user.getId(), project.getId());
+		return projectDAO.getPermission(user.getId(), projectId);
+	}
+
+	@Transactional
+	@Override
+	public List<User> getActiveUsers(Integer role) {
+		return userDAO.getActiveUsers(role);
 	}
 }

@@ -14,4 +14,6 @@ public interface UserDAO extends GenericDAO<User, Long> {
 	void updatePassword(Long id, String newPassword);
 	
 	List<User> getActiveUsers();
+	
+	List<User> getActiveUsers(Integer role);
 }

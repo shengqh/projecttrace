@@ -48,9 +48,9 @@
 								<td>${user.enabled}</td>
 								<td>${user.locked}</td>
 								<td>${user.expired}</td>
-								<td><a href="edituser?id=${user.id}">edit</a></td>
-								<td><a href="deleteuser?id=${user.id}">delete</a></td>
-								<td><a href="resetpassword?id=${user.id}">reset
+								<td><a href="edituser?userid=${user.id}">edit</a></td>
+								<td><a href="deleteuser?userid=${user.id}">delete</a></td>
+								<td><a href="resetpassword?userid=${user.id}">reset
 										password</a></td>
 							</sec:authorize>
 						</tr>
@@ -58,5 +58,6 @@
 				</tbody>
 			</table>
 		</c:if>
+	<p class="message">${message}</p>
 </body>
 </html>

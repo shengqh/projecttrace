@@ -6,4 +6,4 @@
 	uri="http://www.springframework.org/security/tags"%>
 <%@ page
 	import="org.springframework.security.core.context.SecurityContextHolder"%>
-<%@ page import="edu.vanderbilt.cqs.bean.CqsUtils"%>
+<%@ page import="edu.vanderbilt.cqs.Role"%>

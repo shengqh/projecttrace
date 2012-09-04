@@ -26,15 +26,4 @@
 			</value>
 		</property>
 	</bean>
-	
-	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
-		<property name="from" value="project.trace.cqs@gmail.com" />
-		<property name="text"
-			value="
-Dear Sir/Madam:
-	Welcome to CQS/VUMC Project Trace System.\n
-	You can login into system through: http://projecttrace.cqs.vanderbilt.edu\n
-	Your loginname is: %s\n
-	Your password is: %s." />
-	</bean>
 </beans>

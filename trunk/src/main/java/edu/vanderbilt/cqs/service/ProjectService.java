@@ -69,11 +69,13 @@ public interface ProjectService {
 	// Other
 	void persist(Object obj);
 
-	void applyPipeline(Project project, Pipeline pipeline, int count);
-
 	boolean hasUser();
 
 	boolean hasUser(Long id);
 
 	void updatePassword(Long id, String newPassword);
+
+	List<User> getActiveUsers();
+
+	Integer getPermission(User user, Project project);
 }

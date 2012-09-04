@@ -15,7 +15,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
+
+import edu.vanderbilt.cqs.Utils;
 
 @Entity
 @Table(name = "PROJECT")
@@ -27,14 +30,17 @@ public class Project implements Serializable {
 	@GeneratedValue
 	private Long id;
 
-	@Column(name = "NAME")
+	@Column
 	private String name;
+
+	@Column(length = 1000)
+	private String description;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "CREATOR_ID")
 	private User creator;
 
-	@Column(name = "CREATEDATE")
+	@Column
 	private Date createDate;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
@@ -50,6 +56,7 @@ public class Project implements Serializable {
 	private List<User> observers;
 
 	@OneToMany(mappedBy = "project")
+	@OrderBy("taskIndex")
 	private List<ProjectTask> tasks;
 
 	public Long getId() {
@@ -109,10 +116,18 @@ public class Project implements Serializable {
 	}
 
 	public double getPeopleTime() {
-		return CqsUtils.getTotalPeopleTime(getTasks());
+		return Utils.getTotalPeopleTime(getTasks());
 	}
 
 	public double getMachineTime() {
-		return CqsUtils.getTotalMachineTime(getTasks());
+		return Utils.getTotalMachineTime(getTasks());
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

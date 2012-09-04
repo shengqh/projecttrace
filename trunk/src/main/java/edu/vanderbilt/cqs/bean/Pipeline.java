@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import edu.vanderbilt.cqs.Utils;
+
 @Entity
 @Table(name = "PIPELINE")
 public class Pipeline implements Serializable {
@@ -92,10 +94,10 @@ public class Pipeline implements Serializable {
 	}
 
 	public double getPeopleTime() {
-		return CqsUtils.getTotalPeopleTime(getTasks());
+		return Utils.getTotalPeopleTime(getTasks());
 	}
 
 	public double getMachineTime() {
-		return CqsUtils.getTotalMachineTime(getTasks());
+		return Utils.getTotalMachineTime(getTasks());
 	}
 }

@@ -14,8 +14,6 @@ public interface ProjectService {
 
 	void updateUser(User user);
 
-	List<User> listUser();
-
 	void removeUser(Long id);
 
 	User findUser(Long id);
@@ -75,9 +73,11 @@ public interface ProjectService {
 
 	void updatePassword(Long id, String newPassword);
 
-	List<User> getActiveUsers();
+	List<User> listValidUser();
 
-	List<User> getActiveUsers(Integer role);
+	List<User> listValidUser(Integer role);
 
+	List<User> listInvalidUser();
+	
 	Integer getPermission(User user, Long projectid);
 }

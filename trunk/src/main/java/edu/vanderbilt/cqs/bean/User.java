@@ -46,6 +46,9 @@ public class User implements Serializable {
 
 	@Column
 	private Boolean expired = false;
+	
+	@Column
+	private Boolean deleted = false;
 
 	@Column
 	private String password;
@@ -155,5 +158,17 @@ public class User implements Serializable {
 
 	public String getRoleName() {
 		return Utils.getRoleMap().get(this.role);
+	}
+	
+	public boolean isValid(){
+		return enabled && (!locked) && (!expired) && (!deleted); 
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 }

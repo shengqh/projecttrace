@@ -21,8 +21,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -59,8 +61,21 @@ public class UserController {
 	@RequestMapping("/user")
 	@Secured("ROLE_USER")
 	public String listUsers(ModelMap model) {
-		model.addAttribute("userList", projectService.listUser());
-		return "user";
+		model.addAttribute("validUserList", projectService.listValidUser());
+		return "user/list";
+	}
+
+	@RequestMapping("/alluser")
+	@Secured("ROLE_ADMIN")
+	public String listAllUsers(@RequestParam(required = false) String type,
+			@RequestParam(required = false) String error, BindingResult result,
+			ModelMap model) {
+		model.addAttribute("validUserList", projectService.listValidUser());
+		model.addAttribute("invalidUserList", projectService.listInvalidUser());
+		if (type != null && error != null) {
+			result.addError(new ObjectError(type, error));
+		}
+		return "user/listall";
 	}
 
 	@RequestMapping("/adduser")
@@ -72,7 +87,7 @@ public class UserController {
 		form.setRole(Role.USER);
 		form.setRoles(Utils.getRoleMap());
 		model.addAttribute("userForm", form);
-		return "edituser";
+		return "user/edit";
 	}
 
 	@RequestMapping("/edituser")
@@ -84,9 +99,9 @@ public class UserController {
 			BeanUtils.copyProperties(user, form);
 			form.setRoles(Utils.getRoleMap());
 			model.addAttribute("userForm", form);
-			return "edituser";
+			return "user/edit";
 		} else {
-			return "redirect:/user";
+			return "redirect:/userall";
 		}
 	}
 
@@ -97,7 +112,7 @@ public class UserController {
 			BindingResult result, SessionStatus status) {
 		if (result.hasErrors()) {
 			form.setRoles(Utils.getRoleMap());
-			return "edituser";
+			return "user/edit";
 		} else {
 			if (form.getId() == null) {
 				String password = RandomStringUtils.randomAlphanumeric(8);
@@ -108,11 +123,13 @@ public class UserController {
 				user.setPassword(Utils.md5(password));
 				user.setCreateDate(new Date());
 				projectService.addUser(user);
-
-				sendConfirmationEmail(user, password);
-
 				logger.info(currentUser.getEmail() + " add user "
 						+ user.getEmail() + " as " + user.getRoleName());
+
+				String error = sendConfirmationEmail(user, password);
+				if (error != null) {
+					return "redirect:/alluser?type=mail?error=" + error;
+				}
 			} else {
 				User user = projectService.findUser(form.getId());
 				BeanUtils.copyProperties(form, user);
@@ -122,23 +139,101 @@ public class UserController {
 				logger.info(currentUser.getEmail() + " update user "
 						+ user.getEmail() + " as " + user.getRoleName());
 			}
-
-			return "redirect:/user";
+			return "redirect:/alluser?type=save?error=succeed";
 		}
 	}
 
-	@RequestMapping("/deleteuser")
+	private String setUserEnabled(User currentUser, Long userid, Boolean value) {
+		User user = projectService.findUser(userid);
+		if (user != null) {
+			user.setEnabled(value);
+			projectService.updateUser(user);
+			logger.info(currentUser.getEmail() + " set user " + user.getEmail()
+					+ " enabled=" + value.toString());
+		}
+
+		return "redirect:/alluser";
+	}
+
+	private String setUserLocked(User currentUser, Long userid, Boolean value) {
+		User user = projectService.findUser(userid);
+		if (user != null) {
+			user.setLocked(value);
+			projectService.updateUser(user);
+			logger.info(currentUser.getEmail() + " set user " + user.getEmail()
+					+ " locked=" + value.toString());
+		}
+
+		return "redirect:/alluser";
+	}
+
+	private String setUserDeleted(User currentUser, Long userid, Boolean value) {
+		User user = projectService.findUser(userid);
+		if (user != null) {
+			user.setDeleted(value);
+			projectService.updateUser(user);
+			logger.info(currentUser.getEmail() + " set user " + user.getEmail()
+					+ " deleted=" + value.toString());
+		}
+
+		return "redirect:/alluser";
+	}
+
+	@RequestMapping("/enableuser/{userid}")
+	@Secured("ROLE_ADMIN")
+	public String enableUser(@ModelAttribute("currentuser") User currentUser,
+			@PathVariable Long userid) {
+		return setUserEnabled(currentUser, userid, true);
+	}
+
+	@RequestMapping("/disableuser/{userid}")
+	@Secured("ROLE_ADMIN")
+	public String disableUser(@ModelAttribute("currentuser") User currentUser,
+			@PathVariable Long userid) {
+		return setUserEnabled(currentUser, userid, false);
+	}
+
+	@RequestMapping("/lockuser/{userid}")
+	@Secured("ROLE_ADMIN")
+	public String lockUser(@ModelAttribute("currentuser") User currentUser,
+			@PathVariable Long userid) {
+		return setUserLocked(currentUser, userid, true);
+	}
+
+	@RequestMapping("/unlockuser/{userid}")
+	@Secured("ROLE_ADMIN")
+	public String unlockUser(@ModelAttribute("currentuser") User currentUser,
+			@PathVariable Long userid) {
+		return setUserLocked(currentUser, userid, false);
+	}
+
+	@RequestMapping("/deleteuser/{userid}")
 	@Secured("ROLE_ADMIN")
 	public String deleteUser(@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("userid") Long userid) {
+			@PathVariable Long userid) {
+		return setUserDeleted(currentUser, userid, true);
+	}
+
+	@RequestMapping("/undeleteuser/{userid}")
+	@Secured("ROLE_ADMIN")
+	public String undeleteUser(@ModelAttribute("currentuser") User currentUser,
+			@PathVariable Long userid) {
+		return setUserDeleted(currentUser, userid, false);
+	}
+
+	@RequestMapping("/deleteuserforever/{userid}")
+	@Secured("ROLE_ADMIN")
+	public String deleteUserForever(
+			@ModelAttribute("currentuser") User currentUser,
+			@PathVariable Long userid) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			projectService.removeUser(userid);
 			logger.info(currentUser.getEmail() + " delete user "
-					+ user.getEmail() + " as " + user.getRoleName());
+					+ user.getEmail() + " foever");
 		}
 
-		return "redirect:/user";
+		return "redirect:/alluser";
 	}
 
 	@RequestMapping("/changeownpassword")
@@ -147,7 +242,7 @@ public class UserController {
 		ChangePasswordForm form = new ChangePasswordForm();
 		model.put("changeOwnPasswordForm", form);
 
-		return "changeownpassword";
+		return "user/changeownpassword";
 	}
 
 	@RequestMapping("/saveownpassword")
@@ -161,7 +256,7 @@ public class UserController {
 		passwordValidator.validate(form, result);
 
 		if (result.hasErrors()) {
-			return "changeownpassword";
+			return "user/changeownpassword";
 		} else {
 			String newPassword = Utils.md5(form.getNewPassword());
 			projectService.updatePassword(currentUser.getId(), newPassword);
@@ -170,11 +265,11 @@ public class UserController {
 		}
 	}
 
-	@RequestMapping("/resetpassword")
+	@RequestMapping("/resetpassword/{userid}")
 	@Secured("ROLE_ADMIN")
 	public String resetpassword(
 			@ModelAttribute("currentuser") User currentUser,
-			@RequestParam("userid") Long userid, ModelMap model) {
+			@PathVariable Long userid, ModelMap model) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			String password = RandomStringUtils.randomAlphanumeric(8);
@@ -182,15 +277,18 @@ public class UserController {
 			user.setPassword(Utils.md5(password));
 			projectService.updateUser(user);
 
-			sendPasswordChangedEmail(user, password);
-
 			logger.info(currentUser.getEmail() + " reseted user "
 					+ user.getEmail() + " password.");
+
+			String error = sendPasswordChangedEmail(user, password);
+			if (error != null) {
+				return "redirect:/alluser?type=mail?error=" + error;
+			}
 		}
-		return "redirect:/user";
+		return "redirect:/alluser";
 	}
 
-	private void sendConfirmationEmail(final User user, final String password) {
+	private String sendConfirmationEmail(final User user, final String password) {
 		MimeMessagePreparator preparator = new MimeMessagePreparator() {
 			public void prepare(MimeMessage mimeMessage) throws Exception {
 				MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
@@ -209,12 +307,15 @@ public class UserController {
 		logger.info("Sending mail to " + user.getEmail() + " ...");
 		try {
 			this.mailSender.send(preparator);
+			return null;
 		} catch (MailException ex) {
-			logger.error(ex.getMessage());
+			logger.error("Sending mail error " + ex.getMessage());
+			return ex.getMessage();
 		}
 	}
 
-	private void sendPasswordChangedEmail(final User user, final String password) {
+	private String sendPasswordChangedEmail(final User user,
+			final String password) {
 		MimeMessagePreparator preparator = new MimeMessagePreparator() {
 			public void prepare(MimeMessage mimeMessage) throws Exception {
 				MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
@@ -233,9 +334,10 @@ public class UserController {
 		logger.info("Sending mail to " + user.getEmail() + " ...");
 		try {
 			this.mailSender.send(preparator);
+			return null;
 		} catch (MailException ex) {
-			logger.error(ex.getMessage());
+			logger.error("Sending mail error " + ex.getMessage());
+			return ex.getMessage();
 		}
-
 	}
 }

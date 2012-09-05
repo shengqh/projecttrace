@@ -98,9 +98,9 @@ public class ProjectController {
 	}
 
 	private void initializeValidUsers(ProjectForm form) {
-		form.setValidManagers(projectService.getActiveUsers(Role.MANAGER));
-		form.setValidUsers(projectService.getActiveUsers(Role.USER));
-		form.setValidObservers(projectService.getActiveUsers(Role.OBSERVER));
+		form.setValidManagers(projectService.listValidUser(Role.MANAGER));
+		form.setValidUsers(projectService.listValidUser(Role.USER));
+		form.setValidObservers(projectService.listValidUser(Role.OBSERVER));
 	}
 
 	private List<Long> getIdListFromUserList(List<User> users) {

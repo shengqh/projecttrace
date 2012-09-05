@@ -3,50 +3,56 @@ package edu.vanderbilt.cqs.form;
 import java.io.Serializable;
 import java.util.List;
 
-import edu.vanderbilt.cqs.bean.Project;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import edu.vanderbilt.cqs.bean.User;
 
 public class ProjectForm implements Serializable {
 
+	public List<User> getValidManagers() {
+		return validManagers;
+	}
+
+	public void setValidManagers(List<User> validManagers) {
+		this.validManagers = validManagers;
+	}
+
+	public List<User> getValidUsers() {
+		return validUsers;
+	}
+
+	public void setValidUsers(List<User> validUsers) {
+		this.validUsers = validUsers;
+	}
+
+	public List<User> getValidObservers() {
+		return validObservers;
+	}
+
+	public void setValidObservers(List<User> validObservers) {
+		this.validObservers = validObservers;
+	}
+
 	private static final long serialVersionUID = -4361402280964698358L;
 
-	private Project project;
+	private Long id;
 
-	private List<User> managers;
+	@NotEmpty
+	private String name;
 
-	private List<User> users;
+	private String description;
 
-	private List<User> observers;
+	private List<User> validManagers;
+
+	private List<User> validUsers;
+
+	private List<User> validObservers;
 
 	private List<Long> managerIds;
 
 	private List<Long> userIds;
 
 	private List<Long> observerIds;
-
-	public Project getProject() {
-		return project;
-	}
-
-	public void setProject(Project project) {
-		this.project = project;
-	}
-
-	public List<User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(List<User> users) {
-		this.users = users;
-	}
-
-	public List<User> getObservers() {
-		return observers;
-	}
-
-	public void setObservers(List<User> observers) {
-		this.observers = observers;
-	}
 
 	public List<Long> getManagerIds() {
 		return managerIds;
@@ -72,11 +78,27 @@ public class ProjectForm implements Serializable {
 		this.observerIds = observerIds;
 	}
 
-	public List<User> getManagers() {
-		return managers;
+	public Long getId() {
+		return id;
 	}
 
-	public void setManagers(List<User> managers) {
-		this.managers = managers;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

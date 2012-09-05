@@ -12,42 +12,41 @@
 	<p>
 	<h1 align="center">
 		<c:choose>
-			<c:when test="${projectForm.project.id == null}">
+			<c:when test="${projectForm.id == null}">
 				<spring:message code="label.projectnew" />
 			</c:when>
 			<c:otherwise>
-				<spring:message code="label.projectedit" /> : ${projectForm.project.name}
+				<spring:message code="label.projectedit" /> : ${projectForm.name}
 			</c:otherwise>
 		</c:choose>
 	</h1>
 	<p>
 		<form:form method="post" action="saveproject.html"
 			commandName="projectForm">
-			<form:hidden path="project.id" />
+			<form:hidden path="id" />
 			<form:errors path="*" cssClass="errorblock" element="div" />
 			<table id="box-table-a">
 				<tr>
-					<td><form:label path="project.name">
+					<td><form:label path="name">
 							<spring:message code="label.projectname" />
 						</form:label></td>
-					<td><form:input id="txt" path="project.name" /></td>
-
-					<td><form:errors path="project.name" cssClass="error" /></td>
+					<td><form:input id="txt" path="name" cssClass="txt" /></td>
+					<td><form:errors path="name" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="project.description">
+					<td><form:label path="description">
 							<spring:message code="label.description" />
 						</form:label></td>
-					<td><form:textarea id="textarea" path="project.description"
+					<td><form:textarea id="textarea" path="description"
 							rows="10" cols="60" /></td>
-					<td><form:errors path="project.description" cssClass="error" /></td>
+					<td><form:errors path="description" cssClass="error" /></td>
 				</tr>
 				<tr>
 					<td><form:label path="managerIds">
 							<spring:message code="label.managers" />
 						</form:label></td>
 					<td><form:select path="managerIds" multiple="true"
-							items="${projectForm.managers}" itemLabel="email" itemValue="id"
+							items="${projectForm.validManagers}" itemLabel="email" itemValue="id"
 							size="4" /></td>
 					<td><form:errors path="managerIds" cssClass="error" /></td>
 				</tr>
@@ -56,7 +55,7 @@
 							<spring:message code="label.users" />
 						</form:label></td>
 					<td><form:select path="userIds" multiple="true"
-							items="${projectForm.users}" itemLabel="email" itemValue="id"
+							items="${projectForm.validUsers}" itemLabel="email" itemValue="id"
 							size="4" /></td>
 					<td><form:errors path="userIds" cssClass="error" /></td>
 				</tr>
@@ -65,13 +64,13 @@
 							<spring:message code="label.observers" />
 						</form:label></td>
 					<td><form:select path="observerIds" multiple="true"
-							items="${projectForm.observers}" itemLabel="email" itemValue="id"
+							items="${projectForm.validObservers}" itemLabel="email" itemValue="id"
 							size="4" /></td>
 					<td><form:errors path="observerIds" cssClass="error" /></td>
 				</tr>
 				<tr>
 					<td colspan="2" align="center"><c:choose>
-							<c:when test="${projectForm.project.id == null}">
+							<c:when test="${projectForm.id == null}">
 								<input type="submit" value="<spring:message code="label.add"/>" />
 							</c:when>
 							<c:otherwise>

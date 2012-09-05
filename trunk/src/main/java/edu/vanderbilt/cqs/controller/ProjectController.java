@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.jboss.logging.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +41,9 @@ public class ProjectController {
 	@Autowired
 	private ProjectService projectService;
 
+	@Autowired
+	private Validator validator;
+
 	@RequestMapping("/project")
 	@Secured("ROLE_OBSERVER")
 	public String listProject(@ModelAttribute("currentuser") User currentUser,
@@ -56,11 +64,8 @@ public class ProjectController {
 		logger.info(currentUser.getEmail() + " addProject.");
 
 		ProjectForm form = new ProjectForm();
-		form.setProject(new Project());
 
-		form.setManagers(projectService.getActiveUsers(Role.MANAGER));
-		form.setUsers(projectService.getActiveUsers(Role.USER));
-		form.setObservers(projectService.getActiveUsers(Role.OBSERVER));
+		initializeValidUsers(form);
 
 		model.put("projectForm", form);
 
@@ -76,11 +81,9 @@ public class ProjectController {
 		Project project = projectService.findProject(projectId);
 		if (project != null) {
 			ProjectForm form = new ProjectForm();
-			form.setProject(project);
+			BeanUtils.copyProperties(project, form);
 
-			form.setManagers(projectService.getActiveUsers(Role.MANAGER));
-			form.setUsers(projectService.getActiveUsers(Role.USER));
-			form.setObservers(projectService.getActiveUsers(Role.OBSERVER));
+			initializeValidUsers(form);
 
 			form.setManagerIds(getIdListFromUserList(project.getManagers()));
 			form.setUserIds(getIdListFromUserList(project.getUsers()));
@@ -92,6 +95,12 @@ public class ProjectController {
 		} else {
 			return "redirect:/project";
 		}
+	}
+
+	private void initializeValidUsers(ProjectForm form) {
+		form.setValidManagers(projectService.getActiveUsers(Role.MANAGER));
+		form.setValidUsers(projectService.getActiveUsers(Role.USER));
+		form.setValidObservers(projectService.getActiveUsers(Role.OBSERVER));
 	}
 
 	private List<Long> getIdListFromUserList(List<User> users) {
@@ -126,22 +135,33 @@ public class ProjectController {
 	@RequestMapping(value = "/saveproject", method = RequestMethod.POST)
 	@Secured("ROLE_MANAGER")
 	public String saveProject(@ModelAttribute("currentuser") User currentUser,
-			@ModelAttribute("projectForm") ProjectForm projectForm) {
-		Project project = projectForm.getProject();
-		if (project.getId() != null) {
-			Project old = projectService.findProject(project.getId());
-			old.setName(project.getName());
-			old.setDescription(project.getDescription());
+			@Valid @ModelAttribute("projectForm") ProjectForm form,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			initializeValidUsers(form);
+			return "projectedit";
+		}
 
-			initializeUsers(old, projectForm);
+		if (form.getId() != null) {
+			Project project = projectService.findProject(form.getId());
+			BeanUtils.copyProperties(form, project);
 
-			projectService.updateProject(old);
+			initializeUsers(project, form);
+
+			projectService.updateProject(project);
 			logger.info(currentUser.getEmail() + " saveProject - update.");
 		} else {
+			Project project = new Project();
+			BeanUtils.copyProperties(form, project);
 			project.setCreateDate(new Date());
 			project.setCreator(currentUser.getEmail());
 
-			initializeUsers(project, projectForm);
+			initializeUsers(project, form);
+
+			validator.validate(project, result);
+			if (result.hasErrors()) {
+				return "projectedit";
+			}
 
 			projectService.addProject(project);
 			logger.info(currentUser.getEmail() + " saveProject - new.");

@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
+import javax.validation.Valid;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.jboss.logging.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,12 +35,14 @@ import edu.vanderbilt.cqs.form.ChangePasswordForm;
 import edu.vanderbilt.cqs.form.UserForm;
 import edu.vanderbilt.cqs.service.ProjectService;
 import edu.vanderbilt.cqs.validator.ChangePasswordValidator;
-import edu.vanderbilt.cqs.validator.UserValidator;
 
 @Controller
 @SessionAttributes({ "currentuser" })
 public class UserController {
 	private static final Logger logger = Logger.getLogger(UserController.class);
+
+	@Autowired
+	private Validator validator;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -51,9 +56,6 @@ public class UserController {
 	@Autowired
 	private ChangePasswordValidator passwordValidator;
 
-	@Autowired
-	private UserValidator userValidator;
-
 	@RequestMapping("/user")
 	@Secured("ROLE_USER")
 	public String listUsers(ModelMap model) {
@@ -66,10 +68,8 @@ public class UserController {
 	public String addUser(ModelMap model) {
 		UserForm form = new UserForm();
 		User user = new User();
-		user.setEmail("youremail");
-		user.setFirstname("firstname");
-		form.setUser(new User());
-		form.getUser().setRole(Role.USER);
+		BeanUtils.copyProperties(user, form);
+		form.setRole(Role.USER);
 		form.setRoles(Utils.getRoleMap());
 		model.addAttribute("userForm", form);
 		return "edituser";
@@ -81,7 +81,7 @@ public class UserController {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			UserForm form = new UserForm();
-			form.setUser(user);
+			BeanUtils.copyProperties(user, form);
 			form.setRoles(Utils.getRoleMap());
 			model.addAttribute("userForm", form);
 			return "edituser";
@@ -93,17 +93,17 @@ public class UserController {
 	@RequestMapping("/saveuser")
 	@Secured("ROLE_ADMIN")
 	public String saveUser(@ModelAttribute("currentuser") User currentUser,
-			@ModelAttribute("userForm") UserForm form, BindingResult result,
-			SessionStatus status) {
-		userValidator.validate(form, result);
+			@Valid @ModelAttribute("userForm") UserForm form,
+			BindingResult result, SessionStatus status) {
 		if (result.hasErrors()) {
 			form.setRoles(Utils.getRoleMap());
 			return "edituser";
 		} else {
-			if (form.getUser().getId() == null) {
+			if (form.getId() == null) {
 				String password = RandomStringUtils.randomAlphanumeric(8);
 
-				User user = form.getUser();
+				User user = new User();
+				BeanUtils.copyProperties(form, user);
 				user.setEmail(user.getEmail().toLowerCase());
 				user.setPassword(Utils.md5(password));
 				user.setCreateDate(new Date());
@@ -114,14 +114,9 @@ public class UserController {
 				logger.info(currentUser.getEmail() + " add user "
 						+ user.getEmail() + " as " + user.getRoleName());
 			} else {
-				User user = projectService.findUser(form.getUser().getId());
-				user.setRole(form.getUser().getRole());
-				user.setFirstname(form.getUser().getFirstname());
-				user.setLastname(form.getUser().getLastname());
-				user.setEnabled(form.getUser().getEnabled());
-				user.setExpired(form.getUser().getExpired());
-				user.setLocked(form.getUser().getLocked());
-				user.setTelephone(form.getUser().getTelephone());
+				User user = projectService.findUser(form.getId());
+				BeanUtils.copyProperties(form, user);
+
 				projectService.updateUser(user);
 
 				logger.info(currentUser.getEmail() + " update user "

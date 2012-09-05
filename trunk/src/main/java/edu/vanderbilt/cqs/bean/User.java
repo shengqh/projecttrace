@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import edu.vanderbilt.cqs.Utils;
 
 @Entity
@@ -25,6 +28,8 @@ public class User implements Serializable {
 	private String lastname;
 
 	@Column(unique = true)
+	@Email
+	@NotEmpty
 	private String email;
 
 	@Column

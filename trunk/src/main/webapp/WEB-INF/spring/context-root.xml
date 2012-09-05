@@ -29,8 +29,8 @@
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 
 	<!-- Imports logging configuration -->
-	<import resource="context-trace.xml"/>
-	
+	<import resource="context-trace.xml" />
+
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
 		p:location="/WEB-INF/jdbc.properties" />
@@ -50,7 +50,7 @@
 			<props>
 				<prop key="hibernate.dialect">${jdbc.dialect}</prop>
 				<prop key="hibernate.show_sql">true</prop>
-				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
 			</props>
 		</property>
 	</bean>
@@ -66,6 +66,9 @@
 			<ref local="sessionFactory" />
 		</property>
 	</bean>
+
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 
 	<tx:annotation-driven />
 </beans>

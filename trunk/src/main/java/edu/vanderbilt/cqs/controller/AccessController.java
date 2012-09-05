@@ -1,6 +1,5 @@
 package edu.vanderbilt.cqs.controller;
 
-import org.jboss.logging.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -9,9 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AccessController {
-	private static final Logger logger = Logger
-			.getLogger(ProjectController.class);
-	
 	@RequestMapping("/login")
 	public String login(ModelMap model,
 			@RequestParam(required = false) String message) {

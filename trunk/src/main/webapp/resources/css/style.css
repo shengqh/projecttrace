@@ -9,7 +9,11 @@ h1, hr {
 	padding: 0px;
 }
 
-textarea, #txt {
+textarea {
+   width : 100% 
+}
+
+.txt {
    width : 100% 
 }
 

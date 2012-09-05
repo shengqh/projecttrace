@@ -1,4 +1,4 @@
-<%@ include file="include.jsp"%>
+<%@ include file="../include.jsp"%>
 <html>
 <head>
 <link rel="stylesheet" type="text/css" media="screen"
@@ -7,7 +7,7 @@
 </head>
 
 <body>
-	<jsp:include page="menu.jsp" />
+	<jsp:include page="../menu.jsp" />
 
 	<p>
 	<h1 align="center">

@@ -43,8 +43,11 @@
 							<td>${project.createDate}</td>
 							<td>${project.creator}</td>
 							<sec:authorize access="hasRole('ROLE_MANAGER')">
-								<td><a href="editproject?projectid=${project.id}"><spring:message
-											code="label.edit" /></a></td>
+								<td>
+									<form action="editproject?projectid=${project.id}">
+										<input type="submit" value="<spring:message	code="label.edit" />" />
+									</form>
+								</td>
 							</sec:authorize>
 							<sec:authorize access="hasRole('ROLE_ADMIN')">
 								<td>

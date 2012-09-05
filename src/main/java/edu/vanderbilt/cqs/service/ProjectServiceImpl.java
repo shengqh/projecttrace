@@ -47,12 +47,6 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public List<User> listUser() {
-		return userDAO.findAll();
-	}
-
-	@Transactional
-	@Override
 	public void removeUser(Long id) {
 		userDAO.deleteById(id);
 	}
@@ -225,12 +219,6 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public List<User> getActiveUsers() {
-		return userDAO.getActiveUsers();
-	}
-
-	@Transactional
-	@Override
 	public Integer getPermission(User user, Long projectId) {
 		if (user.getRole() >= Role.MANAGER) {
 			return user.getRole();
@@ -241,7 +229,19 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public List<User> getActiveUsers(Integer role) {
-		return userDAO.getActiveUsers(role);
+	public List<User> listValidUser() {
+		return userDAO.listValidUser();
+	}
+
+	@Transactional
+	@Override
+	public List<User> listValidUser(Integer role) {
+		return userDAO.listValidUser(role);
+	}
+
+	@Transactional
+	@Override
+	public List<User> listInvalidUser() {
+		return userDAO.listInvalidUser();
 	}
 }

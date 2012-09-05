@@ -45,24 +45,38 @@ public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> getActiveUsers() {
-		String hql = "from User where enabled=:enabled and (locked = :locked) and (expired = :expired)";
+	public List<User> listValidUser() {
+		String hql = "from User where (enabled=:enabled) and (locked = :locked) and (expired = :expired) and (deleted = :deleted)";
 		Query query = getSession().createQuery(hql);
 		query.setParameter("enabled", true);
 		query.setParameter("locked", false);
 		query.setParameter("expired", false);
+		query.setParameter("deleted", false);
 		return (List<User>) query.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> getActiveUsers(Integer role) {
-		String hql = "from User where enabled=:enabled and (locked = :locked) and (expired = :expired) and (role=:role)";
+	public List<User> listValidUser(Integer role) {
+		String hql = "from User where (enabled=:enabled) and (locked = :locked) and (expired = :expired) and (deleted = :deleted) and (role=:role)";
 		Query query = getSession().createQuery(hql);
 		query.setParameter("enabled", true);
 		query.setParameter("locked", false);
 		query.setParameter("expired", false);
+		query.setParameter("deleted", false);
 		query.setParameter("role", role);
+		return (List<User>) query.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> listInvalidUser() {
+		String hql = "from User where (enabled=:enabled) or (locked = :locked) or (expired = :expired) or (deleted = :deleted)";
+		Query query = getSession().createQuery(hql);
+		query.setParameter("enabled", false);
+		query.setParameter("locked", true);
+		query.setParameter("expired", true);
+		query.setParameter("deleted", true);
 		return (List<User>) query.list();
 	}
 }

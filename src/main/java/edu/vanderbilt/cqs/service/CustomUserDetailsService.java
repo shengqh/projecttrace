@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.vanderbilt.cqs.Role;
-import edu.vanderbilt.cqs.Utils;
 import edu.vanderbilt.cqs.dao.UserDAO;
 
 /**
@@ -81,19 +80,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 		List<String> roles = new ArrayList<String>();
 
 		if (role.intValue() >= Role.OBSERVER) {
-			roles.add(Utils.getRoleMap().get(Role.OBSERVER));
+			roles.add(Role.getRoleMap().get(Role.OBSERVER));
 		}
 
 		if (role.intValue() >= Role.USER) {
-			roles.add(Utils.getRoleMap().get(Role.USER));
+			roles.add(Role.getRoleMap().get(Role.USER));
 		}
 
 		if (role.intValue() >= Role.MANAGER) {
-			roles.add(Utils.getRoleMap().get(Role.MANAGER));
+			roles.add(Role.getRoleMap().get(Role.MANAGER));
 		}
 
 		if (role.intValue() >= Role.ADMIN) {
-			roles.add(Utils.getRoleMap().get(Role.ADMIN));
+			roles.add(Role.getRoleMap().get(Role.ADMIN));
 		}
 
 		return roles;

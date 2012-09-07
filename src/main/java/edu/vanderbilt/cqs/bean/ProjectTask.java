@@ -42,7 +42,7 @@ public class ProjectTask implements ITask, Serializable {
 	private Project project;
 
 	@Column
-	private String status;
+	private Integer status;
 
 	@Column
 	private String updateUser;
@@ -109,11 +109,11 @@ public class ProjectTask implements ITask, Serializable {
 		this.statuses = statuses;
 	}
 
-	public String getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

@@ -14,7 +14,7 @@ import edu.vanderbilt.cqs.service.ProjectService;
 
 @Controller
 @SessionAttributes({ "currentuser" })
-public class HomeController {
+public class HomeController extends RootController{
 	@Autowired
 	private ProjectService projectService;
 

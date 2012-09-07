@@ -3,9 +3,7 @@ package edu.vanderbilt.cqs;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import edu.vanderbilt.cqs.bean.ITask;
 
@@ -29,8 +27,6 @@ public final class Utils {
 			return input;
 		}
 	}
-
-	private static Map<Integer, String> roleMap;
 
 	public static Integer getNextTaskIndex(List<? extends ITask> items) {
 		int result = 1;
@@ -58,17 +54,4 @@ public final class Utils {
 		}
 		return result;
 	}
-
-	public static Map<Integer, String> getRoleMap() {
-		if (roleMap == null) {
-			roleMap = new LinkedHashMap<Integer, String>();
-			roleMap.put(Role.OBSERVER, "ROLE_OBSERVER");
-			roleMap.put(Role.USER, "ROLE_USER");
-			roleMap.put(Role.MANAGER, "ROLE_MANAGER");
-			roleMap.put(Role.ADMIN, "ROLE_ADMIN");
-		}
-		return roleMap;
-
-	}
-
 }

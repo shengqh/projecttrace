@@ -64,7 +64,7 @@ public class ApplicationListenerImpl implements
 	}
 
 	private void addTask(User user, Project rnaseq, int index, String name,
-			double peopletime, double machinetime, String status) {
+			double peopletime, double machinetime, Integer status) {
 		ProjectTask task = new ProjectTask();
 		task.setTaskIndex(index);
 		task.setMachineTime(machinetime);

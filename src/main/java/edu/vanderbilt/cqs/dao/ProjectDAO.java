@@ -10,4 +10,6 @@ public interface ProjectDAO extends GenericDAO<Project, Long> {
 	List<Project> getProjectByUser(Long userid);
 	
 	Integer getPermission(Long userid, Long projectid);
+
+	void removeUserEntry(Long userid);
 }

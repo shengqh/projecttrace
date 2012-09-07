@@ -13,14 +13,6 @@ import edu.vanderbilt.cqs.bean.User;
 @Repository
 public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 	@Override
-	public User validateUser(User user) {
-		return (User) (getSession().createCriteria(getPersistentClass())
-				.add(Restrictions.eq("email", user.getEmail()))
-				.add(Restrictions.eq("password", user.getPassword()))
-				.uniqueResult());
-	}
-
-	@Override
 	public User findByEmail(String email) {
 		return (User) (getSession().createCriteria(getPersistentClass()).add(
 				Restrictions.eq("email", email)).uniqueResult());
@@ -46,7 +38,7 @@ public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> listValidUser() {
-		String hql = "from User where (enabled=:enabled) and (locked = :locked) and (expired = :expired) and (deleted = :deleted)";
+		String hql = "from User where (enabled=:enabled) and (locked = :locked) and (expired = :expired) and (deleted = :deleted) order by email";
 		Query query = getSession().createQuery(hql);
 		query.setParameter("enabled", true);
 		query.setParameter("locked", false);
@@ -58,7 +50,7 @@ public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> listValidUser(Integer role) {
-		String hql = "from User where (enabled=:enabled) and (locked = :locked) and (expired = :expired) and (deleted = :deleted) and (role=:role)";
+		String hql = "from User where (enabled=:enabled) and (locked = :locked) and (expired = :expired) and (deleted = :deleted) and (role=:role) order by email";
 		Query query = getSession().createQuery(hql);
 		query.setParameter("enabled", true);
 		query.setParameter("locked", false);
@@ -71,7 +63,7 @@ public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> listInvalidUser() {
-		String hql = "from User where (enabled=:enabled) or (locked = :locked) or (expired = :expired) or (deleted = :deleted)";
+		String hql = "from User where (enabled=:enabled) or (locked = :locked) or (expired = :expired) or (deleted = :deleted) order by email";
 		Query query = getSession().createQuery(hql);
 		query.setParameter("enabled", false);
 		query.setParameter("locked", true);

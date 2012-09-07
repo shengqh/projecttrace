@@ -48,6 +48,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public void removeUser(Long id) {
+		projectDAO.removeUserEntry(id);
 		userDAO.deleteById(id);
 	}
 

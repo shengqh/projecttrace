@@ -34,7 +34,7 @@ import edu.vanderbilt.cqs.service.ProjectService;
 
 @Controller
 @SessionAttributes({ "currentuser" })
-public class ProjectController {
+public class ProjectController extends RootController {
 	private static final Logger logger = Logger
 			.getLogger(ProjectController.class);
 
@@ -47,11 +47,9 @@ public class ProjectController {
 	@RequestMapping("/project")
 	@Secured("ROLE_OBSERVER")
 	public String listProject(@ModelAttribute("currentuser") User currentUser,
-			@RequestParam(value = "message", required = false) String message,
 			ModelMap model) {
 		logger.info(currentUser.getEmail() + " projectList.");
 
-		model.put("message", message);
 		model.put("projectList", projectService.listProject(currentUser));
 
 		return "project";
@@ -240,7 +238,7 @@ public class ProjectController {
 			task.setTaskIndex(Utils.getNextTaskIndex(project.getTasks()));
 			form.setTask(task);
 			form.setProjectId(project.getId());
-			form.setStatusList(Status.getStatusList());
+			// form.setStatusList(Status.getStatusList());
 
 			model.put("projectTaskForm", form);
 
@@ -260,7 +258,7 @@ public class ProjectController {
 		ProjectTaskForm form = new ProjectTaskForm();
 		form.setTask(task);
 		form.setProjectId(task.getProject().getId());
-		form.setStatusList(Status.getStatusList());
+		form.setStatusList(Status.NAMES);
 
 		model.put("projectTaskForm", form);
 

@@ -54,6 +54,8 @@ public class UserController extends RootController {
 	@Autowired
 	private ChangePasswordValidator passwordValidator;
 
+	protected boolean sendMail = false;
+
 	@RequestMapping("/user")
 	@Secured("ROLE_USER")
 	public String listUsers(ModelMap model) {
@@ -71,8 +73,7 @@ public class UserController extends RootController {
 
 	@RequestMapping("/adduser")
 	@Secured("ROLE_ADMIN")
-	public String addUser(@ModelAttribute("currentuser") User currentUser,
-			ModelMap model) {
+	public String addUser(ModelMap model) {
 		UserForm form = new UserForm();
 		User user = new User();
 		BeanUtils.copyProperties(user, form);
@@ -80,15 +81,14 @@ public class UserController extends RootController {
 		form.setRoles(Role.getRoleMap());
 		model.addAttribute("userForm", form);
 
-		logger.info(currentUser.getEmail() + " try to add user ...");
+		logger.info(currentUser().getUsername() + " try to add user ...");
 		return "user/edit";
 	}
 
 	@RequestMapping("/edituser")
 	@Secured("ROLE_ADMIN")
-	public String editUser(@RequestParam("userid") Long userid,
-			@ModelAttribute("currentuser") User currentUser, ModelMap model) {
-		logger.info(currentUser.getEmail() + " try to edit user ...");
+	public String editUser(@RequestParam("userid") Long userid, ModelMap model) {
+		logger.info(currentUser().getUsername() + " try to edit user ...");
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			UserForm form = new UserForm();
@@ -103,10 +103,9 @@ public class UserController extends RootController {
 
 	@RequestMapping("/saveuser")
 	@Secured("ROLE_ADMIN")
-	public String saveUser(@ModelAttribute("currentuser") User currentUser,
-			@ModelAttribute("userForm") UserForm form, BindingResult result,
-			SessionStatus status) {
-		logger.info(currentUser.getEmail() + " try to save user ...");
+	public String saveUser(@ModelAttribute("userForm") UserForm form,
+			BindingResult result, SessionStatus status) {
+		logger.info(currentUser().getUsername() + " try to save user ...");
 
 		validator.validate(form, result);
 
@@ -124,53 +123,54 @@ public class UserController extends RootController {
 			user.setPassword(Utils.md5(password));
 			user.setCreateDate(new Date());
 			projectService.addUser(user);
-			logger.info(currentUser.getEmail() + " add user " + user.getEmail()
-					+ " as " + user.getRoleName());
-
-			sendConfirmationEmail(user, password);
+			logger.info(currentUser().getUsername() + " add user "
+					+ user.getEmail() + " as " + user.getRoleName());
+			if (sendMail) {
+				sendConfirmationEmail(user, password);
+			}
 		} else {
 			User user = projectService.findUser(form.getId());
 			BeanUtils.copyProperties(form, user);
 
 			projectService.updateUser(user);
 
-			logger.info(currentUser.getEmail() + " update user "
+			logger.info(currentUser().getUsername() + " update user "
 					+ user.getEmail() + " as " + user.getRoleName());
 		}
 		return "redirect:/alluser";
 	}
 
-	private String setUserEnabled(User currentUser, Long userid, Boolean value) {
+	private String setUserEnabled(Long userid, Boolean value) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			user.setEnabled(value);
 			projectService.updateUser(user);
-			logger.info(currentUser.getEmail() + " set user " + user.getEmail()
-					+ " enabled=" + value.toString());
+			logger.info(currentUser().getUsername() + " set user "
+					+ user.getEmail() + " enabled=" + value.toString());
 		}
 
 		return "redirect:/alluser";
 	}
 
-	private String setUserLocked(User currentUser, Long userid, Boolean value) {
+	private String setUserLocked(Long userid, Boolean value) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			user.setLocked(value);
 			projectService.updateUser(user);
-			logger.info(currentUser.getEmail() + " set user " + user.getEmail()
-					+ " locked=" + value.toString());
+			logger.info(currentUser().getUsername() + " set user "
+					+ user.getEmail() + " locked=" + value.toString());
 		}
 
 		return "redirect:/alluser";
 	}
 
-	private String setUserDeleted(User currentUser, Long userid, Boolean value) {
+	private String setUserDeleted(Long userid, Boolean value) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			user.setDeleted(value);
 			projectService.updateUser(user);
-			logger.info(currentUser.getEmail() + " set user " + user.getEmail()
-					+ " deleted=" + value.toString());
+			logger.info(currentUser().getUsername() + " set user "
+					+ user.getEmail() + " deleted=" + value.toString());
 		}
 
 		return "redirect:/alluser";
@@ -178,55 +178,49 @@ public class UserController extends RootController {
 
 	@RequestMapping("/enableuser/{userid}")
 	@Secured("ROLE_ADMIN")
-	public String enableUser(@ModelAttribute("currentuser") User currentUser,
-			@PathVariable Long userid) {
-		return setUserEnabled(currentUser, userid, true);
+	public String enableUser(@PathVariable Long userid) {
+		return setUserEnabled(userid, true);
 	}
 
 	@RequestMapping("/disableuser/{userid}")
 	@Secured("ROLE_ADMIN")
-	public String disableUser(@ModelAttribute("currentuser") User currentUser,
-			@PathVariable Long userid) {
-		return setUserEnabled(currentUser, userid, false);
+	public String disableUser(@PathVariable Long userid) {
+		return setUserEnabled(userid, false);
 	}
 
 	@RequestMapping("/lockuser/{userid}")
 	@Secured("ROLE_ADMIN")
-	public String lockUser(@ModelAttribute("currentuser") User currentUser,
-			@PathVariable Long userid) {
-		return setUserLocked(currentUser, userid, true);
+	public String lockUser(@PathVariable Long userid) {
+		return setUserLocked(userid, true);
 	}
 
 	@RequestMapping("/unlockuser/{userid}")
 	@Secured("ROLE_ADMIN")
-	public String unlockUser(@ModelAttribute("currentuser") User currentUser,
-			@PathVariable Long userid) {
-		return setUserLocked(currentUser, userid, false);
+	public String unlockUser(@PathVariable Long userid) {
+		return setUserLocked(userid, false);
 	}
 
 	@RequestMapping("/deleteuser/{userid}")
 	@Secured("ROLE_ADMIN")
-	public String deleteUser(@ModelAttribute("currentuser") User currentUser,
-			@PathVariable Long userid) {
-		return setUserDeleted(currentUser, userid, true);
+	public String deleteUser(@PathVariable Long userid) {
+		return setUserDeleted(userid, true);
 	}
 
 	@RequestMapping("/undeleteuser/{userid}")
 	@Secured("ROLE_ADMIN")
-	public String undeleteUser(@ModelAttribute("currentuser") User currentUser,
-			@PathVariable Long userid) {
-		return setUserDeleted(currentUser, userid, false);
+	public String undeleteUser(@PathVariable Long userid) {
+		return setUserDeleted(userid, false);
 	}
 
 	@RequestMapping("/deleteuserforever/{userid}")
 	@Secured("ROLE_ADMIN")
 	public String deleteUserForever(
-			@ModelAttribute("currentuser") User currentUser,
-			@PathVariable Long userid) {
+
+	@PathVariable Long userid) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			projectService.removeUser(userid);
-			logger.info(currentUser.getEmail() + " delete user "
+			logger.info(currentUser().getUsername() + " delete user "
 					+ user.getEmail() + " foever");
 		}
 
@@ -245,10 +239,9 @@ public class UserController extends RootController {
 	@RequestMapping("/saveownpassword")
 	@Secured("ROLE_OBSERVER")
 	public String saveownpassword(
-			@ModelAttribute("currentuser") User currentUser,
 			@ModelAttribute("changeOwnPasswordForm") ChangePasswordForm form,
 			ModelMap model, BindingResult result, SessionStatus status) {
-		form.setCurrentUser(currentUser);
+		form.setOldPassword(currentUser().getPassword());
 
 		passwordValidator.validate(form, result);
 
@@ -256,8 +249,7 @@ public class UserController extends RootController {
 			return "user/changeownpassword";
 		} else {
 			String newPassword = Utils.md5(form.getNewPassword());
-			projectService.updatePassword(currentUser.getId(), newPassword);
-			currentUser.setPassword(newPassword);
+			projectService.updatePassword(currentUser().getId(), newPassword);
 			return "home";
 		}
 	}
@@ -277,7 +269,9 @@ public class UserController extends RootController {
 			logger.info(currentUser.getEmail() + " reseted user "
 					+ user.getEmail() + " password.");
 
-			sendPasswordChangedEmail(user, password);
+			if (sendMail) {
+				sendPasswordChangedEmail(user, password);
+			}
 		}
 		return "redirect:/alluser";
 	}

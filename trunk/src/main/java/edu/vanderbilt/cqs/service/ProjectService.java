@@ -27,7 +27,7 @@ public interface ProjectService {
 
 	void updateProject(Project project);
 
-	List<Project> listProject(User currentUser);
+	List<Project> listProject(Long userid, Integer userRole);
 
 	void removeProject(Long id);
 
@@ -79,5 +79,5 @@ public interface ProjectService {
 
 	List<User> listInvalidUser();
 	
-	Integer getPermission(User user, Long projectid);
+	Integer getPermission(Long userid, Integer userRole, Long projectid);
 }

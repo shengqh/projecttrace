@@ -12,11 +12,11 @@
 	<p>
 	<h1 align="center">
 		<c:choose>
-			<c:when test="${projectTaskForm.task.id == null}">
+			<c:when test="${projectTaskForm.id == null}">
 				<spring:message code="label.tasknew" />
 			</c:when>
 			<c:otherwise>
-				<spring:message code="label.taskedit" /> : ${projectTaskForm.task.name}
+				<spring:message code="label.taskedit" /> : ${projectTaskForm.name}
 			</c:otherwise>
 		</c:choose>
 	</h1>
@@ -24,48 +24,48 @@
 		<form:form method="post" action="saveprojecttask.html"
 			commandName="projectTaskForm">
 			<form:hidden path="projectId" />
-			<form:hidden path="task.id" />
+			<form:hidden path="id" />
 			<form:errors path="*" cssClass="errorblock" element="div" />
 			<table id="box-table-a">
 				<tr>
-					<td><form:label path="task.taskIndex">
+					<td><form:label path="taskIndex">
 							<spring:message code="label.taskindex" />
 						</form:label></td>
-					<td><form:input path="task.taskIndex" /></td>
-					<td><form:errors path="task.taskIndex" cssClass="error" /></td>
+					<td><form:input id="txt" path="taskIndex" /></td>
+					<td><form:errors path="taskIndex" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="task.name">
+					<td><form:label path="name">
 							<spring:message code="label.taskname" />
 						</form:label></td>
-					<td><form:input path="task.name" /></td>
-					<td><form:errors path="task.name" cssClass="error" /></td>
+					<td><form:input id="txt" path="name" /></td>
+					<td><form:errors path="name" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="task.peopleTime">
+					<td><form:label path="peopleTime">
 							<spring:message code="label.taskpeopletime" />
 						</form:label></td>
-					<td><form:input path="task.peopleTime" /></td>
-					<td><form:errors path="task.peopleTime" cssClass="error" /></td>
+					<td><form:input id="txt" path="peopleTime" /></td>
+					<td><form:errors path="peopleTime" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="task.machineTime">
+					<td><form:label path="machineTime">
 							<spring:message code="label.taskmachinetime" />
 						</form:label></td>
-					<td><form:input path="task.machineTime" /></td>
-					<td><form:errors path="task.machineTime" cssClass="error" /></td>
+					<td><form:input id="txt" path="machineTime" /></td>
+					<td><form:errors path="machineTime" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="task.status">
+					<td><form:label path="status">
 							<spring:message code="label.taskstatus" />
 						</form:label></td>
-					<td><form:select path="task.status"
-							items="${projectTaskForm.statusList}" /></td>
-					<td><form:errors path="task.status" cssClass="error" /></td>
+					<td><form:select path="status"
+							items="${projectTaskForm.statusMap}" /></td>
+					<td><form:errors path="status" cssClass="error" /></td>
 				</tr>
 				<tr>
 					<td colspan="2" align="center"><c:choose>
-							<c:when test="${projectTaskForm.task.id == null}">
+							<c:when test="${projectTaskForm.id == null}">
 								<input type="submit" value="<spring:message code="label.add"/>" />
 							</c:when>
 							<c:otherwise>

@@ -6,3 +6,4 @@
 <%@ page
 	import="org.springframework.security.core.context.SecurityContextHolder"%>
 <%@ page import="edu.vanderbilt.cqs.Role"%>
+<%@ page import="edu.vanderbilt.cqs.Status"%>

@@ -46,7 +46,7 @@
 				<tbody>
 					<c:forEach items="${projectDetailForm.project.tasks}" var="task">
 						<c:choose>
-							<c:when test="${task.status == 'failed'}">
+							<c:when test="${task.status == 2}">
 								<tr bordercolor="red">
 							</c:when>
 							<c:otherwise>
@@ -57,16 +57,34 @@
 						<td>${task.name}</td>
 						<td>${task.peopleTime}</td>
 						<td>${task.machineTime}</td>
-						<td>${task.status}</td>
-						<td>${task.updateUser}</td>
-						<td>${task.updateDate}</td>
+						<td>${task.statusString}</td>
+						<c:choose>
+							<c:when test="${task.status == 0}">
+								<td></td>
+								<td></td>
+							</c:when>
+							<c:otherwise>
+								<td>${task.updateUser}</td>
+								<td>${task.updateDate}</td>
+							</c:otherwise>
+						</c:choose>
 						<c:if test="${projectDetailForm.canEdit}">
-							<td><a href="editprojecttask?taskid=${task.id}"><spring:message
-										code="label.edit" /></a></td>
+							<td>
+								<form action="editprojecttask?taskid=${task.id}" method="post">
+									<input type="submit"
+										value="<spring:message	code="label.edit" />" />
+								</form>
+
+							</td>
 						</c:if>
 						<c:if test="${projectDetailForm.canManage}">
-							<td><a href="deleteprojecttask?taskid=${task.id}"><spring:message
-										code="label.delete" /></a></td>
+							<td>
+								<form action="deleteprojecttask/${task.id}">
+									<input type="submit"
+										value="<spring:message	code="label.delete" />"
+										onclick="return confirm('Are you sure you want to delete task ${task.name} ?')" />
+								</form>
+							</td>
 						</c:if>
 						</tr>
 					</c:forEach>

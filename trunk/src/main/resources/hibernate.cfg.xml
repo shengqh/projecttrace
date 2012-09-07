@@ -10,6 +10,7 @@
         <mapping class="edu.vanderbilt.cqs.bean.Pipeline" />
         <mapping class="edu.vanderbilt.cqs.bean.PipelineTask" />
         <mapping class="edu.vanderbilt.cqs.bean.Project" />
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectUser" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTask" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTaskStatus" />
     </session-factory>

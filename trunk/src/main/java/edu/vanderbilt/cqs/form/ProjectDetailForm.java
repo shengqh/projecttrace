@@ -1,6 +1,7 @@
 package edu.vanderbilt.cqs.form;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import edu.vanderbilt.cqs.bean.Project;
 
@@ -13,6 +14,8 @@ public class ProjectDetailForm implements Serializable {
 	private Boolean canManage;
 
 	private Boolean canEdit;
+	
+	private Map<Integer, String> statusMap;
 
 	public Project getProject() {
 		return project;
@@ -36,6 +39,14 @@ public class ProjectDetailForm implements Serializable {
 
 	public void setCanManage(Boolean canManage) {
 		this.canManage = canManage;
+	}
+
+	public Map<Integer, String> getStatusMap() {
+		return statusMap;
+	}
+
+	public void setStatusMap(Map<Integer, String> statusMap) {
+		this.statusMap = statusMap;
 	}
 
 }

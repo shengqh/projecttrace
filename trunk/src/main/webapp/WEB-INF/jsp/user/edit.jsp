@@ -23,6 +23,7 @@
 	<p>
 		<form:form method="post" action="saveuser.html" commandName="userForm">
 			<form:hidden path="id" />
+			<form:hidden path="expired" />
 			<form:errors path="*" cssClass="errorblock" element="div" />
 			<table id="box-table-a">
 				<c:choose>
@@ -72,13 +73,6 @@
 							<spring:message code="label.locked" />
 						</form:label></td>
 					<td><form:checkbox path="locked" /></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><form:label path="expired">
-							<spring:message code="label.expired" />
-						</form:label></td>
-					<td><form:checkbox path="expired" /></td>
 					<td></td>
 				</tr>
 				<tr>

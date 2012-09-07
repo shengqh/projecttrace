@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.vanderbilt.cqs.Role;
+import edu.vanderbilt.cqs.bean.SpringSecurityUser;
 import edu.vanderbilt.cqs.dao.UserDAO;
 
 /**
@@ -45,10 +45,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 			boolean credentialsNonExpired = true;
 
-			return new User(domainUser.getEmail(), domainUser.getPassword()
-					.toLowerCase(), domainUser.getEnabled(),
-					!domainUser.getExpired(), credentialsNonExpired,
-					!domainUser.getLocked(),
+			return new SpringSecurityUser(domainUser.getId(),
+					domainUser.getRole(), domainUser.getEmail(), domainUser
+							.getPassword().toLowerCase(),
+					domainUser.getEnabled(), !domainUser.getExpired(),
+					credentialsNonExpired, !domainUser.getLocked(),
 					getAuthorities(domainUser.getRole()));
 
 		} catch (Exception e) {

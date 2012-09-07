@@ -6,7 +6,7 @@ import java.util.Map;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import edu.vanderbilt.cqs.Utils;
+import edu.vanderbilt.cqs.Role;
 
 public class UserForm implements Serializable {
 
@@ -119,7 +119,7 @@ public class UserForm implements Serializable {
 	}
 
 	public String getRoleName() {
-		return Utils.getRoleMap().get(this.role);
+		return Role.getRoleMap().get(this.role);
 	}
 
 	public Map<Integer, String> getRoles() {

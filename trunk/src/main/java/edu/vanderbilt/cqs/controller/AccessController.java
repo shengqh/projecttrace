@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class AccessController {
+public class AccessController extends RootController {
 	@RequestMapping("/login")
 	public String login(ModelMap model,
 			@RequestParam(required = false) String message) {

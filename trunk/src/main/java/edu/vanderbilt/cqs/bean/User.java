@@ -8,10 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import edu.vanderbilt.cqs.Utils;
+import edu.vanderbilt.cqs.Role;
 
 @Entity
 public class User implements Serializable {
@@ -22,18 +19,16 @@ public class User implements Serializable {
 	private Long id;
 
 	@Column
-	private String firstname;
+	private String firstname = "";
 
 	@Column
-	private String lastname;
+	private String lastname = "";
 
 	@Column(unique = true)
-	@Email
-	@NotEmpty
 	private String email;
 
 	@Column
-	private String telephone;
+	private String telephone = "";
 
 	@Column
 	private Date createDate;
@@ -157,7 +152,7 @@ public class User implements Serializable {
 	}
 
 	public String getRoleName() {
-		return Utils.getRoleMap().get(this.role);
+		return Role.getRoleMap().get(this.role);
 	}
 	
 	public boolean isValid(){

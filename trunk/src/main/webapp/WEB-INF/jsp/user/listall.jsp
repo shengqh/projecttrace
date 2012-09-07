@@ -11,7 +11,7 @@
 
 	<p>
 	<h1 align="center">
-		<spring:message code="label.validuserlist" />
+		<spring:message code="label.userlist" />
 		| <a href="adduser"><spring:message code="label.newuser" /></a>
 	</h1>
 	<p>
@@ -72,65 +72,53 @@
 							</td>
 						</tr>
 					</c:forEach>
-				</tbody>
-			</table>
-		</c:if>
-
-		<c:if test="${!empty invalidUserList}">
-			<p>
-			<h1 align="center">
-				<spring:message code="label.invaliduserlist" />
-			</h1>
-			<p>
-			<table id="box-table-a" summary="Invalid User list">
-				<thead>
-					<tr>
-						<th scope="col"><spring:message code="label.email" /></th>
-						<th scope="col"><spring:message code="label.name" /></th>
-						<th scope="col"><spring:message code="label.role" /></th>
-						<th scope="col"><spring:message code="label.telephone" /></th>
-						<th scope="col"><spring:message code="label.createdate" /></th>
-						<th scope="col"><spring:message code="label.enabled" /></th>
-						<th scope="col"><spring:message code="label.locked" /></th>
-						<th scope="col"><spring:message code="label.deleted" /></th>
-						<th scope="col">&nbsp;</th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach items="${invalidUserList}" var="user">
+					<c:if test="${!empty invalidUserList}">
 						<tr>
-							<td>${user.email}</td>
-							<td>${user.name}</td>
-							<td>${user.roleName}</td>
-							<td>${user.telephone}</td>
-							<td>${user.createDate}</td>
-							<td><c:if test="${!user.enabled}">
-									<form action="enableuser/${user.id}">
-										<input type="submit"
-											value="<spring:message	code="label.enable" />" />
-									</form>
-								</c:if></td>
-							<td><c:if test="${user.locked}">
-									<form action="unlockuser/${user.id}">
-										<input type="submit"
-											value="<spring:message	code="label.unlock" />" />
-									</form>
-								</c:if></td>
-							<td><c:if test="${user.deleted}">
-									<form action="undeleteuser/${user.id}">
-										<input type="submit"
-											value="<spring:message	code="label.undelete" />" />
-									</form>
-								</c:if></td>
-							<td>
-								<form action="deleteuserforever/${user.id}">
-									<input type="submit"
-										value="<spring:message	code="label.deleteforever" />"
-										onclick="return confirm('Are you sure you want to delete user ${user.email} forever?')" />
-								</form>
-							</td>
+							<td align="center" colspan="10"><h3 align="center">
+									<spring:message code="label.invaliduserlist" />
+								</h3></td>
 						</tr>
-					</c:forEach>
+						<c:forEach items="${invalidUserList}" var="user">
+							<tr>
+								<td>${user.email}</td>
+								<td>${user.name}</td>
+								<td>${user.roleName}</td>
+								<td>${user.telephone}</td>
+								<td>${user.createDate}</td>
+								<td><c:if test="${!user.enabled}">
+										<form action="enableuser/${user.id}">
+											<input type="submit"
+												value="<spring:message	code="label.enable" />" />
+										</form>
+									</c:if></td>
+								<td><c:if test="${user.locked}">
+										<form action="unlockuser/${user.id}">
+											<input type="submit"
+												value="<spring:message	code="label.unlock" />" />
+										</form>
+									</c:if></td>
+								<td><c:if test="${user.deleted}">
+										<form action="undeleteuser/${user.id}">
+											<input type="submit"
+												value="<spring:message	code="label.undelete" />" />
+										</form>
+									</c:if></td>
+								<td>
+									<form action="edituser?userid=${user.id}" method="post">
+										<input type="submit"
+											value="<spring:message	code="label.edit" />" />
+									</form>
+								</td>
+								<td>
+									<form action="deleteuserforever/${user.id}">
+										<input type="submit"
+											value="<spring:message	code="label.deleteforever" />"
+											onclick="return confirm('Are you sure you want to delete user ${user.email} forever?')" />
+									</form>
+								</td>
+							</tr>
+						</c:forEach>
+					</c:if>
 				</tbody>
 			</table>
 		</c:if>

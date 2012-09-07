@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
-import javax.validation.Valid;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.velocity.app.VelocityEngine;
@@ -21,13 +20,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 import edu.vanderbilt.cqs.Role;
@@ -39,8 +36,7 @@ import edu.vanderbilt.cqs.service.ProjectService;
 import edu.vanderbilt.cqs.validator.ChangePasswordValidator;
 
 @Controller
-@SessionAttributes({ "currentuser" })
-public class UserController {
+public class UserController extends RootController {
 	private static final Logger logger = Logger.getLogger(UserController.class);
 
 	@Autowired
@@ -67,37 +63,37 @@ public class UserController {
 
 	@RequestMapping("/alluser")
 	@Secured("ROLE_ADMIN")
-	public String listAllUsers(@RequestParam(required = false) String type,
-			@RequestParam(required = false) String error, BindingResult result,
-			ModelMap model) {
+	public String listAllUsers(ModelMap model) {
 		model.addAttribute("validUserList", projectService.listValidUser());
 		model.addAttribute("invalidUserList", projectService.listInvalidUser());
-		if (type != null && error != null) {
-			result.addError(new ObjectError(type, error));
-		}
 		return "user/listall";
 	}
 
 	@RequestMapping("/adduser")
 	@Secured("ROLE_ADMIN")
-	public String addUser(ModelMap model) {
+	public String addUser(@ModelAttribute("currentuser") User currentUser,
+			ModelMap model) {
 		UserForm form = new UserForm();
 		User user = new User();
 		BeanUtils.copyProperties(user, form);
 		form.setRole(Role.USER);
-		form.setRoles(Utils.getRoleMap());
+		form.setRoles(Role.getRoleMap());
 		model.addAttribute("userForm", form);
+
+		logger.info(currentUser.getEmail() + " try to add user ...");
 		return "user/edit";
 	}
 
 	@RequestMapping("/edituser")
 	@Secured("ROLE_ADMIN")
-	public String editUser(@RequestParam("userid") Long userid, ModelMap model) {
+	public String editUser(@RequestParam("userid") Long userid,
+			@ModelAttribute("currentuser") User currentUser, ModelMap model) {
+		logger.info(currentUser.getEmail() + " try to edit user ...");
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			UserForm form = new UserForm();
 			BeanUtils.copyProperties(user, form);
-			form.setRoles(Utils.getRoleMap());
+			form.setRoles(Role.getRoleMap());
 			model.addAttribute("userForm", form);
 			return "user/edit";
 		} else {
@@ -108,39 +104,40 @@ public class UserController {
 	@RequestMapping("/saveuser")
 	@Secured("ROLE_ADMIN")
 	public String saveUser(@ModelAttribute("currentuser") User currentUser,
-			@Valid @ModelAttribute("userForm") UserForm form,
-			BindingResult result, SessionStatus status) {
+			@ModelAttribute("userForm") UserForm form, BindingResult result,
+			SessionStatus status) {
+		logger.info(currentUser.getEmail() + " try to save user ...");
+
+		validator.validate(form, result);
+
 		if (result.hasErrors()) {
-			form.setRoles(Utils.getRoleMap());
+			form.setRoles(Role.getRoleMap());
 			return "user/edit";
-		} else {
-			if (form.getId() == null) {
-				String password = RandomStringUtils.randomAlphanumeric(8);
-
-				User user = new User();
-				BeanUtils.copyProperties(form, user);
-				user.setEmail(user.getEmail().toLowerCase());
-				user.setPassword(Utils.md5(password));
-				user.setCreateDate(new Date());
-				projectService.addUser(user);
-				logger.info(currentUser.getEmail() + " add user "
-						+ user.getEmail() + " as " + user.getRoleName());
-
-				String error = sendConfirmationEmail(user, password);
-				if (error != null) {
-					return "redirect:/alluser?type=mail?error=" + error;
-				}
-			} else {
-				User user = projectService.findUser(form.getId());
-				BeanUtils.copyProperties(form, user);
-
-				projectService.updateUser(user);
-
-				logger.info(currentUser.getEmail() + " update user "
-						+ user.getEmail() + " as " + user.getRoleName());
-			}
-			return "redirect:/alluser?type=save?error=succeed";
 		}
+
+		if (form.getId() == null) {
+			String password = RandomStringUtils.randomAlphanumeric(8);
+
+			User user = new User();
+			BeanUtils.copyProperties(form, user);
+			user.setEmail(user.getEmail().toLowerCase());
+			user.setPassword(Utils.md5(password));
+			user.setCreateDate(new Date());
+			projectService.addUser(user);
+			logger.info(currentUser.getEmail() + " add user " + user.getEmail()
+					+ " as " + user.getRoleName());
+
+			sendConfirmationEmail(user, password);
+		} else {
+			User user = projectService.findUser(form.getId());
+			BeanUtils.copyProperties(form, user);
+
+			projectService.updateUser(user);
+
+			logger.info(currentUser.getEmail() + " update user "
+					+ user.getEmail() + " as " + user.getRoleName());
+		}
+		return "redirect:/alluser";
 	}
 
 	private String setUserEnabled(User currentUser, Long userid, Boolean value) {
@@ -280,10 +277,7 @@ public class UserController {
 			logger.info(currentUser.getEmail() + " reseted user "
 					+ user.getEmail() + " password.");
 
-			String error = sendPasswordChangedEmail(user, password);
-			if (error != null) {
-				return "redirect:/alluser?type=mail?error=" + error;
-			}
+			sendPasswordChangedEmail(user, password);
 		}
 		return "redirect:/alluser";
 	}

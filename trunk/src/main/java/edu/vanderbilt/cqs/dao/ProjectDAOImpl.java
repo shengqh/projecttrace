@@ -67,4 +67,20 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements
 		Long count = (Long) qry.uniqueResult();
 		return count > 0;
 	}
+
+	private void removeUserEntry(String table, Long userid) {
+		String sql = String
+				.format("delete from %s where USER_ID=:uid",
+						table);
+		Query qry = getSession().createSQLQuery(sql);
+		qry.setLong("uid", userid);
+		qry.executeUpdate();
+	}
+
+	@Override
+	public void removeUserEntry(Long userid) {
+		removeUserEntry("PROJECT_MANAGER", userid);
+		removeUserEntry("PROJECT_USER", userid);
+		removeUserEntry("PROJECT_OBSERVER", userid);
+	}
 }

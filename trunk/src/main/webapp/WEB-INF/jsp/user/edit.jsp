@@ -89,16 +89,20 @@
 					<td></td>
 				</tr>
 				<tr>
-					<c:choose>
-						<c:when test="${userForm.id == null}">
-							<td colspan="3"><input type="submit"
-								value="<spring:message code="label.add"/>" /></td>
-						</c:when>
-						<c:otherwise>
-							<td colspan="3"><input type="submit"
-								value="<spring:message code="label.update"/>" /></td>
-						</c:otherwise>
-					</c:choose>
+					<td colspan="3" align="center"><c:choose>
+							<c:when test="${userForm.id == null}">
+								<input type="submit" value="<spring:message code="label.add"/>" />
+							</c:when>
+							<c:otherwise>
+								<input type="submit"
+									value="<spring:message code="label.update"/>" />
+							</c:otherwise>
+
+						</c:choose>
+						<form>
+							<input type="button" value="<spring:message code="label.back" />"
+								onClick="parent.location='alluser.html'" />
+						</form></td>
 				</tr>
 			</table>
 		</form:form>

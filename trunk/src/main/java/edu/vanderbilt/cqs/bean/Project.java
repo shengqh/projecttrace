@@ -44,6 +44,9 @@ public class Project implements Serializable {
 	private Date createDate;
 	
 	@Column
+	private Integer status;
+	
+	@Column
 	private Boolean deleted = false;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
@@ -156,5 +159,13 @@ public class Project implements Serializable {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 }

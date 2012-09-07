@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import edu.vanderbilt.cqs.Status;
+
 @Entity
 @Table(name = "PROJECTTASK")
 public class ProjectTask implements ITask, Serializable {
@@ -37,12 +39,16 @@ public class ProjectTask implements ITask, Serializable {
 	@Column
 	private Double machineTime;
 
+	@Column
+	private Integer status;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PROJECT_ID")
 	private Project project;
-
-	@Column
-	private Integer status;
+	
+	public String getStatusString(){
+		return Status.getStatusMap().get(this.status);
+	}
 
 	@Column
 	private String updateUser;

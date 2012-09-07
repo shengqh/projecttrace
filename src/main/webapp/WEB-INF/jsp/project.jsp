@@ -44,7 +44,7 @@
 							<td>${project.creator}</td>
 							<sec:authorize access="hasRole('ROLE_MANAGER')">
 								<td>
-									<form action="editproject?projectid=${project.id}">
+									<form action="editproject?projectid=${project.id}" method="post">
 										<input type="submit" value="<spring:message	code="label.edit" />" />
 									</form>
 								</td>

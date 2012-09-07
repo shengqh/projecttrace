@@ -48,8 +48,10 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public void removeUser(Long id) {
-		projectDAO.removeUserEntry(id);
-		userDAO.deleteById(id);
+		User user = userDAO.findById(id, false);
+		if (user != null) {
+			userDAO.delete(user);
+		}
 	}
 
 	@Transactional
@@ -84,18 +86,21 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public List<Project> listProject(User currentUser) {
-		if (currentUser.getRole() >= Role.MANAGER) {
+	public List<Project> listProject(Long userid, Integer userRole) {
+		if (userRole >= Role.MANAGER) {
 			return projectDAO.findAll();
 		} else {
-			return projectDAO.getProjectByUser(currentUser.getId());
+			return projectDAO.getProjectByUser(userid);
 		}
 	}
 
 	@Transactional
 	@Override
 	public void removeProject(Long id) {
-		projectDAO.deleteById(id);
+		Project project = projectDAO.findById(id, false);
+		if (project != null) {
+			projectDAO.delete(project);
+		}
 	}
 
 	@Transactional
@@ -220,12 +225,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public Integer getPermission(User user, Long projectId) {
-		if (user.getRole() >= Role.MANAGER) {
-			return user.getRole();
+	public Integer getPermission(Long userid, Integer userRole, Long projectId) {
+		if (userRole >= Role.MANAGER) {
+			return userRole;
 		}
 
-		return projectDAO.getPermission(user.getId(), projectId);
+		return projectDAO.getPermission(userid, projectId);
 	}
 
 	@Transactional

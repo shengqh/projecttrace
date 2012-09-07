@@ -2,15 +2,11 @@ package edu.vanderbilt.cqs.form;
 
 import java.io.Serializable;
 
-import edu.vanderbilt.cqs.bean.User;
-
 public class ChangePasswordForm implements Serializable {
 
 	private static final long serialVersionUID = 3886477967526396402L;
 
-	private User currentUser;
-
-	private User targetUser;
+	private String oldPassword;
 
 	private String currentPassword;
 
@@ -34,27 +30,19 @@ public class ChangePasswordForm implements Serializable {
 		this.newPassword = newPassword;
 	}
 
-	public User getCurrentUser() {
-		return currentUser;
-	}
-
-	public void setCurrentUser(User currentUser) {
-		this.currentUser = currentUser;
-	}
-
-	public User getTargetUser() {
-		return targetUser;
-	}
-
-	public void setTargetUser(User targetUser) {
-		this.targetUser = targetUser;
-	}
-
 	public String getCurrentPassword() {
 		return currentPassword;
 	}
 
 	public void setCurrentPassword(String currentPassword) {
 		this.currentPassword = currentPassword;
+	}
+
+	public String getOldPassword() {
+		return oldPassword;
+	}
+
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
 	}
 }

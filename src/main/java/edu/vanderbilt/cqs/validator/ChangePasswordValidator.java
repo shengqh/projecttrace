@@ -31,7 +31,7 @@ public class ChangePasswordValidator implements Validator {
 
 		String oldPassword = Utils.md5(form.getCurrentPassword());
 
-		if (!oldPassword.equals(form.getCurrentUser().getPassword())) {
+		if (!oldPassword.equals(form.getOldPassword())) {
 			errors.rejectValue("currentPassword", "invalid.currentpassword",
 					"Current password doesn't match to your password.");
 		}

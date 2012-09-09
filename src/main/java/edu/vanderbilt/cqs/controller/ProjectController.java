@@ -21,17 +21,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.vanderbilt.cqs.Role;
 import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.Utils;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
+import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 import edu.vanderbilt.cqs.bean.ProjectUser;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.form.ProjectDetailForm;
 import edu.vanderbilt.cqs.form.ProjectForm;
 import edu.vanderbilt.cqs.form.ProjectTaskForm;
+import edu.vanderbilt.cqs.form.ProjectTaskStatusForm;
 import edu.vanderbilt.cqs.service.ProjectService;
 
 @Controller
@@ -45,15 +48,15 @@ public class ProjectController extends RootController {
 	@Autowired
 	private Validator validator;
 
-	@RequestMapping("/project")
 	@Secured("ROLE_OBSERVER")
+	@RequestMapping("/project")
 	public String listProject(ModelMap model) {
 		logger.info(currentUser().getUsername() + " projectList.");
 
 		model.put("projectList", projectService.listProject(currentUser()
 				.getId(), currentUser().getRole()));
 
-		return "project";
+		return "project/list";
 	}
 
 	@RequestMapping("/addproject")
@@ -67,7 +70,7 @@ public class ProjectController extends RootController {
 
 		model.put("projectForm", form);
 
-		return "projectedit";
+		return "project/edit";
 	}
 
 	@RequestMapping("/editproject")
@@ -91,7 +94,7 @@ public class ProjectController extends RootController {
 
 			model.put("projectForm", form);
 
-			return "projectedit";
+			return "project/edit";
 		} else {
 			return "redirect:/project";
 		}
@@ -147,7 +150,7 @@ public class ProjectController extends RootController {
 			BindingResult result) {
 		if (result.hasErrors()) {
 			initializeValidUsers(form);
-			return "projectedit";
+			return "project/edit";
 		}
 
 		if (form.getId() != null) {
@@ -168,7 +171,7 @@ public class ProjectController extends RootController {
 
 			validator.validate(project, result);
 			if (result.hasErrors()) {
-				return "projectedit";
+				return "project/edit";
 			}
 
 			projectService.addProject(project);
@@ -209,7 +212,7 @@ public class ProjectController extends RootController {
 				form.setCanEdit(permission >= Role.USER);
 				form.setStatusMap(Status.getStatusMap());
 				model.put("projectDetailForm", form);
-				return "projectshow";
+				return "project/show";
 			} else {
 				return "/access/denied";
 			}
@@ -230,13 +233,13 @@ public class ProjectController extends RootController {
 		Project project = projectService.findProject(projectid);
 		if (project == null) {
 			model.put("message", "Cannot find project!");
-			return "projectshow";
+			return "project/show";
 		} else {
 			Integer permission = projectService.getPermission(currentUser()
 					.getId(), currentUser().getRole(), projectid);
 
-			if (permission <= Role.MANAGER) {
-				return "/access/denied";
+			if (permission < Role.MANAGER) {
+				return "redirect:/denied";
 			}
 
 			ProjectTaskForm form = new ProjectTaskForm();
@@ -251,7 +254,7 @@ public class ProjectController extends RootController {
 
 			model.put("projectTaskForm", form);
 
-			return "projecttaskedit";
+			return "project/taskedit";
 		}
 	}
 
@@ -272,7 +275,7 @@ public class ProjectController extends RootController {
 
 		model.put("projectTaskForm", form);
 
-		return "projecttaskedit";
+		return "project/taskedit";
 	}
 
 	@RequestMapping(value = "/saveprojecttask", method = RequestMethod.POST)
@@ -286,8 +289,10 @@ public class ProjectController extends RootController {
 			task.setUpdateDate(new Date());
 			task.setUpdateUser(currentUser().getUsername());
 
+			ProjectTaskStatus status = newProjectTaskStatus(form, task);
+
+			projectService.updateProjectTask(task, status);
 			logger.info(currentUser().getUsername() + " updating project task.");
-			projectService.updateProjectTask(task);
 		} else {
 			ProjectTask task = new ProjectTask();
 			BeanUtils.copyProperties(form, task);
@@ -295,11 +300,23 @@ public class ProjectController extends RootController {
 			task.setUpdateDate(new Date());
 			task.setUpdateUser(currentUser().getUsername());
 
-			logger.info(currentUser().getUsername() + " adding project task.");
-			projectService.addProjectTask(task);
+			ProjectTaskStatus status = newProjectTaskStatus(form, task);
+
+			projectService.addProjectTask(task, status);
+			logger.info(currentUser().getUsername() + " added project task.");
 		}
 
 		return getProjectDetailRedirect(project.getId());
+	}
+
+	private ProjectTaskStatus newProjectTaskStatus(ProjectTaskForm form,
+			ProjectTask task) {
+		ProjectTaskStatus result = new ProjectTaskStatus();
+		result.setComment(form.getComment());
+		result.setStatus(task.getStatus());
+		result.setUpdateDate(task.getUpdateDate());
+		result.setUpdateUser(task.getUpdateUser());
+		return result;
 	}
 
 	@RequestMapping("/deleteprojecttask/{taskid}")
@@ -310,13 +327,49 @@ public class ProjectController extends RootController {
 		Integer permission = projectService.getPermission(
 				currentUser().getId(), currentUser().getRole(), projectid);
 
-		if (permission <= Role.MANAGER) {
-			return "/denied";
+		if (permission < Role.MANAGER) {
+			return "redirect:/denied";
 		}
 
 		projectService.removeProjectTask(taskid);
 
 		return getProjectDetailRedirect(projectid);
+	}
+
+	@RequestMapping(value = "/getStatusList3", method = RequestMethod.POST)
+	public @ResponseBody
+	String getStatusList3(@RequestParam("taskid") Long taskid) {
+		String result = "";
+		ProjectTask task = projectService.findProjectTask(taskid);
+		if (task != null) {
+			for (ProjectTaskStatus pts : task.getStatuses()) {
+				result = result + "<br>" + pts.getComment();
+			}
+		}
+		return result;
+	}
+
+	@RequestMapping(value = "/getStatusList2", method = RequestMethod.GET)
+	public @ResponseBody
+	List<ProjectTaskStatus> getStatusList2() {
+		logger.info("getStatusList2");
+		return new ArrayList<ProjectTaskStatus>();
+	}
+
+	@RequestMapping(value = "/getStatusList", method = RequestMethod.POST)
+	public @ResponseBody
+	List<ProjectTaskStatusForm> getStatusList(
+			@RequestParam("taskid") Long taskid) {
+		List<ProjectTaskStatusForm> result = new ArrayList<ProjectTaskStatusForm>();
+		ProjectTask task = projectService.findProjectTask(taskid);
+		if (task != null) {
+			for (ProjectTaskStatus pts : task.getStatuses()) {
+				ProjectTaskStatusForm form = new ProjectTaskStatusForm();
+				BeanUtils.copyProperties(pts, form);
+				result.add(form);
+			}
+		}
+		return result;
 	}
 
 	private String getProjectDetailRedirect(Long projectid) {

@@ -1,6 +1,7 @@
 package edu.vanderbilt.cqs.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,8 +46,8 @@ public class ProjectTask implements ITask, Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PROJECT_ID")
 	private Project project;
-	
-	public String getStatusString(){
+
+	public String getStatusString() {
 		return Status.getStatusMap().get(this.status);
 	}
 
@@ -57,7 +58,7 @@ public class ProjectTask implements ITask, Serializable {
 	private Date updateDate;
 
 	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	private List<ProjectTaskStatus> statuses;
+	private List<ProjectTaskStatus> statuses = new ArrayList<ProjectTaskStatus>();
 
 	public Long getId() {
 		return id;

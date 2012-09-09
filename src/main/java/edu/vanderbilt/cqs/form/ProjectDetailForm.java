@@ -1,9 +1,12 @@
 package edu.vanderbilt.cqs.form;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import edu.vanderbilt.cqs.bean.Project;
+import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 
 public class ProjectDetailForm implements Serializable {
 
@@ -16,7 +19,9 @@ public class ProjectDetailForm implements Serializable {
 	private Boolean canEdit;
 	
 	private Map<Integer, String> statusMap;
-
+	
+	private List<ProjectTaskStatus> comments = new ArrayList<ProjectTaskStatus>();
+	
 	public Project getProject() {
 		return project;
 	}
@@ -47,6 +52,14 @@ public class ProjectDetailForm implements Serializable {
 
 	public void setStatusMap(Map<Integer, String> statusMap) {
 		this.statusMap = statusMap;
+	}
+
+	public List<ProjectTaskStatus> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<ProjectTaskStatus> statuses) {
+		this.comments = statuses;
 	}
 
 }

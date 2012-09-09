@@ -6,6 +6,7 @@ import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
+import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 import edu.vanderbilt.cqs.bean.User;
 
 public interface ProjectService {
@@ -56,9 +57,9 @@ public interface ProjectService {
 	// ProjectTask
 	ProjectTask findProjectTask(Long id);
 
-	void addProjectTask(ProjectTask task);
+	void addProjectTask(ProjectTask task, ProjectTaskStatus status);
 
-	void updateProjectTask(ProjectTask task);
+	void updateProjectTask(ProjectTask task, ProjectTaskStatus status);
 
 	void removeProjectTask(Long id);
 

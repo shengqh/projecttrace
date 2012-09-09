@@ -1,13 +1,30 @@
-<%@ include file="include.jsp"%>
+<%@ include file="../include.jsp"%>
 <html>
 <head>
 <link rel="stylesheet" type="text/css" media="screen"
 	href="resources/css/style.css" />
 <title>CQS/VUMC Project Trace System</title>
+<script type="text/javascript" src="resources/js/jquery.js"></script>
+<script type="text/javascript">
+	function showComments(taskid) {
+		alert(taskid);
+		$.ajax({
+	        type: "POST",
+    	    url: "getStatusList3.html",
+    	    data: "taskid=" + taskid.toString(),
+        	success: function(response){
+        		$('#info').html(response);
+           	},
+        	error: function(e){
+        		alert('Error: ' + e);
+        	}
+        });
+	}
+</script>
 </head>
 
 <body>
-	<jsp:include page="menu.jsp" />
+	<jsp:include page="../menu.jsp" />
 
 	<p>
 	<h1 align="center">
@@ -41,6 +58,7 @@
 						<c:if test="${projectDetailForm.canManage}">
 							<th scope="col">&nbsp;</th>
 						</c:if>
+						<th scope="col">comments</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -86,11 +104,36 @@
 								</form>
 							</td>
 						</c:if>
+						<td><input type="submit" value="Comments"
+							onclick="showComments(${task.id})" /></td>
 						</tr>
 					</c:forEach>
+					<tr><td colspan="7"><div id="info" style="color: green;"></div></td></tr>
 				</tbody>
 			</table>
 		</c:if>
+	<c:if test="${!empty projectDetailForm.comments}">
+		<table id="box-table-a" summary="Project Task Comments">
+			<thead>
+				<tr>
+					<th scope="col"><spring:message code="label.taskstatus" /></th>
+					<th scope="col"><spring:message code="label.taskupdateuser" /></th>
+					<th scope="col"><spring:message code="label.taskupdatedate" /></th>
+					<th scope="col"><spring:message code="label.comment" /></th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach items="${projectDetailForm.comments}" var="comment">
+					<tr>
+						<td>${comment.statusString}</td>
+						<td>${comment.updateUser}</td>
+						<td>${comment.updateDate}</td>
+						<td>${comment.comment}</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</c:if>
 	<p class="message">${message}</p>
 </body>
 </html>

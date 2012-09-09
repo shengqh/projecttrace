@@ -14,7 +14,9 @@ public class ProjectTaskStatusForm implements Serializable {
 
 	private String updateUser;
 
-	private Date updateDate;
+	private String updateDateString;
+
+	private String statusString;
 
 	public Long getId() {
 		return id;
@@ -48,11 +50,19 @@ public class ProjectTaskStatusForm implements Serializable {
 		this.updateUser = updateUser;
 	}
 
-	public Date getUpdateDate() {
-		return updateDate;
+	public String getUpdateDateString() {
+		return updateDateString;
 	}
 
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
+	public void setUpdateDateString(String updateDateString) {
+		this.updateDateString = updateDateString;
+	}
+
+	public String getStatusString() {
+		return statusString;
+	}
+
+	public void setStatusString(String statusString) {
+		this.statusString = statusString;
 	}
 }

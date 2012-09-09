@@ -1,6 +1,6 @@
 <%@ include file="include.jsp"%>
 
-<c:url value="/" var="homeUrl" />
+<c:url value="home" var="homeUrl" />
 <c:url value="project" var="projectUrl" />
 <c:url value="user" var="userUrl" />
 <c:url value="alluser" var="userAllUrl" />

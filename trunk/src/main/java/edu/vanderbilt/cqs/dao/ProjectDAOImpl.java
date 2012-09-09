@@ -35,8 +35,8 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public Integer getPermission(Long userid, Long projectid) {
-		String sql = "select max(PERMISSION) from PROJECT_USER where USER_ID=:userid and PROJECT_ID=:projectid";
-		Query qry = getSession().createSQLQuery(sql).addScalar("PERMISSION",
+		String sql = "select max(PERMISSION) as MAXPERMISSION from PROJECT_USER where USER_ID=:userid and PROJECT_ID=:projectid";
+		Query qry = getSession().createSQLQuery(sql).addScalar("MAXPERMISSION",
 				StandardBasicTypes.INTEGER);
 		qry.setLong("userid", userid);
 		qry.setLong("projectid", projectid);

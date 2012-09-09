@@ -11,6 +11,7 @@ import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
+import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.dao.PipelineDAO;
 import edu.vanderbilt.cqs.dao.PipelineTaskDAO;
@@ -165,8 +166,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public void addProjectTask(ProjectTask task) {
+	public void addProjectTask(ProjectTask task, ProjectTaskStatus status) {
 		projectTaskDAO.save(task);
+		
+		assignTaskToStatus(task, status);
+		
+		projectTaskStatusDAO.save(status);
 	}
 
 	@Transactional
@@ -207,8 +212,19 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public void updateProjectTask(ProjectTask task) {
+	public void updateProjectTask(ProjectTask task, ProjectTaskStatus status) {
 		projectTaskDAO.update(task);
+		
+		assignTaskToStatus(task, status);
+		
+		projectTaskStatusDAO.save(status);
+	}
+
+	private void assignTaskToStatus(ProjectTask task, ProjectTaskStatus status) {
+		status.setStatus(task.getStatus());
+		status.setUpdateUser(task.getUpdateUser());
+		status.setUpdateDate(task.getUpdateDate());
+		status.setTask(task);
 	}
 
 	@Transactional

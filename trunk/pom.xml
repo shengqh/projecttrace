@@ -39,6 +39,12 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>1.9.9</version>
+		</dependency>
+
 		<!-- Spring Core -->
 		<dependency>
 			<groupId>org.springframework</groupId>

@@ -13,6 +13,7 @@ import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.Utils;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
+import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 import edu.vanderbilt.cqs.bean.ProjectUser;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.service.ProjectService;
@@ -79,7 +80,10 @@ public class ApplicationListenerImpl implements
 		task.setStatus(status);
 		task.setUpdateDate(new Date());
 		task.setUpdateUser(user.getEmail());
-		projectService.addProjectTask(task);
+
+		ProjectTaskStatus pts = new ProjectTaskStatus();
+		pts.setComment("Initialize task");
+		projectService.addProjectTask(task, pts);
 	}
 
 	private Project addProject(User creator, String name, User manager,

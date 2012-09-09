@@ -1,4 +1,4 @@
-<%@ include file="include.jsp"%>
+<%@ include file="../include.jsp"%>
 <html>
 <head>
 <link rel="stylesheet" type="text/css" media="screen"
@@ -7,7 +7,7 @@
 </head>
 
 <body>
-	<jsp:include page="menu.jsp" />
+	<jsp:include page="../menu.jsp" />
 
 	<p>
 	<h1 align="center">
@@ -62,6 +62,14 @@
 					<td><form:select path="status"
 							items="${projectTaskForm.statusMap}" /></td>
 					<td><form:errors path="status" cssClass="error" /></td>
+				</tr>
+				<tr>
+					<td><form:label path="comment">
+							<spring:message code="label.comment" />
+						</form:label></td>
+					<td><form:textarea id="textarea" path="comment" rows="10"
+							cols="60" /></td>
+					<td><form:errors path="comment" cssClass="error" /></td>
 				</tr>
 				<tr>
 					<td colspan="2" align="center"><c:choose>

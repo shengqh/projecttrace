@@ -19,6 +19,8 @@ public class ProjectTaskForm implements Serializable {
 	private Double machineTime;
 
 	private Integer status;
+	
+	private String comment;
 
 	private Map<Integer, String> statusMap;
 
@@ -84,5 +86,13 @@ public class ProjectTaskForm implements Serializable {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 }

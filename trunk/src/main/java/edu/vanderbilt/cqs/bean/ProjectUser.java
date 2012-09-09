@@ -15,6 +15,7 @@ public class ProjectUser {
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 
 	@Column(name = "PERMISSION", updatable = false)

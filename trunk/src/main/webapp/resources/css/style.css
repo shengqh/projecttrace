@@ -69,6 +69,10 @@ textarea {
 	float: right;
 }
 
+.comment{
+	color:red;
+}
+
 /**
 * Menu based on James Owers' Horizontal CSS List Menu
 * @see http://jamesowers.co.uk/css-tutorials/50/horizontal-css-list-menu/
@@ -238,6 +242,10 @@ textarea {
 {
 	background: #d0dafd;
 	color: #339;
+}
+#box-table-a tr.yellow td
+{
+	background: #FFC;
 }
 
 #box-table-a select {

@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -55,6 +56,7 @@ public class ProjectTaskStatus implements Serializable {
 	@Column(name = "STATUS")
 	private Integer status;
 
+	@Lob
 	@Column(name = "COMMENT")
 	private String comment;
 

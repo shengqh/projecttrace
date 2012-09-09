@@ -50,7 +50,8 @@ public class ProjectController extends RootController {
 
 	@Secured("ROLE_OBSERVER")
 	@RequestMapping("/project")
-	public String listProject(ModelMap model) {
+	public String listProject(
+			ModelMap model) {
 		logger.info(currentUser().getUsername() + " projectList.");
 
 		model.put("projectList", projectService.listProject(currentUser()
@@ -197,6 +198,7 @@ public class ProjectController extends RootController {
 	@RequestMapping("/showproject")
 	@Secured("ROLE_OBSERVER")
 	public String showProject(@RequestParam("projectid") Long projectid,
+			@RequestParam(value = "taskid", required = false, defaultValue = "0") Long taskid,
 			ModelMap model) {
 		logger.info(currentUser().getUsername() + " showProject "
 				+ projectid.toString());
@@ -211,6 +213,7 @@ public class ProjectController extends RootController {
 				form.setCanManage(permission >= Role.MANAGER);
 				form.setCanEdit(permission >= Role.USER);
 				form.setStatusMap(Status.getStatusMap());
+				form.setTaskId(taskid);
 				model.put("projectDetailForm", form);
 				return "project/show";
 			} else {

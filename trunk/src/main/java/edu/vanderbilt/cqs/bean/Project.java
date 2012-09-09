@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -26,24 +27,26 @@ public class Project implements Serializable {
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 
-	@Column
+	@Column(name="NAME")
 	private String name;
 
-	@Column(length = 1000)
+	@Column(name="DESCRIPTION")
+	@Lob
 	private String description;
 
-	@Column
+	@Column(name="CREATOR")
 	private String creator;
 
-	@Column
+	@Column(name="CREATEDATE")
 	private Date createDate;
 
-	@Column
+	@Column(name="STATUS")
 	private Integer status;
 
-	@Column
+	@Column(name="ENABLED")
 	private Boolean enabled = true;
 
 	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })

@@ -20,6 +20,8 @@ public class ProjectDetailForm implements Serializable {
 	
 	private Map<Integer, String> statusMap;
 	
+	private Long taskId;
+	
 	private List<ProjectTaskStatus> comments = new ArrayList<ProjectTaskStatus>();
 	
 	public Project getProject() {
@@ -60,6 +62,14 @@ public class ProjectDetailForm implements Serializable {
 
 	public void setComments(List<ProjectTaskStatus> statuses) {
 		this.comments = statuses;
+	}
+
+	public Long getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
 	}
 
 }

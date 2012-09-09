@@ -1,10 +1,7 @@
 <%@ include file="../include.jsp"%>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" media="screen"
-	href="resources/css/style.css" />
-<title>CQS/VUMC Project Trace System</title>
-<script type="text/javascript" src="resources/js/jquery.js"></script>
+<%@ include file="../include_head.jsp"%>
 <script type="text/javascript">
 	function showComments(taskid) {
 		//alert(taskid);
@@ -80,47 +77,50 @@
 						<c:forEach items="${projectDetailForm.project.tasks}" var="task">
 							<c:choose>
 								<c:when test="${task.status == 2}">
-									<tr bordercolor="red">
+									<c:set var="bc" value="bordercolor=\"red\"" />
 								</c:when>
 								<c:otherwise>
-									<tr>
+									<c:set var="bc" value="" />
 								</c:otherwise>
 							</c:choose>
-							<td>${task.taskIndex}</td>
-							<td>${task.name}</td>
-							<td>${task.peopleTime}</td>
-							<td>${task.machineTime}</td>
-							<td>${task.statusString}</td>
-							<c:choose>
-								<c:when test="${task.status == 0}">
-									<td></td>
-									<td></td>
-								</c:when>
-								<c:otherwise>
-									<td>${task.updateUser}</td>
-									<td>${task.updateDate}</td>
-								</c:otherwise>
-							</c:choose>
-							<c:if test="${projectDetailForm.canEdit}">
-								<td>
-									<form action="editprojecttask?taskid=${task.id}" method="post">
-										<input type="submit"
-											value="<spring:message	code="label.edit" />" />
-									</form>
+							<tr ${bc}>
+								<td>${task.taskIndex}</td>
+								<td>${task.name}</td>
+								<td>${task.peopleTime}</td>
+								<td>${task.machineTime}</td>
+								<td>${task.statusString}</td>
+								<c:choose>
+									<c:when test="${task.status == 0}">
+										<td></td>
+										<td></td>
+									</c:when>
+									<c:otherwise>
+										<td>${task.updateUser}</td>
+										<td>${task.updateDate}</td>
+									</c:otherwise>
+								</c:choose>
+								<c:if test="${projectDetailForm.canEdit}">
+									<td>
+										<form action="editprojecttask?taskid=${task.id}" method="post">
+											<input type="submit"
+												value="<spring:message	code="label.edit" />" />
+										</form>
 
-								</td>
-							</c:if>
-							<c:if test="${projectDetailForm.canManage}">
-								<td>
-									<form action="deleteprojecttask/${task.id}">
-										<input type="submit"
-											value="<spring:message	code="label.delete" />"
-											onclick="return confirm('Are you sure you want to delete task ${task.name} ?')" />
-									</form>
-								</td>
-							</c:if>
-							<td><form><input type="button" value="+"
-								onclick="showComments(${task.id})" /></form></td>
+									</td>
+								</c:if>
+								<c:if test="${projectDetailForm.canManage}">
+									<td>
+										<form action="deleteprojecttask/${task.id}">
+											<input type="submit"
+												value="<spring:message	code="label.delete" />"
+												onclick="return confirm('Are you sure you want to delete task ${task.name} ?')" />
+										</form>
+									</td>
+								</c:if>
+								<td><form>
+										<input type="button" value="+"
+											onclick="showComments(${task.id})" />
+									</form></td>
 							</tr>
 							<tbody id="task${task.id}"></tbody>
 						</c:forEach>

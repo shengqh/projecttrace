@@ -1,9 +1,7 @@
 <%@ include file="../include.jsp"%>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" media="screen"
-	href="resources/css/style.css" />
-<title>CQS/VUMC Project Trace System</title>
+<%@ include file="../include_head.jsp"%>
 </head>
 
 <body>

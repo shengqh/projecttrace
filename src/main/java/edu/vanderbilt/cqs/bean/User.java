@@ -25,40 +25,40 @@ public class User implements Serializable {
 
 	@Id
 	@GeneratedValue
-	@Column
+	@Column(name="ID")
 	private Long id;
 
-	@Column
+	@Column(name="FIRSTNAME")
 	private String firstname = "";
 
-	@Column
+	@Column(name="LASTNAME")
 	private String lastname = "";
 
-	@Column(unique = true)
+	@Column(unique = true, name="EMAIL")
 	private String email;
 
-	@Column
+	@Column(name="TELEPHONE")
 	private String telephone = "";
 
-	@Column
+	@Column(name="CREATEDATE")
 	private Date createDate;
 
-	@Column
+	@Column(name="ENABLED")
 	private Boolean enabled = true;
 
-	@Column
+	@Column(name="LOCKED")
 	private Boolean locked = false;
 
-	@Column
+	@Column(name="EXPIRED")
 	private Boolean expired = false;
 
-	@Column
+	@Column(name="DELETED")
 	private Boolean deleted = false;
 
-	@Column
+	@Column(name="PASSWORD")
 	private String password;
 
-	@Column
+	@Column(name="ROLE")
 	private Integer role;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })

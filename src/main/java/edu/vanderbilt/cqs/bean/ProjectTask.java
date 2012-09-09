@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import edu.vanderbilt.cqs.Status;
@@ -26,21 +27,22 @@ public class ProjectTask implements ITask, Serializable {
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 
-	@Column
+	@Column(name="NAME")
 	private String name;
 
-	@Column
+	@Column(name="TASKINDEX")
 	private Integer taskIndex;
 
-	@Column
+	@Column(name="PEOPLETIME")
 	private Double peopleTime;
 
-	@Column
+	@Column(name="MACHINETIME")
 	private Double machineTime;
 
-	@Column
+	@Column(name="STATUS")
 	private Integer status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -51,13 +53,14 @@ public class ProjectTask implements ITask, Serializable {
 		return Status.getStatusMap().get(this.status);
 	}
 
-	@Column
+	@Column(name="UPDATEUSER")
 	private String updateUser;
 
-	@Column
+	@Column(name="UPDATEDATE")
 	private Date updateDate;
 
 	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+	@OrderBy("id desc")
 	private List<ProjectTaskStatus> statuses = new ArrayList<ProjectTaskStatus>();
 
 	public Long getId() {

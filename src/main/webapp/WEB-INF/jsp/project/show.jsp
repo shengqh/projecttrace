@@ -4,23 +4,6 @@
 <link rel="stylesheet" type="text/css" media="screen"
 	href="resources/css/style.css" />
 <title>CQS/VUMC Project Trace System</title>
-<script type="text/javascript" src="resources/js/jquery.js"></script>
-<script type="text/javascript">
-	function showComments(taskid) {
-		alert(taskid);
-		$.ajax({
-	        type: "POST",
-    	    url: "getStatusList3.html",
-    	    data: "taskid=" + taskid.toString(),
-        	success: function(response){
-        		$('#info').html(response);
-           	},
-        	error: function(e){
-        		alert('Error: ' + e);
-        	}
-        });
-	}
-</script>
 </head>
 
 <body>
@@ -52,13 +35,9 @@
 						<th scope="col"><spring:message code="label.taskstatus" /></th>
 						<th scope="col"><spring:message code="label.taskupdateuser" /></th>
 						<th scope="col"><spring:message code="label.taskupdatedate" /></th>
-						<c:if test="${projectDetailForm.canEdit}">
-							<th scope="col">&nbsp;</th>
-						</c:if>
-						<c:if test="${projectDetailForm.canManage}">
-							<th scope="col">&nbsp;</th>
-						</c:if>
-						<th scope="col">comments</th>
+						<th scope="col">&nbsp;</th>
+						<th scope="col">&nbsp;</th>
+						<th scope="col">logs</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -86,54 +65,62 @@
 								<td>${task.updateDate}</td>
 							</c:otherwise>
 						</c:choose>
-						<c:if test="${projectDetailForm.canEdit}">
-							<td>
-								<form action="editprojecttask?taskid=${task.id}" method="post">
-									<input type="submit"
-										value="<spring:message	code="label.edit" />" />
-								</form>
+						<c:choose>
+							<c:when test="${projectDetailForm.canEdit}">
+								<td>
+									<form action="editprojecttask?taskid=${task.id}" method="post">
+										<input type="submit"
+											value="<spring:message	code="label.edit" />" />
+									</form>
 
-							</td>
+								</td>
+							</c:when>
+							<c:otherwise>
+								<td></td>
+							</c:otherwise>
+						</c:choose>
+						<c:choose>
+							<c:when test="${projectDetailForm.canManage}">
+								<td>
+									<form action="deleteprojecttask/${task.id}">
+										<input type="submit"
+											value="<spring:message	code="label.delete" />"
+											onclick="return confirm('Are you sure you want to delete task ${task.name} ?')" />
+									</form>
+								</td>
+							</c:when>
+							<c:otherwise>
+								<td></td>
+							</c:otherwise>
+						</c:choose>
+						<td>
+							<form
+								action="showproject?projectid=${projectDetailForm.project.id}&taskid=${task.id}"
+								method="post">
+								<input type="submit"
+									value="+" />
+							</form>
+						</td>
+						<c:if test="${task.id == projectDetailForm.taskId || task.status==2}">
+							<c:if test="${!empty task.statuses}">
+								<c:forEach items="${task.statuses}" var="comment">
+									<tr class="yellow">
+										<td align="right">log:</td>
+										<td colspan="3" class="comment" background="red">${comment.comment}</td>
+										<td>${comment.statusString}</td>
+										<td>${comment.updateUser}</td>
+										<td>${comment.updateDate}</td>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
+								</c:forEach>
+							</c:if>
 						</c:if>
-						<c:if test="${projectDetailForm.canManage}">
-							<td>
-								<form action="deleteprojecttask/${task.id}">
-									<input type="submit"
-										value="<spring:message	code="label.delete" />"
-										onclick="return confirm('Are you sure you want to delete task ${task.name} ?')" />
-								</form>
-							</td>
-						</c:if>
-						<td><input type="submit" value="Comments"
-							onclick="showComments(${task.id})" /></td>
-						</tr>
 					</c:forEach>
-					<tr><td colspan="7"><div id="info" style="color: green;"></div></td></tr>
 				</tbody>
 			</table>
 		</c:if>
-	<c:if test="${!empty projectDetailForm.comments}">
-		<table id="box-table-a" summary="Project Task Comments">
-			<thead>
-				<tr>
-					<th scope="col"><spring:message code="label.taskstatus" /></th>
-					<th scope="col"><spring:message code="label.taskupdateuser" /></th>
-					<th scope="col"><spring:message code="label.taskupdatedate" /></th>
-					<th scope="col"><spring:message code="label.comment" /></th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach items="${projectDetailForm.comments}" var="comment">
-					<tr>
-						<td>${comment.statusString}</td>
-						<td>${comment.updateUser}</td>
-						<td>${comment.updateDate}</td>
-						<td>${comment.comment}</td>
-					</tr>
-				</c:forEach>
-			</tbody>
-		</table>
-	</c:if>
 	<p class="message">${message}</p>
 </body>
 </html>

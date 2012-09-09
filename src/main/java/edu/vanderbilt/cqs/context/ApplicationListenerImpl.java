@@ -42,20 +42,32 @@ public class ApplicationListenerImpl implements
 			User observer = addUser("test@vanderbilt.edu", "cqs", Role.OBSERVER);
 
 			Project rnaseq = addProject(admin, "2144", manager, user, observer);
-			addTask(user, rnaseq, 1, "download dataset from VU gtc web", 1, 2,
-					Status.FINISHED);
-			addTask(user, rnaseq, 2, "move dataset to ACCRE /scratch/", 1, 5,
-					Status.FINISHED);
-			addTask(user, rnaseq, 3, "unzip files", 0.5, 1.5, Status.FINISHED);
-			addTask(user, rnaseq, 4, "QC processing and report", 1.5, 2.5,
-					Status.FINISHED);
-			addTask(user, rnaseq, 5, "tophat processing for testing", 4, 78,
-					Status.PROCESSING);
-			addTask(user, rnaseq, 6, "tophat processing", 6, 84, Status.PENDING);
-			addTask(user, rnaseq, 7, "cuffdiff", 4, 4, Status.PENDING);
-			addTask(user, rnaseq, 8, "cufflink and cluster", 4, 4,
+			ProjectTask task = addTask(manager, rnaseq, 1,
+					"download dataset from VU gtc web", 1, 2, Status.PENDING);
+			updateTask(user, task, Status.FINISHED, "already done.");
+
+			task = addTask(manager, rnaseq, 2,
+					"move dataset to ACCRE /scratch/", 1, 5, Status.PENDING);
+			updateTask(user, task, Status.FINISHED, "already done.");
+
+			task = addTask(manager, rnaseq, 3, "unzip files", 0.5, 1.5,
 					Status.PENDING);
-			addTask(user, rnaseq, 9, "report", 4, 2, Status.PENDING);
+			updateTask(user, task, Status.PROCESSING, "it may failed");
+			updateTask(user, task, Status.FAILED,
+					"failed due to lack of space.");
+
+			task = addTask(manager, rnaseq, 4, "QC processing and report", 1.5,
+					2.5, Status.PENDING);
+			updateTask(user, task, Status.PROCESSING, "running at own computer");
+
+			addTask(manager, rnaseq, 5, "tophat processing for testing", 4, 78,
+					Status.PENDING);
+			addTask(manager, rnaseq, 6, "tophat processing", 6, 84,
+					Status.PENDING);
+			addTask(manager, rnaseq, 7, "cuffdiff", 4, 4, Status.PENDING);
+			addTask(manager, rnaseq, 8, "cufflink and cluster", 4, 4,
+					Status.PENDING);
+			addTask(manager, rnaseq, 9, "report", 4, 2, Status.PENDING);
 
 			Project dnaseq = addProject(admin, "Microarray", user, user, null);
 			addTask(user, dnaseq, 1, "task 1", 1, 2, Status.FINISHED);
@@ -69,8 +81,8 @@ public class ApplicationListenerImpl implements
 		}
 	}
 
-	private void addTask(User user, Project rnaseq, int index, String name,
-			double peopletime, double machinetime, Integer status) {
+	private ProjectTask addTask(User user, Project rnaseq, int index,
+			String name, double peopletime, double machinetime, Integer status) {
 		ProjectTask task = new ProjectTask();
 		task.setTaskIndex(index);
 		task.setMachineTime(machinetime);
@@ -84,6 +96,19 @@ public class ApplicationListenerImpl implements
 		ProjectTaskStatus pts = new ProjectTaskStatus();
 		pts.setComment("Initialize task");
 		projectService.addProjectTask(task, pts);
+
+		return task;
+	}
+
+	private void updateTask(User user, ProjectTask task, Integer status,
+			String comment) {
+		task.setStatus(status);
+		task.setUpdateDate(new Date());
+		task.setUpdateUser(user.getEmail());
+
+		ProjectTaskStatus pts = new ProjectTaskStatus();
+		pts.setComment(comment);
+		projectService.updateProjectTask(task, pts);
 	}
 
 	private Project addProject(User creator, String name, User manager,

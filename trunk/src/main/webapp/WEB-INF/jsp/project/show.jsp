@@ -16,11 +16,12 @@
         	    	//alert(n+' '+value);  
         	       	var trs = "<tr class=\"yellow\">";
         	       	trs += "<td align=\"right\">log:</td>";
-        	       	trs += "<td colspan=\"3\" class=\"comment\" background=\"red\">" + value.comment + "</td>";
+        	       	trs += "<td colspan=\"3\" class=\"comment\" background=\"red\"><pre>" + value.comment + "</pre></td>";
         	       	trs += "<td>" + value.statusString + "</td>";
         	       	trs += "<td>" + value.updateUser + "</td>";
         	       	trs += "<td>" + value.updateDateString + "</td>";
         	       	trs += "<td></td>";
+        	    	trs += "<td></td>";
         	    	trs += "<td></td>";
         	    	trs += "</tr>";
         	        tbody += trs;         
@@ -64,12 +65,22 @@
 							<th scope="col"><spring:message code="label.taskstatus" /></th>
 							<th scope="col"><spring:message code="label.taskupdateuser" /></th>
 							<th scope="col"><spring:message code="label.taskupdatedate" /></th>
-							<c:if test="${projectDetailForm.canEdit}">
-								<th scope="col">&nbsp;</th>
-							</c:if>
-							<c:if test="${projectDetailForm.canManage}">
-								<th scope="col">&nbsp;</th>
-							</c:if>
+							<c:choose>
+								<c:when test="${projectDetailForm.canEdit}">
+									<th scope="col">&nbsp;</th>
+								</c:when>
+								<c:otherwise>
+									<th></th>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${projectDetailForm.canManage}">
+									<th scope="col">&nbsp;</th>
+								</c:when>
+								<c:otherwise>
+									<th></th>
+								</c:otherwise>
+							</c:choose>
 							<th scope="col">comments</th>
 						</tr>
 					</thead>
@@ -99,24 +110,36 @@
 										<td>${task.updateDate}</td>
 									</c:otherwise>
 								</c:choose>
-								<c:if test="${projectDetailForm.canEdit}">
-									<td>
-										<form action="editprojecttask?taskid=${task.id}" method="post">
-											<input type="submit"
-												value="<spring:message	code="label.edit" />" />
-										</form>
 
-									</td>
-								</c:if>
-								<c:if test="${projectDetailForm.canManage}">
-									<td>
-										<form action="deleteprojecttask/${task.id}">
-											<input type="submit"
-												value="<spring:message	code="label.delete" />"
-												onclick="return confirm('Are you sure you want to delete task ${task.name} ?')" />
-										</form>
-									</td>
-								</c:if>
+								<c:choose>
+									<c:when test="${projectDetailForm.canEdit}">
+										<td>
+											<form action="editprojecttask?taskid=${task.id}"
+												method="post">
+												<input type="submit"
+													value="<spring:message	code="label.edit" />" />
+											</form>
+
+										</td>
+									</c:when>
+									<c:otherwise>
+										<td></td>
+									</c:otherwise>
+								</c:choose>
+								<c:choose>
+									<c:when test="${projectDetailForm.canManage}">
+										<td>
+											<form action="deleteprojecttask/${task.id}">
+												<input type="submit"
+													value="<spring:message	code="label.delete" />"
+													onclick="return confirm('Are you sure you want to delete task ${task.name} ?')" />
+											</form>
+										</td>
+									</c:when>
+									<c:otherwise>
+										<td></td>
+									</c:otherwise>
+								</c:choose>
 								<td><form>
 										<input type="button" value="+"
 											onclick="showComments(${task.id})" />

@@ -340,27 +340,8 @@ public class ProjectController extends RootController {
 		return getProjectDetailRedirect(projectid);
 	}
 
-	@RequestMapping(value = "/getStatusList3", method = RequestMethod.POST)
-	public @ResponseBody
-	String getStatusList3(@RequestParam("taskid") Long taskid) {
-		String result = "";
-		ProjectTask task = projectService.findProjectTask(taskid);
-		if (task != null) {
-			for (ProjectTaskStatus pts : task.getStatuses()) {
-				result = result + "<br>" + pts.getComment();
-			}
-		}
-		return result;
-	}
-
-	@RequestMapping(value = "/getStatusList2", method = RequestMethod.GET)
-	public @ResponseBody
-	List<ProjectTaskStatus> getStatusList2() {
-		logger.info("getStatusList2");
-		return new ArrayList<ProjectTaskStatus>();
-	}
-
 	@RequestMapping(value = "/getStatusList", method = RequestMethod.POST)
+	@Secured("ROLE_OBSERVER")
 	public @ResponseBody
 	List<ProjectTaskStatusForm> getStatusList(
 			@RequestParam("taskid") Long taskid) {
@@ -383,6 +364,7 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/getStatusList/{taskid}")
+	@Secured("ROLE_OBSERVER")
 	public @ResponseBody
 	List<ProjectTaskStatusForm> getStatusList4(
 			@PathVariable("taskid") Long taskid) {

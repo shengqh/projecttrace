@@ -37,7 +37,7 @@
 					<c:forEach items="${projectList}" var="project">
 						<tr>
 							<td><a href="showproject?projectid=${project.id}">${project.name}</a></td>
-							<td>${project.description}</td>
+							<td><pre>${project.description}</pre></td>
 							<td>${project.createDate}</td>
 							<td>${project.creator}</td>
 							<sec:authorize access="hasRole('ROLE_MANAGER')">

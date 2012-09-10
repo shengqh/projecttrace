@@ -14,7 +14,7 @@
         		var tbody = "";
         		$.each(response,function(n,value) {   
         	    	//alert(n+' '+value);  
-        	       	var trs = "<tr class=\"yellow\">";
+        	       	var trs = "<tr class=\"comment\">";
         	       	trs += "<td align=\"right\">log:</td>";
         	       	trs += "<td colspan=\"3\" class=\"comment\" background=\"red\"><pre>" + value.comment + "</pre></td>";
         	       	trs += "<td>" + value.statusString + "</td>";
@@ -88,7 +88,7 @@
 						<c:forEach items="${projectDetailForm.project.tasks}" var="task">
 							<c:choose>
 								<c:when test="${task.status == 2}">
-									<c:set var="bc" value="bordercolor=\"red\"" />
+									<c:set var="bc" value="class=\"failed\"" />
 								</c:when>
 								<c:otherwise>
 									<c:set var="bc" value="" />
@@ -150,29 +150,6 @@
 					</tbody>
 				</table>
 			</div>
-		</c:if>
-
-		<c:if test="${!empty projectDetailForm.comments}">
-			<table id="box-table-a" summary="Project Task Comments">
-				<thead>
-					<tr>
-						<th scope="col"><spring:message code="label.taskstatus" /></th>
-						<th scope="col"><spring:message code="label.taskupdateuser" /></th>
-						<th scope="col"><spring:message code="label.taskupdatedate" /></th>
-						<th scope="col"><spring:message code="label.comment" /></th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach items="${projectDetailForm.comments}" var="comment">
-						<tr>
-							<td>${comment.statusString}</td>
-							<td>${comment.updateUser}</td>
-							<td>${comment.updateDate}</td>
-							<td>${comment.comment}</td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
 		</c:if>
 	<p class="message">${message}</p>
 </body>

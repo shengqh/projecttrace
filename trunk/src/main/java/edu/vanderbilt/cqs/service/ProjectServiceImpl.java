@@ -172,12 +172,18 @@ public class ProjectServiceImpl implements ProjectService {
 		assignTaskToStatus(task, status);
 		
 		projectTaskStatusDAO.save(status);
+		
+		projectDAO.updateStatus(task.getProject().getId());
 	}
 
 	@Transactional
 	@Override
 	public void removeProjectTask(Long id) {
+		Long projectId = findProjectByTask(id);
+
 		projectTaskDAO.deleteById(id);
+		
+		projectDAO.updateStatus(projectId);
 	}
 
 	@Transactional
@@ -218,6 +224,8 @@ public class ProjectServiceImpl implements ProjectService {
 		assignTaskToStatus(task, status);
 		
 		projectTaskStatusDAO.save(status);
+		
+		projectDAO.updateStatus(task.getProject().getId());
 	}
 
 	private void assignTaskToStatus(ProjectTask task, ProjectTaskStatus status) {

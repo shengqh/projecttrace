@@ -1,6 +1,7 @@
 <html>
 <body>
-<h3>Hi ${user.name}, welcome to the Project Trace System of CQS/VUMC!</h3>
+<h3>Hi ${user.name}, welcome to the <a href="http://160.129.22.172:8080/projecttrace">Project Trace System of CQS/VUMC! </a></h3>
+
 
 <div>
 	<p>

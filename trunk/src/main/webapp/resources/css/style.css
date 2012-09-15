@@ -69,10 +69,6 @@ textarea {
 	float: right;
 }
 
-.failed {
-	color: red;
-}
-
 /**
 * Menu based on James Owers' Horizontal CSS List Menu
 * @see http://jamesowers.co.uk/css-tutorials/50/horizontal-css-list-menu/
@@ -159,4 +155,8 @@ textarea {
 
 #box-table-a tr.comment td {
 	background: #ffc;
-	
+}
+
+#box-table-a tr.failed td{
+	color: red;
+}

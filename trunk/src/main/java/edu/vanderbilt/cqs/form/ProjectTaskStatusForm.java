@@ -1,7 +1,6 @@
 package edu.vanderbilt.cqs.form;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class ProjectTaskStatusForm implements Serializable {
 	private static final long serialVersionUID = -8313684048270091328L;

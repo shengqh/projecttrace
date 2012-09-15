@@ -10,6 +10,7 @@ import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Repository;
 
 import edu.vanderbilt.cqs.Role;
+import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.bean.Project;
 
 @Repository
@@ -45,5 +46,28 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements
 			return lst.get(0);
 		}
 		return Role.NONE;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void updateStatus(Long projectid) {
+		String sql = "select min(STATUS) as MINSTATUS from PROJECTTASK where PROJECT_ID=:projectid";
+		Query qry = getSession().createSQLQuery(sql).addScalar("MINSTATUS",
+				StandardBasicTypes.INTEGER);
+		qry.setLong("projectid", projectid);
+		List<Integer> lst = qry.list();
+
+		Integer status;
+		if (lst.size() == 0) {
+			status = Status.PENDING;
+		} else {
+			status = lst.get(0);
+		}
+
+		String updateSql = "update PROJECT set STATUS=:status where ID=:projectid";
+		Query updateQry = getSession().createSQLQuery(updateSql);
+		updateQry.setInteger("status", status);
+		updateQry.setLong("projectid", projectid);
+		updateQry.executeUpdate();
 	}
 }

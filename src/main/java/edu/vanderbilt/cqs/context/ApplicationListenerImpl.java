@@ -41,6 +41,8 @@ public class ApplicationListenerImpl implements
 			User user = addUser("quanhu.sheng@vanderbilt.edu", "cqs", Role.USER);
 			User observer = addUser("test@vanderbilt.edu", "cqs", Role.OBSERVER);
 
+			addUser("fei.ye@vanderbilt.edu", "cqs", Role.ADMIN);
+
 			Project rnaseq = addProject(admin, "2144", manager, user, observer);
 			ProjectTask task = addTask(manager, rnaseq, 1,
 					"download dataset from VU gtc web", 1, 2, Status.PENDING);

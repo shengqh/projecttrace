@@ -54,7 +54,7 @@ public class UserController extends RootController {
 	@Autowired
 	private ChangePasswordValidator passwordValidator;
 
-	protected boolean sendMail = false;
+	protected boolean sendMail = true;
 
 	@RequestMapping("/user")
 	@Secured("ROLE_USER")

@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.Utils;
 
 @Entity
@@ -44,7 +45,7 @@ public class Project implements Serializable {
 	private Date createDate;
 
 	@Column(name="STATUS")
-	private Integer status;
+	private Integer status = Status.PENDING;
 
 	@Column(name="ENABLED")
 	private Boolean enabled = true;
@@ -134,5 +135,9 @@ public class Project implements Serializable {
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+	}
+	
+	public String getStatusString(){
+		return Status.getStatusMap().get(this.status);
 	}
 }

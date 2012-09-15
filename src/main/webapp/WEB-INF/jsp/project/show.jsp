@@ -87,7 +87,7 @@
 					<tbody>
 						<c:forEach items="${projectDetailForm.project.tasks}" var="task">
 							<c:choose>
-								<c:when test="${task.status == 2}">
+								<c:when test="${task.status == -1}">
 									<c:set var="bc" value="class=\"failed\"" />
 								</c:when>
 								<c:otherwise>

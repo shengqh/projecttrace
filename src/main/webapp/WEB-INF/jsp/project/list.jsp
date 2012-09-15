@@ -22,6 +22,7 @@
 					<tr>
 						<th scope="col"><spring:message code="label.name" /></th>
 						<th scope="col"><spring:message code="label.description" /></th>
+						<th scope="col"><spring:message code="label.status" /></th>
 						<th scope="col"><spring:message
 								code="label.projectcreatedate" /></th>
 						<th scope="col"><spring:message code="label.projectcreator" /></th>
@@ -35,15 +36,26 @@
 				</thead>
 				<tbody>
 					<c:forEach items="${projectList}" var="project">
-						<tr>
+						<c:choose>
+							<c:when test="${project.status == -1}">
+								<c:set var="bc" value="class=\"failed\"" />
+							</c:when>
+							<c:otherwise>
+								<c:set var="bc" value="" />
+							</c:otherwise>
+						</c:choose>
+						<tr ${bc}>
 							<td><a href="showproject?projectid=${project.id}">${project.name}</a></td>
 							<td><pre>${project.description}</pre></td>
+							<td>${project.statusString}</td>
 							<td>${project.createDate}</td>
 							<td>${project.creator}</td>
 							<sec:authorize access="hasRole('ROLE_MANAGER')">
 								<td>
-									<form action="editproject?projectid=${project.id}" method="post">
-										<input type="submit" value="<spring:message	code="label.edit" />" />
+									<form action="editproject?projectid=${project.id}"
+										method="post">
+										<input type="submit"
+											value="<spring:message	code="label.edit" />" />
 									</form>
 								</td>
 							</sec:authorize>

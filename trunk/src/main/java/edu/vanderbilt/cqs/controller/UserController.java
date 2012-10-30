@@ -241,7 +241,9 @@ public class UserController extends RootController {
 	public String saveownpassword(
 			@ModelAttribute("changeOwnPasswordForm") ChangePasswordForm form,
 			ModelMap model, BindingResult result, SessionStatus status) {
-		form.setOldPassword(currentUser().getPassword());
+		User cuser  =projectService.findUser(currentUser().getId());
+		
+		form.setOldPassword(cuser.getPassword());
 
 		passwordValidator.validate(form, result);
 

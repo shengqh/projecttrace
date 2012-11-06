@@ -35,6 +35,9 @@ public class ApplicationListenerImpl implements
 
 	private void initializeDatabase() {
 		if (!projectService.hasUser()) {
+			addUser("lynne.d.berry@vanderbilt.edu", "cqs", Role.ADMIN);
+			addUser("david.biagi@vanderbilt.edu", "cqs", Role.ADMIN);
+			
 			User admin = addUser("yu.shyr@vanderbilt.edu", "cqs", Role.ADMIN);
 			User manager = addUser("yan.guo@vanderbilt.edu", "cqs",
 					Role.MANAGER);

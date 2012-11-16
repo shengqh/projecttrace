@@ -57,7 +57,7 @@ public class UserController extends RootController {
 	protected boolean sendMail = true;
 
 	@RequestMapping("/user")
-	@Secured("ROLE_USER")
+	@Secured("ROLE_VANGARD_USER")
 	public String listUsers(ModelMap model) {
 		model.addAttribute("validUserList", projectService.listValidUser());
 		return "user/list";
@@ -77,7 +77,7 @@ public class UserController extends RootController {
 		UserForm form = new UserForm();
 		User user = new User();
 		BeanUtils.copyProperties(user, form);
-		form.setRole(Role.USER);
+		form.setRole(Role.VANGARD_USER);
 		form.setRoles(Role.getRoleMap());
 		model.addAttribute("userForm", form);
 

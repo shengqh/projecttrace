@@ -1,19 +1,12 @@
 package edu.vanderbilt.cqs.bean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import edu.vanderbilt.cqs.Role;
@@ -60,9 +53,6 @@ public class User implements Serializable {
 
 	@Column(name="ROLE")
 	private Integer role;
-
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	private Set<ProjectUser> projects = new HashSet<ProjectUser>();
 
 	public String getEmail() {
 		return email;
@@ -178,21 +168,5 @@ public class User implements Serializable {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
-	}
-
-	public Set<ProjectUser> getProjects() {
-		return projects;
-	}
-
-	public void setProjects(Set<ProjectUser> projects) {
-		this.projects = projects;
-	}
-
-	public List<Project> getProjectList() {
-		List<Project> result = new ArrayList<Project>();
-		for (ProjectUser pu : getProjects()) {
-			result.add(pu.getProject());
-		}
-		return result;
 	}
 }

@@ -10,7 +10,7 @@
 	<p>
 	<h1 align="center">
 		<spring:message code="label.projectlist" />
-		<sec:authorize access="hasRole('ROLE_ADMIN')">
+		<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
 		| <a href="addproject"><spring:message code="label.projectnew" /></a>
 		</sec:authorize>
 	</h1>
@@ -26,7 +26,7 @@
 						<th scope="col"><spring:message
 								code="label.projectcreatedate" /></th>
 						<th scope="col"><spring:message code="label.projectcreator" /></th>
-						<sec:authorize access="hasRole('ROLE_MANAGER')">
+						<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
 							<th scope="col">&nbsp;</th>
 						</sec:authorize>
 						<sec:authorize access="hasRole('ROLE_ADMIN')">
@@ -50,7 +50,7 @@
 							<td>${project.statusString}</td>
 							<td>${project.createDate}</td>
 							<td>${project.creator}</td>
-							<sec:authorize access="hasRole('ROLE_MANAGER')">
+							<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
 								<td>
 									<form action="editproject?projectid=${project.id}"
 										method="post">

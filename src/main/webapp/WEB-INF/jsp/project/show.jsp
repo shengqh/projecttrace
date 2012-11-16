@@ -16,7 +16,7 @@
         	    	//alert(n+' '+value);  
         	       	var trs = "<tr class=\"comment\">";
         	       	trs += "<td align=\"right\">log:</td>";
-        	       	trs += "<td colspan=\"3\" class=\"comment\" background=\"red\"><pre>" + value.comment + "</pre></td>";
+        	       	trs += "<td colspan=\"1\" class=\"comment\" background=\"red\"><pre>" + value.comment + "</pre></td>";
         	       	trs += "<td>" + value.statusString + "</td>";
         	       	trs += "<td>" + value.updateUser + "</td>";
         	       	trs += "<td>" + value.updateDateString + "</td>";
@@ -41,18 +41,13 @@
 	<p>
 	<h1 align="center">
 		Project : ${projectDetailForm.project.name}
-		<c:if test="${projectDetailForm.canManage}">
+		<c:if test="${projectDetailForm.canEdit}">
 							| <a
 				href="addprojecttask?projectid=${projectDetailForm.project.id}"><spring:message
 					code="label.tasknew" /></a>
 		</c:if>
 	</h1>
 	<p>
-	<h2 align="center">Total people time :
-		${projectDetailForm.project.peopleTime} ; Total machine time :
-		${projectDetailForm.project.machineTime}</h2>
-	<p>
-
 		<c:if test="${!empty projectDetailForm.project.tasks}">
 			<div>
 				<table id="box-table-a" summary="Project Task">
@@ -60,8 +55,6 @@
 						<tr>
 							<th scope="col"><spring:message code="label.taskindex" /></th>
 							<th scope="col"><spring:message code="label.taskname" /></th>
-							<th scope="col"><spring:message code="label.taskpeopletime" /></th>
-							<th scope="col"><spring:message code="label.taskmachinetime" /></th>
 							<th scope="col"><spring:message code="label.taskstatus" /></th>
 							<th scope="col"><spring:message code="label.taskupdateuser" /></th>
 							<th scope="col"><spring:message code="label.taskupdatedate" /></th>
@@ -74,7 +67,7 @@
 								</c:otherwise>
 							</c:choose>
 							<c:choose>
-								<c:when test="${projectDetailForm.canManage}">
+								<c:when test="${projectDetailForm.canEdit}">
 									<th scope="col">&nbsp;</th>
 								</c:when>
 								<c:otherwise>
@@ -97,8 +90,6 @@
 							<tr ${bc}>
 								<td>${task.taskIndex}</td>
 								<td>${task.name}</td>
-								<td>${task.peopleTime}</td>
-								<td>${task.machineTime}</td>
 								<td>${task.statusString}</td>
 								<c:choose>
 									<c:when test="${task.status == 0}">
@@ -127,7 +118,7 @@
 									</c:otherwise>
 								</c:choose>
 								<c:choose>
-									<c:when test="${projectDetailForm.canManage}">
+									<c:when test="${projectDetailForm.canEdit}">
 										<td>
 											<form action="deleteprojecttask/${task.id}">
 												<input type="submit"

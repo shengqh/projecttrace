@@ -40,15 +40,6 @@
 					<td><form:errors path="description" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="managerIds">
-							<spring:message code="label.managers" />
-						</form:label></td>
-					<td><form:select path="managerIds" multiple="true"
-							items="${projectForm.validManagers}" itemLabel="email" itemValue="id"
-							size="4" /></td>
-					<td><form:errors path="managerIds" cssClass="error" /></td>
-				</tr>
-				<tr>
 					<td><form:label path="userIds">
 							<spring:message code="label.users" />
 						</form:label></td>

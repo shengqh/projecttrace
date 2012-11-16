@@ -88,7 +88,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public List<Project> listProject(Long userid, Integer userRole) {
-		if (userRole >= Role.MANAGER) {
+		if (userRole >= Role.ROLE_VANGARD_BUDGET_USER) {
 			return projectDAO.findAll();
 		} else {
 			return projectDAO.getProjectByUser(userid);
@@ -250,7 +250,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public Integer getPermission(Long userid, Integer userRole, Long projectId) {
-		if (userRole >= Role.MANAGER) {
+		if (userRole >= Role.ROLE_VANGARD_BUDGET_USER) {
 			return userRole;
 		}
 

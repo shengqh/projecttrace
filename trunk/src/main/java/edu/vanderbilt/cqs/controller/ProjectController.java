@@ -60,7 +60,7 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/addproject")
-	@Secured("ROLE_ADMIN")
+	@Secured("ROLE_VANGARD_USER")
 	public String addProject(ModelMap model) {
 		logger.info(currentUser().getUsername() + " addProject.");
 
@@ -74,21 +74,24 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/editproject")
-	@Secured("ROLE_MANAGER")
+	@Secured("ROLE_VANGARD_USER")
 	public String editProject(@RequestParam("projectid") Long projectId,
 			ModelMap model) {
 		logger.info(currentUser().getUsername() + " editProject.");
 
 		Project project = projectService.findProject(projectId);
 		if (project != null) {
+			if (!CanEditProject(project.getId())) {
+				return "redirect:/denied";
+			}
+
 			ProjectForm form = new ProjectForm();
 			BeanUtils.copyProperties(project, form);
 
 			initializeValidUsers(form);
 
-			form.setManagerIds(getIdListFromUserList(project.getUsers(),
-					Role.MANAGER));
-			form.setUserIds(getIdListFromUserList(project.getUsers(), Role.USER));
+			form.setUserIds(getIdListFromUserList(project.getUsers(),
+					Role.VANGARD_USER));
 			form.setObserverIds(getIdListFromUserList(project.getUsers(),
 					Role.OBSERVER));
 
@@ -101,8 +104,7 @@ public class ProjectController extends RootController {
 	}
 
 	private void initializeValidUsers(ProjectForm form) {
-		form.setValidManagers(projectService.listValidUser(Role.MANAGER));
-		form.setValidUsers(projectService.listValidUser(Role.USER));
+		form.setValidUsers(projectService.listValidUser(Role.VANGARD_USER));
 		form.setValidObservers(projectService.listValidUser(Role.OBSERVER));
 	}
 
@@ -135,16 +137,15 @@ public class ProjectController extends RootController {
 
 	private void initializeUsers(Project project, ProjectForm form) {
 		Set<ProjectUser> pus = new HashSet<ProjectUser>();
-		pus.addAll(getUserListFromIdList(project, form.getManagerIds(),
-				Role.MANAGER));
-		pus.addAll(getUserListFromIdList(project, form.getUserIds(), Role.USER));
+		pus.addAll(getUserListFromIdList(project, form.getUserIds(),
+				Role.VANGARD_USER));
 		pus.addAll(getUserListFromIdList(project, form.getObserverIds(),
 				Role.OBSERVER));
 		project.setUsers(pus);
 	}
 
 	@RequestMapping(value = "/saveproject", method = RequestMethod.POST)
-	@Secured("ROLE_MANAGER")
+	@Secured("ROLE_VANGARD_USER")
 	public String saveProject(
 			@Valid @ModelAttribute("projectForm") ProjectForm form,
 			BindingResult result) {
@@ -156,6 +157,10 @@ public class ProjectController extends RootController {
 		if (form.getId() != null) {
 			Project project = projectService.findProject(form.getId());
 			BeanUtils.copyProperties(form, project);
+			
+			if (!CanEditProject(form.getId())) {
+				return "redirect:/denied";
+			}
 
 			initializeUsers(project, form);
 
@@ -183,9 +188,7 @@ public class ProjectController extends RootController {
 
 	@RequestMapping("/deleteproject/{projectid}")
 	@Secured("ROLE_ADMIN")
-	public String deleteProject(
-
-	@PathVariable Long projectid) {
+	public String deleteProject(@PathVariable Long projectid) {
 		projectService.removeProject(projectid);
 
 		logger.info(currentUser().getUsername() + " deleteProject "
@@ -210,10 +213,8 @@ public class ProjectController extends RootController {
 			if (permission >= Role.OBSERVER) {
 				ProjectDetailForm form = new ProjectDetailForm();
 				form.setProject(project);
-				form.setCanManage(permission >= Role.MANAGER);
-				form.setCanEdit(permission >= Role.USER);
+				form.setCanEdit(permission >= Role.VANGARD_USER);
 				form.setStatusMap(Status.getStatusMap());
-				// form.setTaskId(taskid);
 				model.addAttribute("projectDetailForm", form);
 				model.addAttribute("taskid", taskid);
 				return "/project/show";
@@ -228,10 +229,9 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/addprojecttask")
-	@Secured("ROLE_USER")
-	public String addProjectTask(
-
-	@RequestParam("projectid") Long projectid, ModelMap model) {
+	@Secured("ROLE_VANGARD_USER")
+	public String addProjectTask(@RequestParam("projectid") Long projectid,
+			ModelMap model) {
 		logger.info(currentUser().getUsername() + " addProjectTask.");
 
 		Project project = projectService.findProject(projectid);
@@ -239,10 +239,7 @@ public class ProjectController extends RootController {
 			model.put("message", "Cannot find project!");
 			return "/project/show";
 		} else {
-			Integer permission = projectService.getPermission(currentUser()
-					.getId(), currentUser().getRole(), projectid);
-
-			if (permission < Role.MANAGER) {
+			if (!CanEditProject(projectid)) {
 				return "redirect:/denied";
 			}
 
@@ -263,13 +260,17 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/editprojecttask")
-	@Secured("ROLE_USER")
+	@Secured("ROLE_VANGARD_USER")
 	public String editProjectTask(
 
 	@RequestParam("taskid") Long taskid, ModelMap model) {
 		logger.info(currentUser().getUsername() + " editProjectTask.");
 
 		ProjectTask task = projectService.findProjectTask(taskid);
+
+		if (!CanEditProject(task.getProject().getId())) {
+			return "redirect:/denied";
+		}
 
 		ProjectTaskForm form = new ProjectTaskForm();
 
@@ -282,12 +283,23 @@ public class ProjectController extends RootController {
 		return "/project/taskedit";
 	}
 
+	private boolean CanEditProject(long projectId) {
+		Integer permission = projectService.getPermission(
+				currentUser().getId(), currentUser().getRole(), projectId);
+
+		return (permission == Role.VANGARD_USER) || (permission == Role.ADMIN);
+	}
+
 	@RequestMapping(value = "/saveprojecttask", method = RequestMethod.POST)
-	@Secured("ROLE_USER")
+	@Secured("ROLE_VANGARD_USER")
 	public String saveProjectTask(
 			@ModelAttribute("projectTaskForm") ProjectTaskForm form) {
 		Project project = projectService.findProject(form.getProjectId());
 		if (form.getId() != null) {
+			if (!CanEditProject(project.getId())) {
+				return "redirect:/denied";
+			}
+
 			ProjectTask task = projectService.findProjectTask(form.getId());
 			BeanUtils.copyProperties(form, task);
 			task.setUpdateDate(new Date());
@@ -324,14 +336,11 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/deleteprojecttask/{taskid}")
-	@Secured("ROLE_USER")
+	@Secured("ROLE_VANGARD_USER")
 	public String deleteProjectTask(@PathVariable("taskid") Long taskid) {
 		Long projectid = projectService.findProjectByTask(taskid);
 
-		Integer permission = projectService.getPermission(
-				currentUser().getId(), currentUser().getRole(), projectid);
-
-		if (permission < Role.MANAGER) {
+		if (!CanEditProject(projectid)) {
 			return "redirect:/denied";
 		}
 

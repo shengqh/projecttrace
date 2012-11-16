@@ -80,19 +80,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public List<String> getRoles(Integer role) {
 		List<String> roles = new ArrayList<String>();
 
-		if (role.intValue() >= Role.OBSERVER) {
+		if (role.intValue() == Role.OBSERVER) {
 			roles.add(Role.getRoleMap().get(Role.OBSERVER));
 		}
 
-		if (role.intValue() >= Role.USER) {
-			roles.add(Role.getRoleMap().get(Role.USER));
+		if (role.intValue() == Role.VANGARD_USER) {
+			roles.add(Role.getRoleMap().get(Role.OBSERVER));
+			roles.add(Role.getRoleMap().get(Role.VANGARD_USER));
 		}
 
-		if (role.intValue() >= Role.MANAGER) {
-			roles.add(Role.getRoleMap().get(Role.MANAGER));
+		if (role.intValue() == Role.ROLE_VANGARD_BUDGET_USER) {
+			roles.add(Role.getRoleMap().get(Role.OBSERVER));
+			roles.add(Role.getRoleMap().get(Role.ROLE_VANGARD_BUDGET_USER));
 		}
 
-		if (role.intValue() >= Role.ADMIN) {
+		if (role.intValue() == Role.ADMIN) {
+			roles.add(Role.getRoleMap().get(Role.OBSERVER));
+			roles.add(Role.getRoleMap().get(Role.VANGARD_USER));
+			roles.add(Role.getRoleMap().get(Role.ROLE_VANGARD_BUDGET_USER));
 			roles.add(Role.getRoleMap().get(Role.ADMIN));
 		}
 

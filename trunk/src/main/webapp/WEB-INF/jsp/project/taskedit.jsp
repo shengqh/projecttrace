@@ -40,20 +40,6 @@
 					<td><form:errors path="name" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="peopleTime">
-							<spring:message code="label.taskpeopletime" />
-						</form:label></td>
-					<td><form:input id="txt" path="peopleTime" /></td>
-					<td><form:errors path="peopleTime" cssClass="error" /></td>
-				</tr>
-				<tr>
-					<td><form:label path="machineTime">
-							<spring:message code="label.taskmachinetime" />
-						</form:label></td>
-					<td><form:input id="txt" path="machineTime" /></td>
-					<td><form:errors path="machineTime" cssClass="error" /></td>
-				</tr>
-				<tr>
 					<td><form:label path="status">
 							<spring:message code="label.taskstatus" />
 						</form:label></td>

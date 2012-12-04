@@ -57,14 +57,14 @@ public class UserController extends RootController {
 	protected boolean sendMail = true;
 
 	@RequestMapping("/user")
-	@Secured("ROLE_VANGARD_USER")
+	@Secured(Role.ROLE_VANGARD_USER)
 	public String listUsers(ModelMap model) {
 		model.addAttribute("validUserList", projectService.listValidUser());
 		return "user/list";
 	}
 
 	@RequestMapping("/alluser")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String listAllUsers(ModelMap model) {
 		model.addAttribute("validUserList", projectService.listValidUser());
 		model.addAttribute("invalidUserList", projectService.listInvalidUser());
@@ -72,7 +72,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/adduser")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String addUser(ModelMap model) {
 		UserForm form = new UserForm();
 		User user = new User();
@@ -86,7 +86,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/edituser")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String editUser(@RequestParam("userid") Long userid, ModelMap model) {
 		logger.info(currentUser().getUsername() + " try to edit user ...");
 		User user = projectService.findUser(userid);
@@ -102,7 +102,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/saveuser")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String saveUser(@ModelAttribute("userForm") UserForm form,
 			BindingResult result, SessionStatus status) {
 		logger.info(currentUser().getUsername() + " try to save user ...");
@@ -177,43 +177,43 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/enableuser/{userid}")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String enableUser(@PathVariable Long userid) {
 		return setUserEnabled(userid, true);
 	}
 
 	@RequestMapping("/disableuser/{userid}")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String disableUser(@PathVariable Long userid) {
 		return setUserEnabled(userid, false);
 	}
 
 	@RequestMapping("/lockuser/{userid}")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String lockUser(@PathVariable Long userid) {
 		return setUserLocked(userid, true);
 	}
 
 	@RequestMapping("/unlockuser/{userid}")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String unlockUser(@PathVariable Long userid) {
 		return setUserLocked(userid, false);
 	}
 
 	@RequestMapping("/deleteuser/{userid}")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String deleteUser(@PathVariable Long userid) {
 		return setUserDeleted(userid, true);
 	}
 
 	@RequestMapping("/undeleteuser/{userid}")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String undeleteUser(@PathVariable Long userid) {
 		return setUserDeleted(userid, false);
 	}
 
 	@RequestMapping("/deleteuserforever/{userid}")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String deleteUserForever(
 
 	@PathVariable Long userid) {
@@ -228,7 +228,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/changeownpassword")
-	@Secured("ROLE_OBSERVER")
+	@Secured(Role.ROLE_USER)
 	public String changeownpassword(ModelMap model) {
 		ChangePasswordForm form = new ChangePasswordForm();
 		model.put("changeOwnPasswordForm", form);
@@ -237,7 +237,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/saveownpassword")
-	@Secured("ROLE_OBSERVER")
+	@Secured(Role.ROLE_USER)
 	public String saveownpassword(
 			@ModelAttribute("changeOwnPasswordForm") ChangePasswordForm form,
 			ModelMap model, BindingResult result, SessionStatus status) {
@@ -257,7 +257,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/resetpassword/{userid}")
-	@Secured("ROLE_ADMIN")
+	@Secured(Role.ROLE_ADMIN)
 	public String resetpassword(
 			@ModelAttribute("currentuser") User currentUser,
 			@PathVariable Long userid, ModelMap model) {

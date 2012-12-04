@@ -20,7 +20,7 @@ public class ProjectUser {
 
 	@Column(name = "PERMISSION", updatable = false)
 	private Integer permission;
-
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
 	private User user;
@@ -99,5 +99,4 @@ public class ProjectUser {
 	public void setPermission(Integer permission) {
 		this.permission = permission;
 	}
-
 }

@@ -43,6 +43,11 @@ public abstract class GenericDAOImpl<T extends Serializable, Id extends Serializ
 		this.sessionFactory = sessionFactory;
 	}
 
+	@Override
+	public T findById(Id id) {
+		return findById(id, false);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public T findById(Id id, boolean lock) {

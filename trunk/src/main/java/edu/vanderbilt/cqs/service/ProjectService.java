@@ -2,11 +2,14 @@ package edu.vanderbilt.cqs.service;
 
 import java.util.List;
 
+import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
+import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
+import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
 
 public interface ProjectService {
@@ -81,4 +84,31 @@ public interface ProjectService {
 	List<User> listInvalidUser();
 	
 	Integer getPermission(Long userid, Integer userRole, Long projectid);
+	
+	//Technology
+	List<Technology> listTechnology();
+
+	Technology findTechnology(Long id);
+
+	void updateTechnology(Technology entity);
+
+	void addTechnology(Technology entity);
+
+	void removeTechnology(Long id);
+
+	Platform findPlatform(Long id);
+
+	void updatePlatform(Platform entity);
+
+	void addPlatform(Platform entity);
+
+	void removePlatform(Platform entity);
+
+	Module findModule(Long id);
+
+	void updateModule(Module obj);
+
+	void addModule(Module plat);
+
+	void removeModule(Module obj);
 }

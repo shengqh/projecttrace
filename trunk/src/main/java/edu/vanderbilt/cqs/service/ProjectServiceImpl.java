@@ -7,17 +7,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.vanderbilt.cqs.Role;
+import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
+import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
+import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
+import edu.vanderbilt.cqs.dao.ModuleDAO;
 import edu.vanderbilt.cqs.dao.PipelineDAO;
 import edu.vanderbilt.cqs.dao.PipelineTaskDAO;
+import edu.vanderbilt.cqs.dao.PlatformDAO;
 import edu.vanderbilt.cqs.dao.ProjectDAO;
 import edu.vanderbilt.cqs.dao.ProjectTaskDAO;
 import edu.vanderbilt.cqs.dao.ProjectTaskStatusDAO;
+import edu.vanderbilt.cqs.dao.TechnologyDAO;
 import edu.vanderbilt.cqs.dao.UserDAO;
 
 @Service
@@ -40,6 +46,15 @@ public class ProjectServiceImpl implements ProjectService {
 	@Autowired
 	private ProjectTaskStatusDAO projectTaskStatusDAO;
 
+	@Autowired
+	private TechnologyDAO technologyDAO;
+
+	@Autowired
+	private PlatformDAO platformDAO;
+
+	@Autowired
+	private ModuleDAO moduleDAO;
+
 	@Transactional
 	@Override
 	public void addUser(User user) {
@@ -49,7 +64,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public void removeUser(Long id) {
-		User user = userDAO.findById(id, false);
+		User user = userDAO.findById(id);
 		if (user != null) {
 			userDAO.delete(user);
 		}
@@ -64,7 +79,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public User findUser(Long id) {
-		return userDAO.findById(id, false);
+		return userDAO.findById(id);
 	}
 
 	@Transactional
@@ -88,7 +103,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public List<Project> listProject(Long userid, Integer userRole) {
-		if (userRole >= Role.ROLE_VANGARD_BUDGET_USER) {
+		if (userRole >= Role.VANGARD_BUDGET_USER) {
 			return projectDAO.findAll();
 		} else {
 			return projectDAO.getProjectByUser(userid);
@@ -98,7 +113,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public void removeProject(Long id) {
-		Project project = projectDAO.findById(id, false);
+		Project project = projectDAO.findById(id);
 		if (project != null) {
 			projectDAO.delete(project);
 		}
@@ -107,7 +122,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public Pipeline findPipeline(Long id) {
-		return pipelineDAO.findById(id, false);
+		return pipelineDAO.findById(id);
 	}
 
 	@Transactional
@@ -131,7 +146,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public PipelineTask findPipelineTask(Long id) {
-		return pipelineTaskDAO.findById(id, false);
+		return pipelineTaskDAO.findById(id);
 	}
 
 	@Transactional
@@ -161,18 +176,18 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public Project findProject(Long id) {
-		return projectDAO.findById(id, false);
+		return projectDAO.findById(id);
 	}
 
 	@Transactional
 	@Override
 	public void addProjectTask(ProjectTask task, ProjectTaskStatus status) {
 		projectTaskDAO.save(task);
-		
+
 		assignTaskToStatus(task, status);
-		
+
 		projectTaskStatusDAO.save(status);
-		
+
 		projectDAO.updateStatus(task.getProject().getId());
 	}
 
@@ -182,7 +197,7 @@ public class ProjectServiceImpl implements ProjectService {
 		Long projectId = findProjectByTask(id);
 
 		projectTaskDAO.deleteById(id);
-		
+
 		projectDAO.updateStatus(projectId);
 	}
 
@@ -213,18 +228,18 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public ProjectTask findProjectTask(Long id) {
-		return projectTaskDAO.findById(id, false);
+		return projectTaskDAO.findById(id);
 	}
 
 	@Transactional
 	@Override
 	public void updateProjectTask(ProjectTask task, ProjectTaskStatus status) {
 		projectTaskDAO.update(task);
-		
+
 		assignTaskToStatus(task, status);
-		
+
 		projectTaskStatusDAO.save(status);
-		
+
 		projectDAO.updateStatus(task.getProject().getId());
 	}
 
@@ -250,7 +265,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public Integer getPermission(Long userid, Integer userRole, Long projectId) {
-		if (userRole >= Role.ROLE_VANGARD_BUDGET_USER) {
+		if (userRole >= Role.VANGARD_BUDGET_USER) {
 			return userRole;
 		}
 
@@ -273,5 +288,83 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List<User> listInvalidUser() {
 		return userDAO.listInvalidUser();
+	}
+
+	@Transactional
+	@Override
+	public List<Technology> listTechnology() {
+		return technologyDAO.findAll();
+	}
+
+	@Transactional
+	@Override
+	public Technology findTechnology(Long id) {
+		return technologyDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public void updateTechnology(Technology entity) {
+		technologyDAO.update(entity);
+	}
+
+	@Transactional
+	@Override
+	public void addTechnology(Technology entity) {
+		technologyDAO.save(entity);
+	}
+
+	@Transactional
+	@Override
+	public void removeTechnology(Long id) {
+		technologyDAO.deleteById(id);
+	}
+
+	@Transactional
+	@Override
+	public Platform findPlatform(Long id) {
+		return platformDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public void updatePlatform(Platform entity) {
+		platformDAO.update(entity);
+	}
+
+	@Transactional
+	@Override
+	public void addPlatform(Platform entity) {
+		platformDAO.save(entity);
+	}
+
+	@Transactional
+	@Override
+	public void removePlatform(Platform entity) {
+		platformDAO.delete(entity);
+	}
+
+	@Transactional
+	@Override
+	public Module findModule(Long id) {
+		return moduleDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public void updateModule(Module entity) {
+		moduleDAO.update(entity);
+	}
+
+	@Transactional
+	@Override
+	public void addModule(Module entity) {
+		moduleDAO.save(entity);
+	}
+
+	@Transactional
+	@Override
+	public void removeModule(Module entity) {
+		moduleDAO.delete(entity);
 	}
 }

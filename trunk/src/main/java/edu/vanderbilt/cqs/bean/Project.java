@@ -3,7 +3,6 @@ package edu.vanderbilt.cqs.bean;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,11 +13,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import edu.vanderbilt.cqs.Status;
-import edu.vanderbilt.cqs.Utils;
 
 @Entity
 @Table(name = "PROJECT")
@@ -37,6 +34,9 @@ public class Project implements Serializable {
 	@Column(name="DESCRIPTION")
 	@Lob
 	private String description;
+	
+	@Column(name="CONTACTDATE")
+	private Date contactDate;
 
 	@Column(name="CREATOR")
 	private String creator;
@@ -53,9 +53,57 @@ public class Project implements Serializable {
 	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
 	private Set<ProjectUser> users = new HashSet<ProjectUser>();
 
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	@OrderBy("taskIndex")
-	private List<ProjectTask> tasks;
+	@Column(name="TECHNOLOGIES")
+	private String technologies;
+	
+	@Column(name="MODULES")
+	private String modules;
+	
+	@Column(name="CONTACT")
+	private String contact;
+	
+	public Date getContactDate() {
+		return contactDate;
+	}
+
+	public void setContactDate(Date contactDate) {
+		this.contactDate = contactDate;
+	}
+
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+
+	public String getStudyPI() {
+		return studyPI;
+	}
+
+	public void setStudyPI(String studyPI) {
+		this.studyPI = studyPI;
+	}
+
+	@Column(name="STUDYPI")
+	private String studyPI;
+
+	public String getModules() {
+		return modules;
+	}
+
+	public void setModules(String modules) {
+		this.modules = modules;
+	}
+
+	public String getTechnologies() {
+		return technologies;
+	}
+
+	public void setTechnologies(String technologies) {
+		this.technologies = technologies;
+	}
 
 	public Long getId() {
 		return id;
@@ -87,22 +135,6 @@ public class Project implements Serializable {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
-	}
-
-	public List<ProjectTask> getTasks() {
-		return tasks;
-	}
-
-	public void setTasks(List<ProjectTask> tasks) {
-		this.tasks = tasks;
-	}
-
-	public double getPeopleTime() {
-		return Utils.getTotalPeopleTime(getTasks());
-	}
-
-	public double getMachineTime() {
-		return Utils.getTotalMachineTime(getTasks());
 	}
 
 	public String getDescription() {

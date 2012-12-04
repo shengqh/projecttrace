@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface GenericDAO<T extends Serializable, Id extends Serializable> {
+	T findById(Id id);
+	
 	T findById(Id id, boolean lock);
 
 	List<T> findListByName(String tablecolumn, String name);

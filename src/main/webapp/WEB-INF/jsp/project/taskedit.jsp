@@ -51,8 +51,7 @@
 					<td><form:label path="comment">
 							<spring:message code="label.comment" />
 						</form:label></td>
-					<td><form:textarea id="textarea" path="comment" rows="10"
-							cols="60" /></td>
+					<td><form:textarea id="textarea" path="comment" rows="10"/></td>
 					<td><form:errors path="comment" cssClass="error" /></td>
 				</tr>
 				<tr>

@@ -6,6 +6,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.vanderbilt.cqs.Role;
+
 @Controller
 public class AccessController extends RootController {
 	@RequestMapping("/login")
@@ -16,7 +18,7 @@ public class AccessController extends RootController {
 	}
 
 	@RequestMapping(value = "/denied")
-	@Secured("ROLE_OBSERVER")
+	@Secured(Role.ROLE_USER)
 	public String denied() {
 		return "access/denied";
 	}

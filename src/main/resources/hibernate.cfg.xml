@@ -13,5 +13,8 @@
         <mapping class="edu.vanderbilt.cqs.bean.ProjectUser" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTask" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTaskStatus" />
+        <mapping class="edu.vanderbilt.cqs.bean.Technology" />
+        <mapping class="edu.vanderbilt.cqs.bean.Platform" />
+        <mapping class="edu.vanderbilt.cqs.bean.Module" />
     </session-factory>
 </hibernate-configuration>

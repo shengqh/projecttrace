@@ -40,9 +40,9 @@ public class ApplicationListenerImpl implements
 			
 			User admin = addUser("yu.shyr@vanderbilt.edu", "cqs", Role.ADMIN);
 			User manager = addUser("yan.guo@vanderbilt.edu", "cqs",
-					Role.ROLE_VANGARD_BUDGET_USER);
+					Role.VANGARD_BUDGET_USER);
 			User user = addUser("quanhu.sheng@vanderbilt.edu", "cqs", Role.VANGARD_USER);
-			User observer = addUser("test@vanderbilt.edu", "cqs", Role.OBSERVER);
+			User observer = addUser("test@vanderbilt.edu", "cqs", Role.USER);
 
 			addUser("fei.ye@vanderbilt.edu", "cqs", Role.ADMIN);
 
@@ -123,9 +123,9 @@ public class ApplicationListenerImpl implements
 		project.setName(name);
 		project.setCreateDate(new Date());
 		project.setDescription("Description of " + name);
-		addProjectUser(project, manager, Role.ROLE_VANGARD_BUDGET_USER);
+		addProjectUser(project, manager, Role.VANGARD_BUDGET_USER);
 		addProjectUser(project, user, Role.VANGARD_USER);
-		addProjectUser(project, observer, Role.OBSERVER);
+		addProjectUser(project, observer, Role.USER);
 
 		projectService.addProject(project);
 		return project;

@@ -2,6 +2,7 @@
 
 <c:url value="home" var="homeUrl" />
 <c:url value="project" var="projectUrl" />
+<c:url value="technology" var="technologyUrl" />
 <c:url value="user" var="userUrl" />
 <c:url value="alluser" var="userAllUrl" />
 <c:url value="changeownpassword" var="passwordUrl" />
@@ -11,11 +12,12 @@
 	<ul>
 		<li><a href="${homeUrl}">Home</a></li>
 
-		<sec:authorize access="hasRole('ROLE_OBSERVER')">
+		<sec:authorize access="hasRole('ROLE_USER')">
 			<li><a href="${projectUrl}">Project</a></li>
+			<li><a href="${technologyUrl}">Technology</a></li>
 		</sec:authorize>
 
-		<sec:authorize access="hasRole('ROLE_USER')">
+		<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
 			<sec:authorize ifAnyGranted="ROLE_ADMIN">
 				<li><a href="${userAllUrl}">User</a></li>
 			</sec:authorize>
@@ -25,7 +27,6 @@
 		</sec:authorize>
 
 		<li><a href="${passwordUrl}">Change Password</a></li>
-
 		<li><a href="${logoutUrl}">Logout</a></li>
 	</ul>
 	<span id="menu-username"><%=SecurityContextHolder.getContext().getAuthentication()

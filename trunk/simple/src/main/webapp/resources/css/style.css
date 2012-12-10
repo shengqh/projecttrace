@@ -1,0 +1,162 @@
+body {
+	font-family: Arial, sans-serif;
+	width: 1024px;
+	margin: auto;
+}
+
+h1,hr {
+	margin: 0px;
+	padding: 0px;
+}
+
+textarea {
+	width: 100%
+}
+
+.txt {
+	width: 100%
+}
+
+#banner {
+	display: block;
+}
+
+#username {
+	color: red;
+	font-weight: bold;
+}
+
+#menu-username {
+	color: red;
+	float: right;
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
+.message {
+	color: red;
+	text-align: center;
+}
+
+.login-form {
+	background-color: #333;
+	color: white;
+	padding: 5px;
+	width: 400px;
+	height: 160px;
+	margin: auto;
+	text-align: center;
+	margin-top: 100px;
+}
+
+.login-form fieldset {
+	border: 1px solid gray;
+}
+
+.login-form legend {
+	margin: 0px;
+	padding: 0px;
+	text-align: left;
+}
+
+.login-form hr {
+	height: 1px;
+	border: 0px;
+	border-top: 1px solid black;
+}
+
+.login-form input {
+	float: right;
+}
+
+/**
+* Menu based on James Owers' Horizontal CSS List Menu
+* @see http://jamesowers.co.uk/css-tutorials/50/horizontal-css-list-menu/
+*/
+.menu {
+	width: 100%;
+	background-color: #333;
+}
+
+.menu ul {
+	margin: 0;
+	padding: 0;
+	float: left;
+}
+
+.menu ul li {
+	display: inline;
+}
+
+.menu ul li a {
+	float: left;
+	text-decoration: none;
+	color: white;
+	padding: 10.5px 11px;
+	background-color: #333;
+}
+
+.menu ul li a:visited {
+	color: white;
+}
+
+.menu ul li a:hover,.menu ul li .current {
+	color: #fff;
+	background-color: #0b75b2;
+}
+
+.error {
+	color: #ff0000;
+}
+
+.errorblock {
+	color: #000;
+	background-color: #ffEEEE;
+	border: 3px solid #ff0000;
+	padding: 8px;
+	margin: 16px;
+}
+
+#box-table-a {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	margin: auto;
+	width: 100%;
+	text-align: left;
+	border-collapse: collapse;
+}
+
+#box-table-a th {
+	font-size: 13px;
+	font-weight: normal;
+	padding: 8px;
+	background: #b9c9fe;
+	border-top: 4px solid #aabcfe;
+	border-bottom: 1px solid #fff;
+	color: #039;
+}
+
+#box-table-a td {
+	padding: 8px;
+	background: #e8edff;
+	border-bottom: 1px solid #fff;
+	color: #669;
+	border-top: 1px solid transparent;
+}
+
+#box-table-a tr:hover td {
+	background: #d0dafd;
+	color: #339;
+}
+
+#box-table-a select {
+	width: 100%;
+}
+
+#box-table-a tr.comment td {
+	background: #ffc;
+}
+
+#box-table-a tr.failed td{
+	color: red;
+}

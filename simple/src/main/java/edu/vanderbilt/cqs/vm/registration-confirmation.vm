@@ -1,0 +1,14 @@
+<html>
+<body>
+<h3>Hi ${user.name}, welcome to the <a href="http://160.129.22.172:8080/projecttrace">Project Trace System of CQS/VUMC! </a></h3>
+
+
+<div>
+	<p>
+   	Your login name is ${user.email}
+   	<p>
+   	Your password is: ${password} 
+</div>
+</body>
+
+</html>

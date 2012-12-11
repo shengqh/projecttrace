@@ -3,7 +3,9 @@ package edu.vanderbilt.cqs.form;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
@@ -12,9 +14,11 @@ public class ProjectForm implements Serializable {
 	private static final long serialVersionUID = -4361402280964698358L;
 
 	private Project project;
-	
+
+	private Integer userType;
+
 	private List<Long> technology = new ArrayList<Long>();
-	
+
 	private List<Long> faculty = new ArrayList<Long>();
 
 	private List<Long> staff = new ArrayList<Long>();
@@ -22,9 +26,9 @@ public class ProjectForm implements Serializable {
 	private List<Long> contact = new ArrayList<Long>();
 
 	private List<Long> studyPI = new ArrayList<Long>();
-	
+
 	private List<Technology> technologyList;
-	
+
 	private List<User> contactList;
 
 	private List<User> studyPIList;
@@ -32,6 +36,10 @@ public class ProjectForm implements Serializable {
 	private List<User> facultyList;
 
 	private List<User> staffList;
+
+	public Map<String, String> getStatusMap() {
+		return Status.getStatusMap();
+	}
 
 	public Project getProject() {
 		return project;
@@ -119,5 +127,13 @@ public class ProjectForm implements Serializable {
 
 	public void setTechnologyList(List<Technology> technologyList) {
 		this.technologyList = technologyList;
+	}
+
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
 	}
 }

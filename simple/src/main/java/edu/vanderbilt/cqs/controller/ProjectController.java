@@ -49,7 +49,7 @@ public class ProjectController extends RootController {
 	@Autowired
 	private Validator validator;
 
-	@Secured({Permission.ROLE_PROJECT_VIEW})
+	@Secured({ Permission.ROLE_PROJECT_VIEW })
 	@RequestMapping("/project")
 	public String listProject(ModelMap model) {
 		logger.info(currentUser().getUsername() + " projectList.");
@@ -65,12 +65,18 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/addproject")
-	@Secured({Permission.ROLE_PROJECT_EDIT})
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
 	public String addProject(ModelMap model) {
 		logger.info(currentUser().getUsername() + " addProject.");
 
 		ProjectForm form = new ProjectForm();
 		form.setProject(new Project());
+		if (isCurrentPowerUser()) {
+			form.setUserType(UserType.ADMIN);
+		} else {
+			form.setUserType(UserType.VANGARD_FACULTY);
+		}
+
 		initializeProjectForm(form);
 
 		model.put("projectForm", form);
@@ -80,28 +86,38 @@ public class ProjectController extends RootController {
 
 	private void initializeProjectForm(ProjectForm form) {
 		form.setTechnologyList(projectService.listValidTechnology());
-		
+
 		List<User> users = projectService.listValidUser();
-		List<User> contactList = new ArrayList<User>();
-		List<User> piList = new ArrayList<User>();
-		List<User> facultyList = new ArrayList<User>();
-		List<User> staffList = new ArrayList<User>();
-		for(User user:users){
-			if(user.hasRole(Role.ROLE_USER)){
-				contactList.add(user);
-				piList.add(user);
+
+		Set<User> contactSet = new HashSet<User>();
+		Set<User> piSet = new HashSet<User>();
+		Set<User> facultySet = new HashSet<User>();
+		Set<User> staffSet = new HashSet<User>();
+
+		for (User user : users) {
+			if (user.hasRole(Role.ROLE_USER)) {
+				contactSet.add(user);
+				piSet.add(user);
 			}
-			if(user.hasRole(Role.ROLE_VANGARD_USER)){
-				facultyList.add(user);
-				staffList.add(user);
+			if (user.hasRole(Role.ROLE_VANGARD_FACULTY)) {
+				facultySet.add(user);
+				staffSet.add(user);
+			}
+			if (user.hasRole(Role.ROLE_VANGARD_STAFF)) {
+				staffSet.add(user);
 			}
 		}
-		
+
+		List<User> contactList = new ArrayList<User>(contactSet);
+		List<User> piList = new ArrayList<User>(piSet);
+		List<User> facultyList = new ArrayList<User>(facultySet);
+		List<User> staffList = new ArrayList<User>(staffSet);
+
 		Collections.sort(contactList);
 		Collections.sort(piList);
 		Collections.sort(facultyList);
 		Collections.sort(staffList);
-		
+
 		form.setContactList(contactList);
 		form.setStudyPIList(piList);
 		form.setFacultyList(facultyList);
@@ -109,15 +125,20 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/editproject")
-	@Secured({Permission.ROLE_PROJECT_EDIT})
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
 	public String editProject(@RequestParam("projectid") Long projectId,
 			ModelMap model) {
 		logger.info(currentUser().getUsername() + " editProject.");
+		Integer userType = getUserType(projectId);
+		if (userType == UserType.NONE) {
+			return "/access/denied";
+		}
 
 		Project project = projectService.findProject(projectId);
 		if (project != null) {
 			ProjectForm form = new ProjectForm();
 			form.setProject(project);
+			form.setUserType(userType);
 
 			initializeProjectForm(form);
 
@@ -167,18 +188,22 @@ public class ProjectController extends RootController {
 
 	private void initializeUsers(Project project, ProjectForm form) {
 		project.getUsers().clear();
-		project.getUsers().addAll(getUserListFromIdList(project, form.getContact(),
-				UserType.CONTACT));
-		project.getUsers().addAll(getUserListFromIdList(project, form.getStudyPI(),
-				UserType.STUDYPI));
-		project.getUsers().addAll(getUserListFromIdList(project, form.getStaff(),
-				UserType.VANGARD_STAFF));
-		project.getUsers().addAll(getUserListFromIdList(project, form.getFaculty(),
-				UserType.VANGARD_FACULTY));
+		project.getUsers().addAll(
+				getUserListFromIdList(project, form.getContact(),
+						UserType.CONTACT));
+		project.getUsers().addAll(
+				getUserListFromIdList(project, form.getStudyPI(),
+						UserType.STUDYPI));
+		project.getUsers().addAll(
+				getUserListFromIdList(project, form.getStaff(),
+						UserType.VANGARD_STAFF));
+		project.getUsers().addAll(
+				getUserListFromIdList(project, form.getFaculty(),
+						UserType.VANGARD_FACULTY));
 	}
 
 	@RequestMapping(value = "/saveproject", method = RequestMethod.POST)
-	@Secured({Permission.ROLE_PROJECT_EDIT})
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
 	public String saveProject(
 			@Valid @ModelAttribute("projectForm") ProjectForm form,
 			BindingResult result) {
@@ -191,7 +216,7 @@ public class ProjectController extends RootController {
 			Project project = projectService.findProject(form.getProject()
 					.getId());
 			BeanUtils.copyProperties(form.getProject(), project, new String[] {
-					"technologies", "users" });
+					"technologies", "users", "comments" });
 
 			initializeUsers(project, form);
 
@@ -237,39 +262,36 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/showproject")
-	@Secured({Permission.ROLE_PROJECT_VIEW})
-	public String showProject(
-			@RequestParam("projectid") Long projectid,
-			@RequestParam(value = "taskid", required = false, defaultValue = "0") Long taskid,
+	@Secured({ Permission.ROLE_PROJECT_VIEW })
+	public String showProject(@RequestParam("projectid") Long projectId,
 			ModelMap model) {
 		logger.info(currentUser().getUsername() + " showProject "
-				+ projectid.toString());
+				+ projectId.toString());
+		Integer userType = getUserType(projectId);
+		if (userType == UserType.NONE) {
+			return "/access/denied";
+		}
 
-		Project project = projectService.findProject(projectid);
+		Project project = projectService.findProject(projectId);
 		if (project != null) {
-			Integer userType = isCurrentPowerUser() ? UserType.ADMIN
-					: projectService.getUserType(currentUser().getId(),
-							projectid);
-			if (userType != UserType.NONE) {
-				ProjectDetailForm form = new ProjectDetailForm();
-				form.setProject(project);
-				form.setCanEdit(userType >= UserType.VANGARD_FACULTY);
-				form.setStatusMap(Status.getStatusMap());
-				model.addAttribute("projectDetailForm", form);
-				model.addAttribute("taskid", taskid);
-				return "/project/show";
-			} else {
-				return "/access/denied";
-			}
+			ProjectForm form = new ProjectForm();
+			form.setProject(project);
+			form.setUserType(userType);
+			model.addAttribute("projectForm", form);
+			return "/project/show";
 		} else {
-			model.put("message", "Project with id " + projectid.toString()
-					+ " not exists");
 			return "redirect:/project";
 		}
 	}
 
+	private Integer getUserType(Long projectid) {
+		Integer userType = isCurrentPowerUser() ? UserType.ADMIN
+				: projectService.getUserType(currentUser().getId(), projectid);
+		return userType;
+	}
+
 	@RequestMapping(value = "/getStatusList", method = RequestMethod.POST)
-	@Secured({Permission.ROLE_PROJECT_VIEW})
+	@Secured({ Permission.ROLE_PROJECT_VIEW })
 	public @ResponseBody
 	List<ProjectTaskStatusForm> getStatusList(
 			@RequestParam("taskid") Long taskid) {
@@ -283,7 +305,7 @@ public class ProjectController extends RootController {
 			for (ProjectTaskStatus pts : task.getStatuses()) {
 				ProjectTaskStatusForm form = new ProjectTaskStatusForm();
 				BeanUtils.copyProperties(pts, form);
-				form.setStatusString(pts.getStatusString());
+				form.setStatusString(pts.getStatus());
 				form.setUpdateDateString(pts.getUpdateDate().toString());
 				result.add(form);
 			}

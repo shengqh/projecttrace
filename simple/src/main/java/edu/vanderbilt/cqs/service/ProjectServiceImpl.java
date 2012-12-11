@@ -62,10 +62,10 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	private PlatformDAO platformDAO;
-	
+
 	@Autowired
 	private ModuleDAO moduleDAO;
-	
+
 	@Autowired
 	private ProjectTechnologyDAO projectTechnologyDAO;
 
@@ -197,18 +197,12 @@ public class ProjectServiceImpl implements ProjectService {
 		assignTaskToStatus(task, status);
 
 		projectTaskStatusDAO.save(status);
-
-		projectDAO.updateStatus(task.getProject().getId());
 	}
 
 	@Transactional
 	@Override
 	public void removeProjectTask(Long id) {
-		Long projectId = findProjectByTask(id);
-
 		projectTaskDAO.deleteById(id);
-
-		projectDAO.updateStatus(projectId);
 	}
 
 	@Transactional
@@ -249,8 +243,6 @@ public class ProjectServiceImpl implements ProjectService {
 		assignTaskToStatus(task, status);
 
 		projectTaskStatusDAO.save(status);
-
-		projectDAO.updateStatus(task.getProject().getId());
 	}
 
 	private void assignTaskToStatus(ProjectTask task, ProjectTaskStatus status) {
@@ -389,7 +381,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public List<Role> listRole() {
-		return roleDAO.findAll();
+		return roleDAO.listRoles();
 	}
 
 	@Transactional
@@ -419,7 +411,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public List<Permission> listPermission() {
-		return permissionDAO.findAll();
+		return permissionDAO.listPermission();
 	}
 
 	@Transactional
@@ -450,5 +442,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void updateProjectTechnology(ProjectTechnology entity) {
 		projectTechnologyDAO.update(entity);
+	}
+
+	@Transactional
+	@Override
+	public void updateRole(Role role) {
+		roleDAO.update(role);
 	}
 }

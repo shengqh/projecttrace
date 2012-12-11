@@ -22,13 +22,11 @@
 					<tr>
 						<th scope="col">Study name</th>
 						<th scope="col">Contact date</th>
-						<th scope="col">Contact name</th>
 						<th scope="col">Study PI</th>
 						<th scope="col">Technology</th>
 						<th scope="col">Faculty</th>
 						<th scope="col">Staff</th>
-						<th scope="col">Work started</th>
-						<th scope="col">Work completed</th>
+						<th scope="col">Status</th>
 						<sec:authorize access="hasRole('ROLE_PROJECT_EDIT')">
 							<th scope="col">&nbsp;</th>
 						</sec:authorize>
@@ -40,7 +38,7 @@
 				<tbody>
 					<c:forEach items="${projectList}" var="project">
 						<c:choose>
-							<c:when test="${project.status == -1}">
+							<c:when test="${project.status == 'Cancelled'}">
 								<c:set var="bc" value="class=\"failed\"" />
 							</c:when>
 							<c:otherwise>
@@ -49,10 +47,7 @@
 						</c:choose>
 						<tr ${bc}>
 							<td><a href="showproject?projectid=${project.id}">${project.name}</a></td>
-							<td>${project.contactDate}</td>
-							<td><c:forEach items="${project.contactName}" var="user">
-									${user}<br>
-								</c:forEach></td>
+							<td>${project.contactDateString}</td>
 							<td><c:forEach items="${project.studyPIName}" var="user">
 									${user}<br>
 								</c:forEach></td>
@@ -65,8 +60,7 @@
 							<td><c:forEach items="${project.staffName}" var="user">
 									${user}<br>
 								</c:forEach></td>
-							<td>${project.workStarted}</td>
-							<td>${project.workCompleted}</td>
+							<td>${project.status}</td>
 							<sec:authorize access="hasRole('ROLE_PROJECT_EDIT')">
 								<td>
 									<form action="editproject?projectid=${project.id}"

@@ -20,8 +20,7 @@
 		</c:choose>
 	</h1>
 	<p>
-		<form:form method="post" action="savemodule.html"
-			commandName="module">
+		<form:form method="post" action="savemodule.html" commandName="module">
 			<form:hidden path="technology.id" />
 			<form:hidden path="id" />
 			<form:errors path="*" cssClass="errorblock" element="div" />
@@ -57,11 +56,9 @@
 								<input type="submit"
 									value="<spring:message code="label.update"/>" />
 							</c:otherwise>
-						</c:choose>
-						<form>
-							<input type="button" value="<spring:message code="label.back" />"
-								onClick="parent.location='showtechnology.html?id=${module.technology.id}'" />
-						</form></td>
+						</c:choose> <input type="button" value="<spring:message code="label.back" />"
+						onClick="parent.location='showtechnology.html?id=${module.technology.id}'" />
+					</td>
 					<td></td>
 				</tr>
 			</table>

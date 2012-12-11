@@ -2,6 +2,7 @@ package edu.vanderbilt.cqs.bean;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -17,7 +18,8 @@ import javax.persistence.Table;
 @Table(name = "ROLE")
 public class Role implements Serializable, Comparable<Role> {
 	public static final String ROLE_USER = "ROLE_USER";
-	public static final String ROLE_VANGARD_USER = "ROLE_VANGARD_USER";
+	public static final String ROLE_VANGARD_FACULTY = "ROLE_VANGARD_FACULTY";
+	public static final String ROLE_VANGARD_STAFF = "ROLE_VANGARD_STAFF";
 	public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
 	private static final long serialVersionUID = -6330012869746878952L;
@@ -27,7 +29,7 @@ public class Role implements Serializable, Comparable<Role> {
 	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "NAME")
+	@Column(name = "NAME",unique=true)
 	private String name = "";
 
 	@OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
@@ -109,5 +111,13 @@ public class Role implements Serializable, Comparable<Role> {
 		}
 		
 		return this.name.compareTo(o.name);
+	}
+	
+	public Set<Long> getPermissionIds(){
+		Set<Long> result = new LinkedHashSet<Long>();
+		for(RolePermission rp:permissions){
+			result.add(rp.getPermission().getId());
+		}
+		return result;
 	}
 }

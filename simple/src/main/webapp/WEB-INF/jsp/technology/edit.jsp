@@ -35,8 +35,8 @@
 					<td><form:label path="description">
 							<spring:message code="label.description" />
 						</form:label></td>
-					<td><form:textarea id="textarea" path="description"
-							rows="10" cols="60" /></td>
+					<td><form:textarea id="textarea" path="description" rows="10"
+							cols="60" /></td>
 					<td><form:errors path="description" cssClass="error" /></td>
 				</tr>
 				<tr>
@@ -48,11 +48,8 @@
 								<input type="submit"
 									value="<spring:message code="label.update"/>" />
 							</c:otherwise>
-						</c:choose>
-						<form>
-							<input type="button" value="<spring:message code="label.back" />"
-								onClick="parent.location='technology.html'" />
-						</form></td>
+						</c:choose> <input type="button" value="<spring:message code="label.back" />"
+						onClick="parent.location='technology.html'" /></td>
 					<td></td>
 				</tr>
 			</table>

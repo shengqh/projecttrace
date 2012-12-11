@@ -1,8 +1,11 @@
 package edu.vanderbilt.cqs.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,7 +16,6 @@ import org.apache.velocity.app.VelocityEngine;
 import org.jboss.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -24,8 +26,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +63,8 @@ public class UserController extends RootController {
 
 	protected boolean sendMail = true;
 
+	protected boolean sendMailToVantageUserOnly = true;
+
 	@RequestMapping("/user")
 	@Secured(Permission.ROLE_USER_VIEW)
 	public String listUsers(ModelMap model) {
@@ -75,12 +77,12 @@ public class UserController extends RootController {
 	public String listAllUsers(ModelMap model) {
 		model.addAttribute("validUserList", projectService.listValidUser());
 		model.addAttribute("invalidUserList", projectService.listInvalidUser());
-		return "user/listall";
+		return "user/list";
 	}
 
 	private void initUserForm(UserForm form, User user) {
 		form.setUser(user);
-		form.setRoleList(new HashSet<Role>(projectService.listRole()));
+		form.setRoleList(new LinkedHashSet<Role>(projectService.listRole()));
 
 		HashSet<Long> roles = new HashSet<Long>();
 		for (UserRole ur : user.getRoles()) {
@@ -90,29 +92,20 @@ public class UserController extends RootController {
 	}
 
 	private void assignRole(User user, Set<Long> roles) {
-		Set<Role> roleList = new HashSet<Role>();
-		for(Long r:roles){
-			roleList.add(projectService.findRole(r));
-		}
-		
-		boolean same = true;
-		if (user.getRoles().size() == roles.size()) {
-			for (Role role : roleList) {
-				if (!user.getRoles().contains(new UserRole(user, role))) {
-					same = false;
-					break;
-				}
+		List<UserRole> roleList = new ArrayList<UserRole>();
+		for (UserRole ur : user.getRoles()) {
+			if (roles.contains(ur.getRole().getId())) {
+				roleList.add(ur);
+				roles.remove(ur.getRole().getId());
 			}
-		} else {
-			same = false;
 		}
 
-		if (!same) {
-			user.getRoles().clear();
-			for (Role role : roleList) {
-				user.getRoles().add(new UserRole(user, role));
-			}
+		for (Long r : roles) {
+			roleList.add(new UserRole(user, projectService.findRole(r)));
 		}
+
+		user.getRoles().clear();
+		user.getRoles().addAll(roleList);
 	}
 
 	@RequestMapping("/adduser")
@@ -167,13 +160,14 @@ public class UserController extends RootController {
 			projectService.addUser(user);
 			logger.info(currentUser().getUsername() + " add user "
 					+ user.getEmail());
-			if (sendMail) {
+			if (sendMail
+					&& (!sendMailToVantageUserOnly || user.isVangardUser())) {
 				sendConfirmationEmail(user, password);
 			}
 		} else {
 			User user = projectService.findUser(form.getUser().getId());
-			BeanUtils.copyProperties(form.getUser(), user,
-					new String[] { "roles", "createDate" });
+			BeanUtils.copyProperties(form.getUser(), user, new String[] {
+					"roles", "createDate" });
 			assignRole(user, form.getRoles());
 
 			projectService.updateUser(user);
@@ -313,7 +307,8 @@ public class UserController extends RootController {
 			logger.info(currentUser.getEmail() + " reseted user "
 					+ user.getEmail() + " password.");
 
-			if (sendMail) {
+			if (sendMail
+					&& (!sendMailToVantageUserOnly || user.isVangardUser())) {
 				sendPasswordChangedEmail(user, password);
 			}
 		}

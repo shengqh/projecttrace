@@ -1,0 +1,36 @@
+<%@ include file="../include.jsp"%>
+<html>
+<head>
+<%@ include file="../include_head.jsp"%>
+</head>
+
+<body>
+	<jsp:include page="../menu.jsp" />
+
+	<p>
+	<h1 align="center">Edit : ${roleForm.role.name}</h1>
+	<p>
+		<form:form method="post" action="saverole.html" commandName="roleForm">
+			<form:hidden path="role.id" />
+			<form:errors path="*" cssClass="errorblock" element="div" />
+			<table id="box-table-a">
+				<tr>
+					<td><form:label path="permissions">
+							Permission
+						</form:label></td>
+					<td><form:select path="permissions"
+							items="${roleForm.permissionList}" multiple="true"
+							itemLabel="name" itemValue="id" size="10" /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="3" align="center"><input type="submit"
+						value="<spring:message code="label.update"/>" /> <input
+						type="button" value="<spring:message code="label.back" />"
+						onClick="parent.location='alluser.html'" /></td>
+				</tr>
+			</table>
+		</form:form>
+	<p class="message">${message}</p>
+</body>
+</html>

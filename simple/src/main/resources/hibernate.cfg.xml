@@ -23,6 +23,7 @@
         <mapping class="edu.vanderbilt.cqs.bean.ProjectUser" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTechnology" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTechnologyModule" />
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectComment" />
 
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTask" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTaskStatus" />

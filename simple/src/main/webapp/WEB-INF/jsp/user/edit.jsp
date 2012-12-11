@@ -66,7 +66,7 @@
 				</tr>
 				<tr>
 					<td><form:label path="user.accountNonLocked">
-							<spring:message code="label.locked" />
+							<spring:message code="label.accountNonlocked" />
 						</form:label></td>
 					<td><form:checkbox path="user.accountNonLocked" /></td>
 					<td></td>
@@ -89,11 +89,8 @@
 									value="<spring:message code="label.update"/>" />
 							</c:otherwise>
 
-						</c:choose>
-						<form>
-							<input type="button" value="<spring:message code="label.back" />"
-								onClick="parent.location='alluser.html'" />
-						</form></td>
+						</c:choose> <input type="button" value="<spring:message code="label.back" />"
+						onClick="parent.location='alluser.html'" /></td>
 				</tr>
 			</table>
 		</form:form>

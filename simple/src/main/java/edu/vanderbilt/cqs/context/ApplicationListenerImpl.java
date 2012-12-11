@@ -15,6 +15,7 @@ import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
+import edu.vanderbilt.cqs.bean.ProjectComment;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
 import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.ProjectUser;
@@ -46,6 +47,8 @@ public class ApplicationListenerImpl implements
 			addPermission(Permission.ROLE_USER_EDIT);
 			addPermission(Permission.ROLE_PROJECT_VIEW);
 			addPermission(Permission.ROLE_PROJECT_EDIT);
+			addPermission(Permission.ROLE_MODULE_VIEW);
+			addPermission(Permission.ROLE_MODULE_EDIT);
 		}
 
 		if (projectService.listRole().size() == 0) {
@@ -57,26 +60,33 @@ public class ApplicationListenerImpl implements
 					.findPermissionByName(Permission.ROLE_PROJECT_VIEW);
 			Permission pe = projectService
 					.findPermissionByName(Permission.ROLE_PROJECT_EDIT);
+			Permission mv = projectService
+					.findPermissionByName(Permission.ROLE_MODULE_VIEW);
+			Permission me = projectService
+					.findPermissionByName(Permission.ROLE_MODULE_EDIT);
 
-			addRole(Role.ROLE_USER, new Permission[] { uv, pv });
-			addRole(Role.ROLE_VANGARD_USER, new Permission[] { uv, pv, pe });
-			addRole(Role.ROLE_ADMIN, new Permission[] { uv, pv, ue, pe });
+			addRole(Role.ROLE_USER, new Permission[] {});
+			addRole(Role.ROLE_VANGARD_STAFF, new Permission[] { uv, pv, pe, mv });
+			addRole(Role.ROLE_VANGARD_FACULTY, new Permission[] { uv, pv, pe, mv, me });
+			addRole(Role.ROLE_ADMIN, new Permission[] { uv, pv, ue, pe, mv, me });
 		}
 
 		if (projectService.listUser().size() == 0) {
 			Role user = projectService.findRoleByName(Role.ROLE_USER);
-			Role vuser = projectService.findRoleByName(Role.ROLE_VANGARD_USER);
+			Role staff = projectService.findRoleByName(Role.ROLE_VANGARD_STAFF);
+			Role faculty = projectService.findRoleByName(Role.ROLE_VANGARD_FACULTY);
 			Role admin = projectService.findRoleByName(Role.ROLE_ADMIN);
 
-			addUser("lynne.d.berry@vanderbilt.edu", "cqs", new Role[] { vuser,
+			addUser("lynne.d.berry@vanderbilt.edu", "cqs", new Role[] { faculty,
 					admin });
-			addUser("quanhu.sheng@vanderbilt.edu", "cqs", new Role[] { vuser,
+			addUser("quanhu.sheng@vanderbilt.edu", "cqs", new Role[] { staff,
 					admin });
 			addUser("yu.shyr@vanderbilt.edu", "cqs", new Role[] { admin });
 
-			addUser("david.biagi@vanderbilt.edu", "cqs", new Role[] { vuser });
-			addUser("fei.ye@vanderbilt.edu", "cqs", new Role[] { vuser });
-			addUser("yan.guo@vanderbilt.edu", "cqs", new Role[] { vuser });
+			addUser("david.biagi@vanderbilt.edu", "cqs", new Role[] { staff });
+			addUser("fei.ye@vanderbilt.edu", "cqs", new Role[] { faculty });
+			addUser("yan.guo@vanderbilt.edu", "cqs", new Role[] { faculty });
+			addUser("qi.liu@vanderbilt.edu", "cqs", new Role[] { faculty });
 			addUser("test_contact@vanderbilt.edu", "cqs", new Role[] { user });
 			addUser("test_pi@vanderbilt.edu", "cqs", new Role[] { user });
 		}
@@ -139,7 +149,13 @@ public class ApplicationListenerImpl implements
 			project.setName("2144");
 			project.setCreateDate(new Date());
 			project.setCreator(vfaculty.getEmail());
-			project.setComments("Demo project, any comments are welcome!");
+			
+			ProjectComment pc = new ProjectComment();
+			pc.setComment("Demo project, any comments are welcome!");
+			pc.setCommentDate(new Date());
+			pc.setCommentUser(admin.getEmail());
+			pc.setProject(project);
+			project.getComments().add(pc);
 
 			addProjectUser(project, contact, UserType.CONTACT);
 			addProjectUser(project, studypi, UserType.STUDYPI);
@@ -148,12 +164,12 @@ public class ApplicationListenerImpl implements
 
 			addProjectTechnology(project, "RNA-seq", "Illumina", 6);
 			addProjectTechnology(project, "Microarray", "agilentg4502a_07_3", 5);
-			//ProjectTechnology pt = 
+			// ProjectTechnology pt =
 			addProjectTechnology(project, "Genotyping", "", 4);
 
 			projectService.addProject(project);
-			//pt.getModules().clear();
-			//projectService.updateProjectTechnology(pt);
+			// pt.getModules().clear();
+			// projectService.updateProjectTechnology(pt);
 		}
 	}
 
@@ -172,8 +188,8 @@ public class ApplicationListenerImpl implements
 		projectService.addRole(role);
 	}
 
-	private ProjectTechnology addProjectTechnology(Project project, String name,
-			String platform, int sampleNumber) {
+	private ProjectTechnology addProjectTechnology(Project project,
+			String name, String platform, int sampleNumber) {
 		Technology rnaseq = projectService.findTechnologyByName(name);
 		ProjectTechnology pt = new ProjectTechnology();
 		pt.setProject(project);

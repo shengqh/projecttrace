@@ -18,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,6 +41,8 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 	private String lastname = "";
 
 	@Column(unique = true, name = "EMAIL")
+	@Email
+	@NotBlank
 	private String email;
 
 	@Column(name = "TELEPHONE")
@@ -65,7 +69,7 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 	@Column(name = "PASSWORD")
 	private String password;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	private Set<UserRole> roles = new HashSet<UserRole>();
 
 	public String getEmail() {
@@ -270,14 +274,23 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 
 	@Override
 	public int compareTo(User arg0) {
-		if(arg0 == null){
+		if (arg0 == null) {
 			return -1;
 		}
-		
-		if(email == null){
+
+		if (email == null) {
 			return -1;
 		}
-		
+
 		return email.compareTo(arg0.email);
+	}
+
+	public boolean isVangardUser() {
+		for (UserRole ur : roles) {
+			if (!ur.getRole().getName().equals(Role.ROLE_USER)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

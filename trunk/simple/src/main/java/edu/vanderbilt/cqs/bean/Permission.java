@@ -22,13 +22,15 @@ public class Permission implements Serializable {
 	public static final String ROLE_PROJECT_EDIT = "ROLE_PROJECT_EDIT";
 	public static final String ROLE_USER_VIEW = "ROLE_USER_VIEW";
 	public static final String ROLE_USER_EDIT = "ROLE_USER_EDIT";
+	public static final String ROLE_MODULE_VIEW = "ROLE_MODULE_VIEW";
+	public static final String ROLE_MODULE_EDIT = "ROLE_MODULE_EDIT";
 
 	@Id
 	@GeneratedValue
 	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "NAME")
+	@Column(name = "NAME", unique=true)
 	private String name = "";
 	
 	@OneToMany(mappedBy = "permission", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)

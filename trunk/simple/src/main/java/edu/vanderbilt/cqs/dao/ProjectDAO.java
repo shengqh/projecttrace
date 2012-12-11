@@ -8,6 +8,4 @@ public interface ProjectDAO extends GenericDAO<Project, Long> {
 	List<Project> getProjectByUser(Long userid);
 	
 	Integer getUserType(Long userid, Long projectid);
-	
-	void updateStatus(Long projectid);
 }

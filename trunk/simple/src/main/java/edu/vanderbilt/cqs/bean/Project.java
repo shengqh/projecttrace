@@ -13,13 +13,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.UserType;
+import edu.vanderbilt.cqs.Utils;
 
 @Entity
 @Table(name = "PROJECT")
@@ -62,9 +62,9 @@ public class Project implements Serializable {
 	@Column(name = "BILLEDBY")
 	private String billedBy;
 
-	@Column(name = "COMMENTS")
-	@Lob
-	private String comments;
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@OrderBy("commentDate")
+	private List<ProjectComment> comments = new ArrayList<ProjectComment>();
 
 	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
 	private Set<ProjectUser> users = new HashSet<ProjectUser>();
@@ -80,7 +80,7 @@ public class Project implements Serializable {
 	private Date createDate;
 
 	@Column(name = "STATUS")
-	private Integer status = Status.PENDING;
+	private String status = Status.PENDING;
 
 	@Column(name = "ENABLED")
 	private Boolean enabled = true;
@@ -182,14 +182,6 @@ public class Project implements Serializable {
 		this.billedBy = billedBy;
 	}
 
-	public String getComments() {
-		return comments;
-	}
-
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
-
 	public Set<ProjectUser> getUsers() {
 		return users;
 	}
@@ -214,11 +206,11 @@ public class Project implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public Integer getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -254,5 +246,25 @@ public class Project implements Serializable {
 
 	public List<String> getStaffName() {
 		return getUserName(UserType.VANGARD_STAFF);
+	}
+
+	public List<ProjectComment> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<ProjectComment> comments) {
+		this.comments = comments;
+	}
+	
+	public String getContactDateString(){
+		return Utils.getDateString(contactDate);
+	}
+	
+	public String getWorkStartedString(){
+		return Utils.getDateString(workStarted);
+	}
+	
+	public String getWorkCompletedString(){
+		return Utils.getDateString(workCompleted);
 	}
 }

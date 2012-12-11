@@ -6,4 +6,8 @@
 <%@ page
 	import="org.springframework.security.core.context.SecurityContextHolder"%>
 <%@ page import="edu.vanderbilt.cqs.UserType"%>
-<%@ page import="edu.vanderbilt.cqs.Status"%>
+<c:set var="utAdmin" value="<%=UserType.ADMIN%>" />
+<c:set var="utContact" value="<%=UserType.CONTACT%>" />
+<c:set var="utStudyPI" value="<%=UserType.STUDYPI%>" />
+<c:set var="utStaff" value="<%=UserType.VANGARD_STAFF%>" />
+<c:set var="utFaculty" value="<%=UserType.VANGARD_FACULTY%>" />

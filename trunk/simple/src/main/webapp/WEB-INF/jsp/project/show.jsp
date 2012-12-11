@@ -49,77 +49,73 @@
 <body>
 	<jsp:include page="../menu.jsp" />
 	<p>
-	<h1>Project : ${projectDetailForm.project.name}</h1>
+	<h1>Project : ${projectForm.project.name}</h1>
 	<hr>
 	<h2>Basic Information</h2>
 	<table id="box-table-a" summary="Project Information">
 		<tr>
 			<td>Contact date</td>
-			<td>${projectDetailForm.project.contactDate}</td>
+			<td>${projectForm.project.contactDateString}</td>
 		</tr>
 		<tr>
 			<td>Contact name</td>
-			<td><c:forEach items="${projectDetailForm.project.contactName}"
+			<td><c:forEach items="${projectForm.project.contactName}"
 					var="user">
 						${user}<br>
 				</c:forEach></td>
 		</tr>
 		<tr>
 			<td>Study PI</td>
-			<td><c:forEach items="${projectDetailForm.project.studyPIName}"
+			<td><c:forEach items="${projectForm.project.studyPIName}"
 					var="user">
 						${user}<br>
 				</c:forEach></td>
 		</tr>
 		<tr>
 			<td>Quote amount</td>
-			<td>${projectDetailForm.project.quoteAmount}</td>
+			<td>${projectForm.project.quoteAmount}</td>
 		</tr>
 		<tr>
 			<td>Assigned to (faculty)</td>
-			<td><c:forEach items="${projectDetailForm.project.facultyName}"
+			<td><c:forEach items="${projectForm.project.facultyName}"
 					var="user">
 						${user}<br>
 				</c:forEach></td>
 		</tr>
 		<tr>
 			<td>Assigned to (staff)</td>
-			<td><c:forEach items="${projectDetailForm.project.staffName}"
+			<td><c:forEach items="${projectForm.project.staffName}"
 					var="user">
 						${user}<br>
 				</c:forEach></td>
 		</tr>
 		<tr>
 			<td>Work started (date)</td>
-			<td>${projectDetailForm.project.workStarted}</td>
+			<td>${projectForm.project.workStartedString}</td>
 		</tr>
 		<tr>
 			<td>Work completed (date)</td>
-			<td>${projectDetailForm.project.workCompleted}</td>
+			<td>${projectForm.project.workCompletedString}</td>
 		</tr>
 		<tr>
 			<td>Cost center to bill</td>
-			<td>${projectDetailForm.project.costCenterToBill}</td>
+			<td>${projectForm.project.costCenterToBill}</td>
 		</tr>
 		<tr>
 			<td>Request cost center setup in CORES (date)</td>
-			<td>${projectDetailForm.project.requestCostCenterSetupInCORES}</td>
+			<td>${projectForm.project.requestCostCenterSetupInCORES}</td>
 		</tr>
 		<tr>
 			<td>Requested by (name)</td>
-			<td>${projectDetailForm.project.requestedBy}</td>
+			<td>${projectForm.project.requestedBy}</td>
 		</tr>
 		<tr>
 			<td>Billed in CORES (date)</td>
-			<td>${projectDetailForm.project.billedInCORES}</td>
+			<td>${projectForm.project.billedInCORES}</td>
 		</tr>
 		<tr>
 			<td>Billed by (name)</td>
-			<td>${projectDetailForm.project.billedBy}</td>
-		</tr>
-		<tr>
-			<td>Comments</td>
-			<td><pre>${projectDetailForm.project.comments}</pre></td>
+			<td>${projectForm.project.billedBy}</td>
 		</tr>
 	</table>
 	<h2>Technologies</h2>
@@ -133,7 +129,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach items="${projectDetailForm.project.technologies}"
+			<c:forEach items="${projectForm.project.technologies}"
 				var="tec">
 				<tr>
 					<td>${tec.technology}</td>
@@ -149,6 +145,26 @@
 						<td></td>
 					</tr>
 				</c:forEach>
+			</c:forEach>
+		</tbody>
+	</table>
+
+	<h2>Comments</h2>
+	<table id="box-table-a" summary="Comments">
+		<thead>
+			<tr>
+				<th scope="col">Date</th>
+				<th scope="col">User/Comment</th>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach items="${projectForm.project.comments}"
+				var="comment">
+				<tr>
+					<td>${comment.commentDate}</td>
+					<td>${comment.commentUser} wrote : <br> <pre>${comment.comment}</pre>
+					</td>
+				</tr>
 			</c:forEach>
 		</tbody>
 	</table>

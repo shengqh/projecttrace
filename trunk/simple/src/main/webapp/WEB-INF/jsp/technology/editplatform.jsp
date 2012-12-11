@@ -8,14 +8,14 @@
 	<jsp:include page="../menu.jsp" />
 
 	<p>
-	<h1 align="center">
-		${module.technology.name } |
+	<h1>
+		${platform.technology.name } |
 		<c:choose>
 			<c:when test="${platform.id == null}">
 				New Platform
 			</c:when>
 			<c:otherwise>
-				Edit Platform : ${platform.name}
+				${platform.name}
 			</c:otherwise>
 		</c:choose>
 	</h1>
@@ -37,8 +37,8 @@
 					<td><form:label path="description">
 							<spring:message code="label.description" />
 						</form:label></td>
-					<td><form:textarea id="textarea" path="description"
-							rows="10" cols="60" /></td>
+					<td><form:textarea id="textarea" path="description" rows="10"
+							cols="60" /></td>
 					<td><form:errors path="description" cssClass="error" /></td>
 				</tr>
 				<tr>
@@ -50,11 +50,9 @@
 								<input type="submit"
 									value="<spring:message code="label.update"/>" />
 							</c:otherwise>
-						</c:choose>
-						<form>
-							<input type="button" value="<spring:message code="label.back" />"
-								onClick="parent.location='showtechnology.html?id={platform.technology.id}'" />
-						</form></td>
+						</c:choose> <input type="button" value="<spring:message code="label.back" />"
+						onClick="parent.location='showtechnology.html?id={platform.technology.id}'" />
+					</td>
 					<td></td>
 				</tr>
 			</table>

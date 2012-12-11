@@ -3,6 +3,8 @@ package edu.vanderbilt.cqs;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import edu.vanderbilt.cqs.bean.ITask;
@@ -53,5 +55,13 @@ public final class Utils {
 			result += task.getMachineTime();
 		}
 		return result;
+	}
+
+	public static String getDateString(Date aDate) {
+		if (aDate == null) {
+			return "";
+		} else {
+			return new SimpleDateFormat("yyyyMMdd").format(aDate);
+		}
 	}
 }

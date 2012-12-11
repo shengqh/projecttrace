@@ -2,48 +2,6 @@
 <html>
 <head>
 <%@ include file="../include_head.jsp"%>
-<script type="text/javascript">
-	function showComments(taskid) {
-		//alert(taskid);
-		$
-				.ajax({
-					type : "POST",
-					url : "getStatusList.html",
-					data : "taskid=" + taskid.toString(),
-					success : function(response) {
-						//alert(response);
-						var tbody = "";
-						$
-								.each(
-										response,
-										function(n, value) {
-											//alert(n+' '+value);  
-											var trs = "<tr class=\"comment\">";
-											trs += "<td align=\"right\">log:</td>";
-											trs += "<td colspan=\"1\" class=\"comment\" background=\"red\"><pre>"
-													+ value.comment
-													+ "</pre></td>";
-											trs += "<td>" + value.statusString
-													+ "</td>";
-											trs += "<td>" + value.updateUser
-													+ "</td>";
-											trs += "<td>"
-													+ value.updateDateString
-													+ "</td>";
-											trs += "<td></td>";
-											trs += "<td></td>";
-											trs += "<td></td>";
-											trs += "</tr>";
-											tbody += trs;
-										});
-						$('#task' + taskid.toString()).html(tbody);
-					},
-					error : function(e) {
-						alert('Error: ' + e);
-					}
-				});
-	}
-</script>
 </head>
 
 <body>
@@ -51,12 +9,12 @@
 	<p>
 	<h1>Technology : ${technology.name}</h1>
 	<p>
-	<h3>Description	</h3>
+	<h3>Description</h3>
 	<pre>${technology.description}</pre>
 	<p>
 	<h3>
 		Platforms
-		<sec:authorize access="hasRole('ROLE_VANGARD_USER')"> | <a
+		<sec:authorize access="hasRole('ROLE_MODULE_EDIT')"> | <a
 				href="addplatform?technologyid=${technology.id}">New Platform</a>
 		</sec:authorize>
 	</h3>
@@ -67,7 +25,7 @@
 					<tr>
 						<th scope="col">Name</th>
 						<th scope="col">Description</th>
-						<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+						<sec:authorize access="hasRole('ROLE_MODULE_EDIT')">
 							<th scope="col">&nbsp;</th>
 							<th scope="col">&nbsp;</th>
 						</sec:authorize>
@@ -78,7 +36,7 @@
 						<tr>
 							<td>${platform.name}</td>
 							<td>${platform.description}</td>
-							<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+							<sec:authorize access="hasRole('ROLE_MODULE_EDIT')">
 								<td>
 									<form action="editplatform?id=${platform.id}" method="post">
 										<input type="submit"
@@ -88,7 +46,8 @@
 								<td>
 									<form action="deleteplatform/${platform.id}" method="post">
 										<input type="submit"
-											value="<spring:message	code="label.delete" />" />
+											value="<spring:message	code="label.delete" />"
+											onclick="return confirm('Are you sure you want to delete?')" />
 									</form>
 								</td>
 							</sec:authorize>
@@ -100,7 +59,7 @@
 	</c:if>
 	<h3>
 		Modules
-		<sec:authorize access="hasRole('ROLE_VANGARD_USER')"> | <a
+		<sec:authorize access="hasRole('ROLE_MODULE_EDIT')"> | <a
 				href="addmodule?technologyid=${technology.id}">New Module</a>
 		</sec:authorize>
 	</h3>
@@ -112,7 +71,7 @@
 						<th scope="col">Module Index</th>
 						<th scope="col">Name</th>
 						<th scope="col">Description</th>
-						<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+						<sec:authorize access="hasRole('ROLE_MODULE_EDIT')">
 							<th scope="col">&nbsp;</th>
 							<th scope="col">&nbsp;</th>
 						</sec:authorize>
@@ -124,7 +83,7 @@
 							<td>${module.moduleIndex}</td>
 							<td>${module.name}</td>
 							<td>${module.description}</td>
-							<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+							<sec:authorize access="hasRole('ROLE_MODULE_EDIT')">
 								<td>
 									<form action="editmodule?id=${module.id}" method="post">
 										<input type="submit"
@@ -134,7 +93,8 @@
 								<td>
 									<form action="deletemodule/${module.id}" method="post">
 										<input type="submit"
-											value="<spring:message	code="label.delete" />" />
+											value="<spring:message	code="label.delete" />"
+											onclick="return confirm('Are you sure you want to delete?')" />
 									</form>
 								</td>
 							</sec:authorize>

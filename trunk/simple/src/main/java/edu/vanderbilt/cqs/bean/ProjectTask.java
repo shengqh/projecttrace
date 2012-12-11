@@ -17,8 +17,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
-import edu.vanderbilt.cqs.Status;
-
 @Entity
 @Table(name = "PROJECTTASK")
 public class ProjectTask implements ITask, Serializable {
@@ -43,15 +41,11 @@ public class ProjectTask implements ITask, Serializable {
 	private Double machineTime;
 
 	@Column(name="STATUS")
-	private Integer status;
+	private String status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PROJECT_ID")
 	private Project project;
-
-	public String getStatusString() {
-		return Status.getStatusMap().get(this.status);
-	}
 
 	@Column(name="UPDATEUSER")
 	private String updateUser;
@@ -119,11 +113,11 @@ public class ProjectTask implements ITask, Serializable {
 		this.statuses = statuses;
 	}
 
-	public Integer getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 

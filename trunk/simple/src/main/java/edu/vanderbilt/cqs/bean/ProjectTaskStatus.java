@@ -13,17 +13,15 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import edu.vanderbilt.cqs.Status;
-
 @Entity
 @Table(name = "PROJECTTASKSTATUS")
 public class ProjectTaskStatus implements Serializable {
 
-	public Integer getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -54,7 +52,7 @@ public class ProjectTaskStatus implements Serializable {
 	private ProjectTask task;
 
 	@Column(name = "STATUS")
-	private Integer status;
+	private String status;
 
 	@Lob
 	@Column(name = "COMMENT")
@@ -88,9 +86,5 @@ public class ProjectTaskStatus implements Serializable {
 
 	public void setComment(String comment) {
 		this.comment = comment;
-	}
-	
-	public String getStatusString() {
-		return Status.getStatusMap().get(this.status);
 	}
 }

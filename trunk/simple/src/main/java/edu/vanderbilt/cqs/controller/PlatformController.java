@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Platform;
-import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.service.ProjectService;
 
@@ -33,7 +33,7 @@ public class PlatformController extends RootController {
 	private Validator validator;
 
 	@RequestMapping("/addplatform")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_MODULE_EDIT)
 	public String add(@RequestParam("technologyid") Long technologyid,
 			ModelMap model) {
 		Technology tec = projectService.findTechnology(technologyid);
@@ -48,7 +48,7 @@ public class PlatformController extends RootController {
 	}
 
 	@RequestMapping("/editplatform")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_MODULE_EDIT)
 	public String edit(@RequestParam("id") Long id, ModelMap model) {
 		logger.info(currentUser().getUsername() + " editplatform.");
 
@@ -62,7 +62,7 @@ public class PlatformController extends RootController {
 	}
 
 	@RequestMapping(value = "/saveplatform", method = RequestMethod.POST)
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_MODULE_EDIT)
 	public String save(@Valid @ModelAttribute("platform") Platform plat,
 			BindingResult result) {
 		if (result.hasErrors()) {
@@ -90,7 +90,7 @@ public class PlatformController extends RootController {
 	}
 
 	@RequestMapping("/deleteplatform/{id}")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_MODULE_EDIT)
 	public String delete(@PathVariable Long id) {
 		Platform plat = projectService.findPlatform(id);
 		if(plat == null){

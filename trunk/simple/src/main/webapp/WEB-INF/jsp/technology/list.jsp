@@ -8,9 +8,9 @@
 	<jsp:include page="../menu.jsp" />
 
 	<p>
-	<h1 align="center">
+	<h1>
 		Technology List
-		<sec:authorize access="hasRole('ROLE_VANGARD_USER')"> | <a
+		<sec:authorize access="hasRole('ROLE_MODULE_EDIT')"> | <a
 				href="addtechnology">New Technology</a>
 		</sec:authorize>
 	</h1>
@@ -21,10 +21,8 @@
 					<tr>
 						<th scope="col"><spring:message code="label.name" /></th>
 						<th scope="col"><spring:message code="label.description" /></th>
-						<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+						<sec:authorize access="hasRole('ROLE_MODULE_EDIT')">
 							<th scope="col">&nbsp;</th>
-						</sec:authorize>
-						<sec:authorize access="hasRole('ROLE_ADMIN')">
 							<th scope="col">&nbsp;</th>
 							<th scope="col">&nbsp;</th>
 						</sec:authorize>
@@ -43,15 +41,13 @@
 						<tr ${bc}>
 							<td><a href="showtechnology?id=${tec.id}">${tec.name}</a></td>
 							<td><pre>${tec.description}</pre></td>
-							<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+							<sec:authorize access="hasRole('ROLE_MODULE_EDIT')">
 								<td>
 									<form action="edittechnology?id=${tec.id}" method="post">
 										<input type="submit"
 											value="<spring:message	code="label.edit" />" />
 									</form>
 								</td>
-							</sec:authorize>
-							<sec:authorize access="hasRole('ROLE_ADMIN')">
 								<td><c:choose>
 										<c:when test="${tec.enabled}">
 											<form action="disabletechnology/${tec.id}">

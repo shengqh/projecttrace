@@ -140,4 +140,6 @@ public interface ProjectService {
 	Permission findPermission(Long id);
 
 	void updateProjectTechnology(ProjectTechnology entity);
+
+	void updateRole(Role role);
 }

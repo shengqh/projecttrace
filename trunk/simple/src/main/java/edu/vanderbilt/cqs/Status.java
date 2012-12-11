@@ -4,20 +4,20 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class Status {
-	public static final Integer FAILED = -1;
-	public static final Integer PROCESSING = 1;
-	public static final Integer PENDING = 2;
-	public static final Integer FINISHED = 3;
+	public static final String PENDING = "Pending";
+	public static final String ACTIVE = "Active";
+	public static final String CANCELLED = "Cancelled";
+	public static final String COMPLETE = "Complete";
 
-	private static Map<Integer, String> statusMap;
+	private static Map<String, String> statusMap;
 
-	public static Map<Integer, String> getStatusMap() {
+	public static Map<String, String> getStatusMap() {
 		if (statusMap == null) {
-			statusMap = new LinkedHashMap<Integer, String>();
-			statusMap.put(FAILED, "failed");
-			statusMap.put(PROCESSING, "processing");
-			statusMap.put(PENDING, "pending");
-			statusMap.put(FINISHED, "finished");
+			statusMap = new LinkedHashMap<String, String>();
+			statusMap.put(PENDING, PENDING);
+			statusMap.put(ACTIVE, ACTIVE);
+			statusMap.put(CANCELLED, CANCELLED);
+			statusMap.put(COMPLETE, COMPLETE);
 		}
 		return statusMap;
 	}

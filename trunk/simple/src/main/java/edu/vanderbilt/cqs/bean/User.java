@@ -16,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,7 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "USER")
-public class User implements Serializable, UserDetails {
+public class User implements Serializable, Comparable<User>, UserDetails {
 	private static final long serialVersionUID = 7401126221031716368L;
 
 	@Id
@@ -55,16 +56,16 @@ public class User implements Serializable, UserDetails {
 	@Column(name = "ACCOUNT_NOT_EXPIRED")
 	private Boolean accountNonExpired = true;
 
-	@Column(name = "DELETED")
-	private Boolean deleted = false;
+	@Column(name = "ACCOUNT_NOT_DELETED")
+	private Boolean accountNonDeleted = true;
 
-	@Column(name = "CREDENTIALS_NOT_EXPIRED")
+	@Transient
 	private Boolean credentialsNonExpired = true;
 
 	@Column(name = "PASSWORD")
 	private String password;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
 	private Set<UserRole> roles = new HashSet<UserRole>();
 
 	public String getEmail() {
@@ -129,7 +130,7 @@ public class User implements Serializable, UserDetails {
 
 	public String getName() {
 		if (notEmpty(firstname) && notEmpty(lastname)) {
-			return this.firstname + " " + lastname;
+			return lastname + ", " + firstname;
 		} else if (notEmpty(this.firstname)) {
 			return this.firstname;
 		} else if (notEmpty(this.lastname)) {
@@ -140,16 +141,8 @@ public class User implements Serializable, UserDetails {
 	}
 
 	public boolean isValid() {
-		return enabled && (!accountNonLocked) && (!accountNonExpired)
-				&& (!deleted);
-	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
+		return enabled && accountNonLocked && accountNonExpired
+				&& accountNonDeleted;
 	}
 
 	public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
@@ -186,9 +179,16 @@ public class User implements Serializable, UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
+		HashSet<String> gas = new HashSet<String>();
 		for (UserRole role : roles) {
-			result.add(new SimpleGrantedAuthority(role.getRole().getName()));
+			gas.add(role.getRole().getName());
+			for (RolePermission rp : role.getRole().getPermissions()) {
+				gas.add(rp.getPermission().getName());
+			}
+		}
+		List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
+		for (String ga : gas) {
+			result.add(new SimpleGrantedAuthority(ga));
 		}
 		return result;
 	}
@@ -233,5 +233,51 @@ public class User implements Serializable, UserDetails {
 			}
 		}
 		return false;
+	}
+
+	public Boolean getAccountNonDeleted() {
+		return accountNonDeleted;
+	}
+
+	public void setAccountNonDeleted(Boolean accountNonDeleted) {
+		this.accountNonDeleted = accountNonDeleted;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		return true;
+	}
+
+	@Override
+	public int compareTo(User arg0) {
+		if(arg0 == null){
+			return -1;
+		}
+		
+		if(email == null){
+			return -1;
+		}
+		
+		return email.compareTo(arg0.email);
 	}
 }

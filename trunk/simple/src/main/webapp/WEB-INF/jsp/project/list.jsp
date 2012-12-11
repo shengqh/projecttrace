@@ -10,7 +10,7 @@
 	<p>
 	<h1>
 		<spring:message code="label.projectlist" />
-		<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+		<sec:authorize access="hasRole('ROLE_PROJECT_EDIT')">
 		| <a href="addproject"><spring:message code="label.projectnew" /></a>
 		</sec:authorize>
 	</h1>
@@ -25,12 +25,11 @@
 						<th scope="col">Contact name</th>
 						<th scope="col">Study PI</th>
 						<th scope="col">Technology</th>
-						<th scope="col">Sample number</th>
 						<th scope="col">Faculty</th>
 						<th scope="col">Staff</th>
 						<th scope="col">Work started</th>
 						<th scope="col">Work completed</th>
-						<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+						<sec:authorize access="hasRole('ROLE_PROJECT_EDIT')">
 							<th scope="col">&nbsp;</th>
 						</sec:authorize>
 						<sec:authorize access="hasRole('ROLE_ADMIN')">
@@ -49,37 +48,26 @@
 							</c:otherwise>
 						</c:choose>
 						<tr ${bc}>
-							<td><a href="showproject?projectid=${project.id}">${project.studyName}</a></td>
+							<td><a href="showproject?projectid=${project.id}">${project.name}</a></td>
 							<td>${project.contactDate}</td>
-							<td>
-								<c:forEach items="${project.contactName}" var="user">
+							<td><c:forEach items="${project.contactName}" var="user">
 									${user}<br>
-								</c:forEach>
-							</td>
-							<td>							
-								<c:forEach items="${project.studyPIName}" var="user">
+								</c:forEach></td>
+							<td><c:forEach items="${project.studyPIName}" var="user">
 									${user}<br>
-								</c:forEach>
-							</td>
-							<td>
-								<c:forEach items="${project.technologies}" var="tec">
+								</c:forEach></td>
+							<td><c:forEach items="${project.technologies}" var="tec">
 									${tec.technology}<br>
-								</c:forEach>
-							</td>
-							<td>${project.sampleNumber}</td>
-							<td>							
-								<c:forEach items="${project.facultyName}" var="user">
+								</c:forEach></td>
+							<td><c:forEach items="${project.facultyName}" var="user">
 									${user}<br>
-								</c:forEach>
-							</td>
-							<td>							
-								<c:forEach items="${project.staffName}" var="user">
+								</c:forEach></td>
+							<td><c:forEach items="${project.staffName}" var="user">
 									${user}<br>
-								</c:forEach>
-							</td>
+								</c:forEach></td>
 							<td>${project.workStarted}</td>
 							<td>${project.workCompleted}</td>
-							<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
+							<sec:authorize access="hasRole('ROLE_PROJECT_EDIT')">
 								<td>
 									<form action="editproject?projectid=${project.id}"
 										method="post">

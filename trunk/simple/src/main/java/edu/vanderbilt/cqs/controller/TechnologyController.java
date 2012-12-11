@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import edu.vanderbilt.cqs.bean.Role;
+import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.service.ProjectService;
 
@@ -31,7 +31,7 @@ public class TechnologyController extends RootController {
 	@Autowired
 	private Validator validator;
 
-	@Secured(Role.ROLE_USER)
+	@Secured(Permission.ROLE_PROJECT_VIEW)
 	@RequestMapping("/technology")
 	public String list(ModelMap model) {
 		model.put("technologyList", projectService.listTechnology());
@@ -39,7 +39,7 @@ public class TechnologyController extends RootController {
 	}
 
 	@RequestMapping("/addtechnology")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String add(ModelMap model) {
 		Technology tec = new Technology();
 		model.put("technology", tec);
@@ -47,7 +47,7 @@ public class TechnologyController extends RootController {
 	}
 
 	@RequestMapping("/edittechnology")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String edit(@RequestParam("id") Long id,
 			ModelMap model) {
 		logger.info(currentUser().getUsername() + " edittechnology.");
@@ -62,7 +62,7 @@ public class TechnologyController extends RootController {
 	}
 
 	@RequestMapping(value = "/savetechnology", method = RequestMethod.POST)
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String save(
 			@Valid @ModelAttribute("technology") Technology tec,
 			BindingResult result) {
@@ -84,7 +84,7 @@ public class TechnologyController extends RootController {
 	}
 
 	@RequestMapping("/deletetechnology/{id}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String delete(@PathVariable Long id) {
 		projectService.removeTechnology(id);
 
@@ -95,7 +95,7 @@ public class TechnologyController extends RootController {
 	}
 
 	@RequestMapping("/showtechnology")
-	@Secured(Role.ROLE_USER)
+	@Secured(Permission.ROLE_PROJECT_VIEW)
 	public String show(
 			@RequestParam("id") Long id,
 			ModelMap model) {
@@ -109,7 +109,7 @@ public class TechnologyController extends RootController {
 	}
 	
 	@RequestMapping("/enabletechnology/{id}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String enable(@PathVariable Long id) {
 		Technology tec = projectService.findTechnology(id);
 		if (tec != null) {
@@ -121,7 +121,7 @@ public class TechnologyController extends RootController {
 	}
 
 	@RequestMapping("/disabletechnology/{id}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String disable(@PathVariable Long id) {
 		Technology tec = projectService.findTechnology(id);
 		if (tec != null) {

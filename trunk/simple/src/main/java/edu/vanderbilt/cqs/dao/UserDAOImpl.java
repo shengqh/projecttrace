@@ -38,37 +38,24 @@ public class UserDAOImpl extends GenericDAOImpl<User, Long> implements UserDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> listValidUser() {
-		String hql = "from User where (enabled=:enabled) and (locked = :locked) and (expired = :expired) and (deleted = :deleted) order by email";
+		String hql = "from User where (enabled=:enabled) and (accountNonLocked = :accountNonLocked) and (accountNonExpired = :accountNonExpired) and (accountNonDeleted = :accountNonDeleted) order by email";
 		Query query = getSession().createQuery(hql);
 		query.setParameter("enabled", true);
-		query.setParameter("locked", false);
-		query.setParameter("expired", false);
-		query.setParameter("deleted", false);
-		return (List<User>) query.list();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<User> listValidUser(Integer role) {
-		String hql = "from User where (enabled=:enabled) and (locked = :locked) and (expired = :expired) and (deleted = :deleted) and (role=:role) order by email";
-		Query query = getSession().createQuery(hql);
-		query.setParameter("enabled", true);
-		query.setParameter("locked", false);
-		query.setParameter("expired", false);
-		query.setParameter("deleted", false);
-		query.setParameter("role", role);
+		query.setParameter("accountNonLocked", true);
+		query.setParameter("accountNonExpired", true);
+		query.setParameter("accountNonDeleted", true);
 		return (List<User>) query.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> listInvalidUser() {
-		String hql = "from User where (enabled=:enabled) or (locked = :locked) or (expired = :expired) or (deleted = :deleted) order by email";
+		String hql = "from User where (enabled=:enabled) or (accountNonLocked = :accountNonLocked) or (accountNonExpired = :accountNonExpired) or (accountNonDeleted = :accountNonDeleted) order by email";
 		Query query = getSession().createQuery(hql);
 		query.setParameter("enabled", false);
-		query.setParameter("locked", true);
-		query.setParameter("expired", true);
-		query.setParameter("deleted", true);
+		query.setParameter("accountNonLocked", false);
+		query.setParameter("accountNonExpired", false);
+		query.setParameter("accountNonDeleted", false);
 		return (List<User>) query.list();
 	}
 }

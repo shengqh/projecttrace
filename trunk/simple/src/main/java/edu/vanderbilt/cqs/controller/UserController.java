@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 
 import edu.vanderbilt.cqs.Utils;
+import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.bean.UserRole;
@@ -62,43 +63,15 @@ public class UserController extends RootController {
 
 	protected boolean sendMail = true;
 
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
-		binder.registerCustomEditor(Set.class, "roles",
-				new CustomCollectionEditor(Set.class) {
-					@Override
-					protected Object convertElement(Object element) {
-						Long id = null;
-
-						if (element instanceof String
-								&& !((String) element).equals("")) {
-							// From the JSP 'element' will be a String
-							try {
-								id = Long.parseLong((String) element);
-							} catch (NumberFormatException e) {
-								System.out.println("Element was "
-										+ ((String) element));
-								e.printStackTrace();
-							}
-						} else if (element instanceof Long) {
-							// From the database 'element' will be a Long
-							id = (Long) element;
-						}
-
-						return id != null ? projectService.findRole(id) : null;
-					}
-				});
-	}
-
 	@RequestMapping("/user")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_USER_VIEW)
 	public String listUsers(ModelMap model) {
 		model.addAttribute("validUserList", projectService.listValidUser());
 		return "user/list";
 	}
 
 	@RequestMapping("/alluser")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String listAllUsers(ModelMap model) {
 		model.addAttribute("validUserList", projectService.listValidUser());
 		model.addAttribute("invalidUserList", projectService.listInvalidUser());
@@ -109,23 +82,41 @@ public class UserController extends RootController {
 		form.setUser(user);
 		form.setRoleList(new HashSet<Role>(projectService.listRole()));
 
-		HashSet<Role> roles = new HashSet<Role>();
+		HashSet<Long> roles = new HashSet<Long>();
 		for (UserRole ur : user.getRoles()) {
-			roles.add(ur.getRole());
+			roles.add(ur.getRole().getId());
 		}
 		form.setRoles(roles);
 	}
 
-	private void assignRole(User user, Set<Role> roles) {
-		Set<UserRole> urs = new HashSet<UserRole>();
-		for (Role role : roles) {
-			urs.add(new UserRole(user, role));
+	private void assignRole(User user, Set<Long> roles) {
+		Set<Role> roleList = new HashSet<Role>();
+		for(Long r:roles){
+			roleList.add(projectService.findRole(r));
 		}
-		user.setRoles(urs);
+		
+		boolean same = true;
+		if (user.getRoles().size() == roles.size()) {
+			for (Role role : roleList) {
+				if (!user.getRoles().contains(new UserRole(user, role))) {
+					same = false;
+					break;
+				}
+			}
+		} else {
+			same = false;
+		}
+
+		if (!same) {
+			user.getRoles().clear();
+			for (Role role : roleList) {
+				user.getRoles().add(new UserRole(user, role));
+			}
+		}
 	}
 
 	@RequestMapping("/adduser")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String addUser(ModelMap model) {
 		UserForm form = new UserForm();
 		User user = new User();
@@ -137,7 +128,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/edituser")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String editUser(@RequestParam("userid") Long userid, ModelMap model) {
 		logger.info(currentUser().getUsername() + " try to edit user ...");
 		User user = projectService.findUser(userid);
@@ -152,7 +143,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/saveuser")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String saveUser(@ModelAttribute("userForm") UserForm form,
 			BindingResult result, SessionStatus status) {
 		logger.info(currentUser().getUsername() + " try to save user ...");
@@ -182,7 +173,7 @@ public class UserController extends RootController {
 		} else {
 			User user = projectService.findUser(form.getUser().getId());
 			BeanUtils.copyProperties(form.getUser(), user,
-					new String[] { "roles" });
+					new String[] { "roles", "createDate" });
 			assignRole(user, form.getRoles());
 
 			projectService.updateUser(user);
@@ -220,7 +211,7 @@ public class UserController extends RootController {
 	private String setUserDeleted(Long userid, Boolean value) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
-			user.setDeleted(value);
+			user.setAccountNonDeleted(!value);
 			projectService.updateUser(user);
 			logger.info(currentUser().getUsername() + " set user "
 					+ user.getEmail() + " deleted=" + value.toString());
@@ -230,43 +221,43 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/enableuser/{userid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String enableUser(@PathVariable Long userid) {
 		return setUserEnabled(userid, true);
 	}
 
 	@RequestMapping("/disableuser/{userid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String disableUser(@PathVariable Long userid) {
 		return setUserEnabled(userid, false);
 	}
 
 	@RequestMapping("/lockuser/{userid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String lockUser(@PathVariable Long userid) {
 		return setUserLocked(userid, true);
 	}
 
 	@RequestMapping("/unlockuser/{userid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String unlockUser(@PathVariable Long userid) {
 		return setUserLocked(userid, false);
 	}
 
 	@RequestMapping("/deleteuser/{userid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String deleteUser(@PathVariable Long userid) {
 		return setUserDeleted(userid, true);
 	}
 
 	@RequestMapping("/undeleteuser/{userid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String undeleteUser(@PathVariable Long userid) {
 		return setUserDeleted(userid, false);
 	}
 
 	@RequestMapping("/deleteuserforever/{userid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String deleteUserForever(
 
 	@PathVariable Long userid) {
@@ -281,7 +272,6 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/changeownpassword")
-	@Secured(Role.ROLE_USER)
 	public String changeownpassword(ModelMap model) {
 		ChangePasswordForm form = new ChangePasswordForm();
 		model.put("changeOwnPasswordForm", form);
@@ -290,7 +280,6 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/saveownpassword")
-	@Secured(Role.ROLE_USER)
 	public String saveownpassword(
 			@ModelAttribute("changeOwnPasswordForm") ChangePasswordForm form,
 			ModelMap model, BindingResult result, SessionStatus status) {
@@ -310,7 +299,7 @@ public class UserController extends RootController {
 	}
 
 	@RequestMapping("/resetpassword/{userid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_USER_EDIT)
 	public String resetpassword(
 			@ModelAttribute("currentuser") User currentUser,
 			@PathVariable Long userid, ModelMap model) {

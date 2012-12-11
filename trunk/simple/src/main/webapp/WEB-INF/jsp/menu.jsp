@@ -12,16 +12,16 @@
 	<ul>
 		<li><a href="${homeUrl}">Home</a></li>
 
-		<sec:authorize access="hasRole('ROLE_USER')">
+		<sec:authorize access="hasAnyRole('ROLE_PROJECT_VIEW', 'ROLE_PROJECT_EDIT')">
 			<li><a href="${projectUrl}">Project</a></li>
 			<li><a href="${technologyUrl}">Technology</a></li>
 		</sec:authorize>
 
-		<sec:authorize access="hasRole('ROLE_VANGARD_USER')">
-			<sec:authorize ifAnyGranted="ROLE_ADMIN">
+		<sec:authorize access="hasAnyRole('ROLE_USER_VIEW', 'ROLE_USER_EDIT')">
+			<sec:authorize ifAnyGranted="ROLE_USER_EDIT">
 				<li><a href="${userAllUrl}">User</a></li>
 			</sec:authorize>
-			<sec:authorize ifNotGranted="ROLE_ADMIN">
+			<sec:authorize ifNotGranted="ROLE_USER_EDIT">
 				<li><a href="${userUrl}">User</a></li>
 			</sec:authorize>
 		</sec:authorize>

@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import edu.vanderbilt.cqs.Status;
@@ -34,14 +35,8 @@ public class Project implements Serializable {
 	@Column(name = "CONTACTDATE")
 	private Date contactDate;
 
-	@Column(name = "STUDYNAME")
-	private String studyName;
-
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	private Set<ProjectTechnology> technologies = new HashSet<ProjectTechnology>();
-
-	@Column(name = "SAMPLENUMBER")
-	private Integer sampleNumber;
+	@Column(name = "NAME")
+	private String name;
 
 	@Column(name = "QUOTEAMOUNT")
 	private Double quoteAmount;
@@ -59,10 +54,10 @@ public class Project implements Serializable {
 	private Date requestCostCenterSetupInCORES;
 
 	@Column(name = "REQUESTEDBY")
-	private String requstedBy;
+	private String requestedBy;
 
 	@Column(name = "BILLEDBYCORES")
-	private Date billedByCORES;
+	private Date billedInCORES;
 
 	@Column(name = "BILLEDBY")
 	private String billedBy;
@@ -71,9 +66,13 @@ public class Project implements Serializable {
 	@Lob
 	private String comments;
 
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
 	private Set<ProjectUser> users = new HashSet<ProjectUser>();
 
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@OrderBy("technology")
+	private Set<ProjectTechnology> technologies = new HashSet<ProjectTechnology>();
+	
 	@Column(name = "CREATOR")
 	private String creator;
 
@@ -102,12 +101,12 @@ public class Project implements Serializable {
 		this.contactDate = contactDate;
 	}
 
-	public String getStudyName() {
-		return studyName;
+	public String getName() {
+		return name;
 	}
 
-	public void setStudyName(String studyName) {
-		this.studyName = studyName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Set<ProjectTechnology> getTechnologies() {
@@ -116,14 +115,6 @@ public class Project implements Serializable {
 
 	public void setTechnologies(Set<ProjectTechnology> technologies) {
 		this.technologies = technologies;
-	}
-
-	public Integer getSampleNumber() {
-		return sampleNumber;
-	}
-
-	public void setSampleNumber(Integer sampleNumber) {
-		this.sampleNumber = sampleNumber;
 	}
 
 	public Double getQuoteAmount() {
@@ -167,20 +158,20 @@ public class Project implements Serializable {
 		this.requestCostCenterSetupInCORES = requestCostCenterSetupInCORES;
 	}
 
-	public String getRequstedBy() {
-		return requstedBy;
+	public String getRequestedBy() {
+		return requestedBy;
 	}
 
-	public void setRequstedBy(String requstedBy) {
-		this.requstedBy = requstedBy;
+	public void setRequestedBy(String requestedBy) {
+		this.requestedBy = requestedBy;
 	}
 
-	public Date getBilledByCORES() {
-		return billedByCORES;
+	public Date getBilledInCORES() {
+		return billedInCORES;
 	}
 
-	public void setBilledByCORES(Date billedByCORES) {
-		this.billedByCORES = billedByCORES;
+	public void setBilledInCORES(Date billedInCORES) {
+		this.billedInCORES = billedInCORES;
 	}
 
 	public String getBilledBy() {

@@ -23,9 +23,15 @@ public class ProjectForm implements Serializable {
 
 	private List<Long> studyPI = new ArrayList<Long>();
 	
-	private List<Technology> technologies;
+	private List<Technology> technologyList;
 	
-	private List<User> users;
+	private List<User> contactList;
+
+	private List<User> studyPIList;
+
+	private List<User> facultyList;
+
+	private List<User> staffList;
 
 	public Project getProject() {
 		return project;
@@ -75,19 +81,43 @@ public class ProjectForm implements Serializable {
 		this.studyPI = studyPI;
 	}
 
-	public List<Technology> getTechnologies() {
-		return technologies;
+	public List<User> getContactList() {
+		return contactList;
 	}
 
-	public void setTechnologies(List<Technology> technologies) {
-		this.technologies = technologies;
+	public void setContactList(List<User> contactList) {
+		this.contactList = contactList;
 	}
 
-	public List<User> getUsers() {
-		return users;
+	public List<User> getStudyPIList() {
+		return studyPIList;
 	}
 
-	public void setUsers(List<User> users) {
-		this.users = users;
+	public void setStudyPIList(List<User> studyPIList) {
+		this.studyPIList = studyPIList;
+	}
+
+	public List<User> getFacultyList() {
+		return facultyList;
+	}
+
+	public void setFacultyList(List<User> facultyList) {
+		this.facultyList = facultyList;
+	}
+
+	public List<User> getStaffList() {
+		return staffList;
+	}
+
+	public void setStaffList(List<User> staffList) {
+		this.staffList = staffList;
+	}
+
+	public List<Technology> getTechnologyList() {
+		return technologyList;
+	}
+
+	public void setTechnologyList(List<Technology> technologyList) {
+		this.technologyList = technologyList;
 	}
 }

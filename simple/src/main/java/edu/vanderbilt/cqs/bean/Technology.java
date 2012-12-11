@@ -1,7 +1,7 @@
 package edu.vanderbilt.cqs.bean;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,20 +23,20 @@ public class Technology implements Serializable {
 
 	@Id
 	@GeneratedValue
-	@Column(name="ID")
+	@Column(name = "ID")
 	private Long id;
 
 	@NotEmpty
-	@Column(name="NAME")
+	@Column(name = "NAME")
 	private String name;
 
-	@Column(name="DESCRIPTION")
+	@Column(name = "DESCRIPTION")
 	@Lob
 	private String description;
-	
-	@Column(name="ENABLED")
+
+	@Column(name = "ENABLED")
 	private Boolean enabled = true;
-	
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -46,11 +46,11 @@ public class Technology implements Serializable {
 	}
 
 	@OneToMany(mappedBy = "technology", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	private List<Platform> platforms;
-	
+	private Set<Platform> platforms;
+
 	@OneToMany(mappedBy = "technology", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
 	@OrderBy("moduleIndex")
-	private List<Module> modules;
+	private Set<Module> modules;
 
 	public Long getId() {
 		return id;
@@ -76,27 +76,27 @@ public class Technology implements Serializable {
 		this.description = description;
 	}
 
-	public List<Platform> getPlatforms() {
+	public Set<Platform> getPlatforms() {
 		return platforms;
 	}
 
-	public void setPlatforms(List<Platform> platforms) {
+	public void setPlatforms(Set<Platform> platforms) {
 		this.platforms = platforms;
 	}
 
-	public List<Module> getModules() {
+	public Set<Module> getModules() {
 		return modules;
 	}
 
-	public void setModules(List<Module> modules) {
+	public void setModules(Set<Module> modules) {
 		this.modules = modules;
 	}
-	
-	public int getNextModuleIndex(){
+
+	public int getNextModuleIndex() {
 		int result = 1;
-		for(int i = 0;i < this.getModules().size();i++){
-			int mindex = this.getModules().get(i).getModuleIndex();
-			if(mindex >= result){
+		for (Module module : modules) {
+			int mindex = module.getModuleIndex();
+			if (mindex >= result) {
 				result = mindex + 1;
 			}
 		}

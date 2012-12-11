@@ -14,7 +14,7 @@ public class UserForm implements Serializable {
 
 	private Set<Role> roleList;
 
-	private Set<Role> roles;
+	private Set<Long> roles;
 
 	public User getUser() {
 		return user;
@@ -32,11 +32,11 @@ public class UserForm implements Serializable {
 		this.roleList = roleList;
 	}
 
-	public Set<Role> getRoles() {
+	public Set<Long> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(Set<Role> roles) {
+	public void setRoles(Set<Long> roles) {
 		this.roles = roles;
 	}
 }

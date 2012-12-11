@@ -3,12 +3,14 @@ package edu.vanderbilt.cqs.service;
 import java.util.List;
 
 import edu.vanderbilt.cqs.bean.Module;
+import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
+import edu.vanderbilt.cqs.bean.ProjectTechnology;
 import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
@@ -84,13 +86,11 @@ public interface ProjectService {
 
 	List<User> listValidUser();
 
-	List<User> listValidUser(Integer role);
-
 	List<User> listInvalidUser();
 	
 	Integer getUserType(Long userid, Long projectid);
-	
-	//Technology
+
+	// Technology
 	List<Technology> listTechnology();
 
 	List<Technology> listValidTechnology();
@@ -111,6 +111,8 @@ public interface ProjectService {
 
 	void removePlatform(Platform entity);
 
+	List<Module> listModule(Long technologyId);
+	
 	Module findModule(Long id);
 
 	void updateModule(Module obj);
@@ -124,8 +126,18 @@ public interface ProjectService {
 	List<Role> listRole();
 
 	void addRole(Role entity);
-	
+
 	Role findRoleByName(String name);
 
 	Role findRole(Long id);
+
+	List<Permission> listPermission();
+
+	void addPermission(Permission entity);
+
+	Permission findPermissionByName(String name);
+
+	Permission findPermission(Long id);
+
+	void updateProjectTechnology(ProjectTechnology entity);
 }

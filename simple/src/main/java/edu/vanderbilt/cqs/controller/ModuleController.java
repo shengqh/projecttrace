@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.vanderbilt.cqs.bean.Module;
-import edu.vanderbilt.cqs.bean.Role;
+import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.service.ProjectService;
 
@@ -33,7 +33,7 @@ public class ModuleController extends RootController {
 	private Validator validator;
 
 	@RequestMapping("/addmodule")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String add(@RequestParam("technologyid") Long technologyid,
 			ModelMap model) {
 		Technology tec = projectService.findTechnology(technologyid);
@@ -49,7 +49,7 @@ public class ModuleController extends RootController {
 	}
 
 	@RequestMapping("/editmodule")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String edit(@RequestParam("id") Long id, ModelMap model) {
 		logger.info(currentUser().getUsername() + " editmodule.");
 
@@ -63,7 +63,7 @@ public class ModuleController extends RootController {
 	}
 
 	@RequestMapping(value = "/savemodule", method = RequestMethod.POST)
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String save(@Valid @ModelAttribute("module") Module plat,
 			BindingResult result) {
 		if (result.hasErrors()) {
@@ -91,7 +91,7 @@ public class ModuleController extends RootController {
 	}
 
 	@RequestMapping("/deletemodule/{id}")
-	@Secured(Role.ROLE_VANGARD_USER)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String delete(@PathVariable Long id) {
 		Module obj = projectService.findModule(id);
 		if(obj == null){

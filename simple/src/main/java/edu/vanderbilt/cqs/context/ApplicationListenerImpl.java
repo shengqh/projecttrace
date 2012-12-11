@@ -1,6 +1,7 @@
 package edu.vanderbilt.cqs.context;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -11,11 +12,14 @@ import org.springframework.stereotype.Repository;
 import edu.vanderbilt.cqs.UserType;
 import edu.vanderbilt.cqs.Utils;
 import edu.vanderbilt.cqs.bean.Module;
+import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
+import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.ProjectUser;
 import edu.vanderbilt.cqs.bean.Role;
+import edu.vanderbilt.cqs.bean.RolePermission;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.bean.UserRole;
@@ -37,21 +41,34 @@ public class ApplicationListenerImpl implements
 	}
 
 	private void initializeDatabase() {
+		if (projectService.listPermission().size() == 0) {
+			addPermission(Permission.ROLE_USER_VIEW);
+			addPermission(Permission.ROLE_USER_EDIT);
+			addPermission(Permission.ROLE_PROJECT_VIEW);
+			addPermission(Permission.ROLE_PROJECT_EDIT);
+		}
+
 		if (projectService.listRole().size() == 0) {
-			addRole(Role.ROLE_USER);
-			addRole(Role.ROLE_VANGARD_USER);
-			addRole(Role.ROLE_VANGARD_BUDGET_USER);
-			addRole(Role.ROLE_ADMIN);
+			Permission uv = projectService
+					.findPermissionByName(Permission.ROLE_USER_VIEW);
+			Permission ue = projectService
+					.findPermissionByName(Permission.ROLE_USER_EDIT);
+			Permission pv = projectService
+					.findPermissionByName(Permission.ROLE_PROJECT_VIEW);
+			Permission pe = projectService
+					.findPermissionByName(Permission.ROLE_PROJECT_EDIT);
+
+			addRole(Role.ROLE_USER, new Permission[] { uv, pv });
+			addRole(Role.ROLE_VANGARD_USER, new Permission[] { uv, pv, pe });
+			addRole(Role.ROLE_ADMIN, new Permission[] { uv, pv, ue, pe });
 		}
 
 		if (projectService.listUser().size() == 0) {
 			Role user = projectService.findRoleByName(Role.ROLE_USER);
 			Role vuser = projectService.findRoleByName(Role.ROLE_VANGARD_USER);
-			Role vbuser = projectService
-					.findRoleByName(Role.ROLE_VANGARD_BUDGET_USER);
 			Role admin = projectService.findRoleByName(Role.ROLE_ADMIN);
 
-			addUser("lynne.d.berry@vanderbilt.edu", "cqs", new Role[] { vbuser,
+			addUser("lynne.d.berry@vanderbilt.edu", "cqs", new Role[] { vuser,
 					admin });
 			addUser("quanhu.sheng@vanderbilt.edu", "cqs", new Role[] { vuser,
 					admin });
@@ -119,7 +136,7 @@ public class ApplicationListenerImpl implements
 
 			Project project = new Project();
 			project.setCreator(admin.getEmail());
-			project.setStudyName("2144");
+			project.setName("2144");
 			project.setCreateDate(new Date());
 			project.setCreator(vfaculty.getEmail());
 			project.setComments("Demo project, any comments are welcome!");
@@ -129,26 +146,54 @@ public class ApplicationListenerImpl implements
 			addProjectUser(project, vfaculty, UserType.VANGARD_FACULTY);
 			addProjectUser(project, vstaff, UserType.VANGARD_STAFF);
 
-			addTechnology(project, "RNA-seq");
-			addTechnology(project, "Microarray");
+			addProjectTechnology(project, "RNA-seq", "Illumina", 6);
+			addProjectTechnology(project, "Microarray", "agilentg4502a_07_3", 5);
+			//ProjectTechnology pt = 
+			addProjectTechnology(project, "Genotyping", "", 4);
 
 			projectService.addProject(project);
+			//pt.getModules().clear();
+			//projectService.updateProjectTechnology(pt);
 		}
 	}
 
-	private void addRole(String roleName) {
+	private void addPermission(String name) {
+		Permission permission = new Permission();
+		permission.setName(name);
+		projectService.addPermission(permission);
+	}
+
+	private void addRole(String roleName, Permission[] permissions) {
 		Role role = new Role();
 		role.setName(roleName);
+		for (Permission permission : permissions) {
+			role.getPermissions().add(new RolePermission(role, permission));
+		}
 		projectService.addRole(role);
 	}
 
-	private void addTechnology(Project project, String name) {
+	private ProjectTechnology addProjectTechnology(Project project, String name,
+			String platform, int sampleNumber) {
 		Technology rnaseq = projectService.findTechnologyByName(name);
 		ProjectTechnology pt = new ProjectTechnology();
 		pt.setProject(project);
 		pt.setTechnology(rnaseq.getName());
 		pt.setTechnologyId(rnaseq.getId());
+		pt.setPlatform(platform);
+		pt.setSampleNumber(sampleNumber);
+		List<Module> mods = projectService.listModule(rnaseq.getId());
+		int mindex = 0;
+		for (Module module : mods) {
+			mindex++;
+			ProjectTechnologyModule ptm = new ProjectTechnologyModule();
+			ptm.setName(module.getName());
+			ptm.setModuleId(module.getId());
+			ptm.setTechnology(pt);
+			ptm.setModuleIndex(mindex);
+			pt.getModules().add(ptm);
+		}
 		project.getTechnologies().add(pt);
+		return pt;
 	}
 
 	private void addTechnology(String technology, String[] platforms,

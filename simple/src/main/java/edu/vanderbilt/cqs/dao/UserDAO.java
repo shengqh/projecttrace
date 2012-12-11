@@ -14,6 +14,4 @@ public interface UserDAO extends GenericDAO<User, Long> {
 	List<User> listValidUser();
 	
 	List<User> listInvalidUser();
-	
-	List<User> listValidUser(Integer role);
 }

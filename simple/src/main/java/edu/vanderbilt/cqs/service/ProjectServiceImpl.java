@@ -7,22 +7,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.vanderbilt.cqs.bean.Module;
+import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
+import edu.vanderbilt.cqs.bean.ProjectTechnology;
 import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.dao.ModuleDAO;
+import edu.vanderbilt.cqs.dao.PermissionDAO;
 import edu.vanderbilt.cqs.dao.PipelineDAO;
 import edu.vanderbilt.cqs.dao.PipelineTaskDAO;
 import edu.vanderbilt.cqs.dao.PlatformDAO;
 import edu.vanderbilt.cqs.dao.ProjectDAO;
 import edu.vanderbilt.cqs.dao.ProjectTaskDAO;
 import edu.vanderbilt.cqs.dao.ProjectTaskStatusDAO;
+import edu.vanderbilt.cqs.dao.ProjectTechnologyDAO;
 import edu.vanderbilt.cqs.dao.RoleDAO;
 import edu.vanderbilt.cqs.dao.TechnologyDAO;
 import edu.vanderbilt.cqs.dao.UserDAO;
@@ -34,6 +38,9 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	private RoleDAO roleDAO;
+
+	@Autowired
+	private PermissionDAO permissionDAO;
 
 	@Autowired
 	private PipelineDAO pipelineDAO;
@@ -55,9 +62,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	private PlatformDAO platformDAO;
-
+	
 	@Autowired
 	private ModuleDAO moduleDAO;
+	
+	@Autowired
+	private ProjectTechnologyDAO projectTechnologyDAO;
 
 	@Transactional
 	@Override
@@ -282,12 +292,6 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public List<User> listValidUser(Integer role) {
-		return userDAO.listValidUser(role);
-	}
-
-	@Transactional
-	@Override
 	public List<User> listInvalidUser() {
 		return userDAO.listInvalidUser();
 	}
@@ -410,5 +414,41 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Role findRole(Long id) {
 		return roleDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public List<Permission> listPermission() {
+		return permissionDAO.findAll();
+	}
+
+	@Transactional
+	@Override
+	public void addPermission(Permission entity) {
+		permissionDAO.save(entity);
+	}
+
+	@Transactional
+	@Override
+	public Permission findPermissionByName(String name) {
+		return permissionDAO.findByName(name);
+	}
+
+	@Transactional
+	@Override
+	public Permission findPermission(Long id) {
+		return permissionDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public List<Module> listModule(Long technologyId) {
+		return moduleDAO.findByTechnology(technologyId);
+	}
+
+	@Transactional
+	@Override
+	public void updateProjectTechnology(ProjectTechnology entity) {
+		projectTechnologyDAO.update(entity);
 	}
 }

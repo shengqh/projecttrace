@@ -5,18 +5,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import edu.vanderbilt.cqs.bean.Role;
+import edu.vanderbilt.cqs.bean.Permission;
 
 @Controller
 public class HomeController extends RootController {
 	@RequestMapping("/")
-	@Secured({Role.ROLE_USER, Role.ROLE_VANGARD_USER, Role.ROLE_VANGARD_BUDGET_USER, Role.ROLE_ADMIN})
+	@Secured({Permission.ROLE_PROJECT_VIEW})
 	public String goindex() {
 		return "redirect:/project";
 	}
 
 	@RequestMapping("/home")
-	@Secured({Role.ROLE_USER, Role.ROLE_VANGARD_USER, Role.ROLE_VANGARD_BUDGET_USER, Role.ROLE_ADMIN})
+	@Secured({Permission.ROLE_PROJECT_VIEW})
 	public String gohome(ModelMap model) {
 		return "home";
 	}

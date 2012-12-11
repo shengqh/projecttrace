@@ -1,6 +1,7 @@
 package edu.vanderbilt.cqs.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.UserType;
+import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
@@ -33,7 +35,6 @@ import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.form.ProjectDetailForm;
 import edu.vanderbilt.cqs.form.ProjectForm;
-import edu.vanderbilt.cqs.form.ProjectTaskForm;
 import edu.vanderbilt.cqs.form.ProjectTaskStatusForm;
 import edu.vanderbilt.cqs.service.ProjectService;
 
@@ -48,7 +49,7 @@ public class ProjectController extends RootController {
 	@Autowired
 	private Validator validator;
 
-	@Secured({Role.ROLE_USER, Role.ROLE_VANGARD_USER, Role.ROLE_VANGARD_BUDGET_USER, Role.ROLE_ADMIN})
+	@Secured({Permission.ROLE_PROJECT_VIEW})
 	@RequestMapping("/project")
 	public String listProject(ModelMap model) {
 		logger.info(currentUser().getUsername() + " projectList.");
@@ -64,7 +65,7 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/addproject")
-	@Secured({Role.ROLE_VANGARD_USER, Role.ROLE_VANGARD_BUDGET_USER, Role.ROLE_ADMIN})
+	@Secured({Permission.ROLE_PROJECT_EDIT})
 	public String addProject(ModelMap model) {
 		logger.info(currentUser().getUsername() + " addProject.");
 
@@ -78,22 +79,43 @@ public class ProjectController extends RootController {
 	}
 
 	private void initializeProjectForm(ProjectForm form) {
-		form.setTechnologies(projectService.listValidTechnology());
-		form.setUsers(projectService.listValidUser());
+		form.setTechnologyList(projectService.listValidTechnology());
+		
+		List<User> users = projectService.listValidUser();
+		List<User> contactList = new ArrayList<User>();
+		List<User> piList = new ArrayList<User>();
+		List<User> facultyList = new ArrayList<User>();
+		List<User> staffList = new ArrayList<User>();
+		for(User user:users){
+			if(user.hasRole(Role.ROLE_USER)){
+				contactList.add(user);
+				piList.add(user);
+			}
+			if(user.hasRole(Role.ROLE_VANGARD_USER)){
+				facultyList.add(user);
+				staffList.add(user);
+			}
+		}
+		
+		Collections.sort(contactList);
+		Collections.sort(piList);
+		Collections.sort(facultyList);
+		Collections.sort(staffList);
+		
+		form.setContactList(contactList);
+		form.setStudyPIList(piList);
+		form.setFacultyList(facultyList);
+		form.setStaffList(staffList);
 	}
 
 	@RequestMapping("/editproject")
-	@Secured({Role.ROLE_VANGARD_USER, Role.ROLE_VANGARD_BUDGET_USER, Role.ROLE_ADMIN})
+	@Secured({Permission.ROLE_PROJECT_EDIT})
 	public String editProject(@RequestParam("projectid") Long projectId,
 			ModelMap model) {
 		logger.info(currentUser().getUsername() + " editProject.");
 
 		Project project = projectService.findProject(projectId);
 		if (project != null) {
-			if (!CanEditProject(project.getId())) {
-				return "redirect:/denied";
-			}
-
 			ProjectForm form = new ProjectForm();
 			form.setProject(project);
 
@@ -120,7 +142,7 @@ public class ProjectController extends RootController {
 			Integer userType) {
 		List<Long> result = new ArrayList<Long>();
 		for (ProjectUser u : users) {
-			if (u.getUserType() == userType)
+			if (u.getUserType().equals(userType))
 				result.add(u.getUser().getId());
 		}
 		return result;
@@ -144,20 +166,19 @@ public class ProjectController extends RootController {
 	}
 
 	private void initializeUsers(Project project, ProjectForm form) {
-		Set<ProjectUser> pus = new HashSet<ProjectUser>();
-		pus.addAll(getUserListFromIdList(project, form.getContact(),
+		project.getUsers().clear();
+		project.getUsers().addAll(getUserListFromIdList(project, form.getContact(),
 				UserType.CONTACT));
-		pus.addAll(getUserListFromIdList(project, form.getStudyPI(),
+		project.getUsers().addAll(getUserListFromIdList(project, form.getStudyPI(),
 				UserType.STUDYPI));
-		pus.addAll(getUserListFromIdList(project, form.getStaff(),
+		project.getUsers().addAll(getUserListFromIdList(project, form.getStaff(),
 				UserType.VANGARD_STAFF));
-		pus.addAll(getUserListFromIdList(project, form.getFaculty(),
+		project.getUsers().addAll(getUserListFromIdList(project, form.getFaculty(),
 				UserType.VANGARD_FACULTY));
-		project.setUsers(pus);
 	}
 
 	@RequestMapping(value = "/saveproject", method = RequestMethod.POST)
-	@Secured({Role.ROLE_VANGARD_USER, Role.ROLE_VANGARD_BUDGET_USER, Role.ROLE_ADMIN})
+	@Secured({Permission.ROLE_PROJECT_EDIT})
 	public String saveProject(
 			@Valid @ModelAttribute("projectForm") ProjectForm form,
 			BindingResult result) {
@@ -205,7 +226,7 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/deleteproject/{projectid}")
-	@Secured(Role.ROLE_ADMIN)
+	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String deleteProject(@PathVariable Long projectid) {
 		projectService.removeProject(projectid);
 
@@ -216,7 +237,7 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping("/showproject")
-	@Secured(Role.ROLE_USER)
+	@Secured({Permission.ROLE_PROJECT_VIEW})
 	public String showProject(
 			@RequestParam("projectid") Long projectid,
 			@RequestParam(value = "taskid", required = false, defaultValue = "0") Long taskid,
@@ -247,126 +268,8 @@ public class ProjectController extends RootController {
 		}
 	}
 
-	@RequestMapping("/addprojecttask")
-	@Secured(Role.ROLE_VANGARD_USER)
-	public String addProjectTask(@RequestParam("projectid") Long projectid,
-			ModelMap model) {
-		logger.info(currentUser().getUsername() + " addProjectTask.");
-
-		Project project = projectService.findProject(projectid);
-		if (project == null) {
-			model.put("message", "Cannot find project!");
-			return "/project/show";
-		} else {
-			if (!CanEditProject(projectid)) {
-				return "redirect:/denied";
-			}
-
-			ProjectTaskForm form = new ProjectTaskForm();
-
-			form.setMachineTime(1.0);
-			form.setPeopleTime(1.0);
-			form.setName("Task");
-			form.setStatus(Status.PENDING);
-			form.setProjectId(project.getId());
-			form.setStatusMap(Status.getStatusMap());
-
-			model.put("projectTaskForm", form);
-
-			return "/project/taskedit";
-		}
-	}
-
-	@RequestMapping("/editprojecttask")
-	@Secured(Role.ROLE_VANGARD_USER)
-	public String editProjectTask(
-
-	@RequestParam("taskid") Long taskid, ModelMap model) {
-		logger.info(currentUser().getUsername() + " editProjectTask.");
-
-		ProjectTask task = projectService.findProjectTask(taskid);
-
-		if (!CanEditProject(task.getProject().getId())) {
-			return "redirect:/denied";
-		}
-
-		ProjectTaskForm form = new ProjectTaskForm();
-
-		BeanUtils.copyProperties(task, form);
-		form.setProjectId(task.getProject().getId());
-		form.setStatusMap(Status.getStatusMap());
-
-		model.put("projectTaskForm", form);
-
-		return "/project/taskedit";
-	}
-
-	private boolean CanEditProject(long projectId) {
-		return isCurrentPowerUser()
-				|| projectService.getUserType(currentUser().getId(), projectId) >= UserType.VANGARD_FACULTY;
-	}
-
-	@RequestMapping(value = "/saveprojecttask", method = RequestMethod.POST)
-	@Secured(Role.ROLE_VANGARD_USER)
-	public String saveProjectTask(
-			@ModelAttribute("projectTaskForm") ProjectTaskForm form) {
-		Project project = projectService.findProject(form.getProjectId());
-		if (form.getId() != null) {
-			if (!CanEditProject(project.getId())) {
-				return "redirect:/denied";
-			}
-
-			ProjectTask task = projectService.findProjectTask(form.getId());
-			BeanUtils.copyProperties(form, task);
-			task.setUpdateDate(new Date());
-			task.setUpdateUser(currentUser().getUsername());
-
-			ProjectTaskStatus status = newProjectTaskStatus(form, task);
-
-			projectService.updateProjectTask(task, status);
-			logger.info(currentUser().getUsername() + " updating project task.");
-		} else {
-			ProjectTask task = new ProjectTask();
-			BeanUtils.copyProperties(form, task);
-			task.setProject(project);
-			task.setUpdateDate(new Date());
-			task.setUpdateUser(currentUser().getUsername());
-
-			ProjectTaskStatus status = newProjectTaskStatus(form, task);
-
-			projectService.addProjectTask(task, status);
-			logger.info(currentUser().getUsername() + " added project task.");
-		}
-
-		return getProjectDetailRedirect(project.getId());
-	}
-
-	private ProjectTaskStatus newProjectTaskStatus(ProjectTaskForm form,
-			ProjectTask task) {
-		ProjectTaskStatus result = new ProjectTaskStatus();
-		result.setComment(form.getComment());
-		result.setStatus(task.getStatus());
-		result.setUpdateDate(task.getUpdateDate());
-		result.setUpdateUser(task.getUpdateUser());
-		return result;
-	}
-
-	@RequestMapping("/deleteprojecttask/{taskid}")
-	@Secured(Role.ROLE_VANGARD_USER)
-	public String deleteProjectTask(@PathVariable("taskid") Long taskid) {
-		Long projectid = projectService.findProjectByTask(taskid);
-
-		if (!CanEditProject(projectid)) {
-			return "redirect:/denied";
-		}
-
-		projectService.removeProjectTask(taskid);
-
-		return getProjectDetailRedirect(projectid);
-	}
-
 	@RequestMapping(value = "/getStatusList", method = RequestMethod.POST)
-	@Secured(Role.ROLE_USER)
+	@Secured({Permission.ROLE_PROJECT_VIEW})
 	public @ResponseBody
 	List<ProjectTaskStatusForm> getStatusList(
 			@RequestParam("taskid") Long taskid) {
@@ -386,14 +289,6 @@ public class ProjectController extends RootController {
 			}
 		}
 		return result;
-	}
-
-	@RequestMapping("/getStatusList/{taskid}")
-	@Secured(Role.ROLE_USER)
-	public @ResponseBody
-	List<ProjectTaskStatusForm> getStatusList4(
-			@PathVariable("taskid") Long taskid) {
-		return doGetStatusList(taskid);
 	}
 
 	private String getProjectDetailRedirect(Long projectid) {

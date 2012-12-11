@@ -34,7 +34,9 @@
 						<tr>
 							<td>${user.email}</td>
 							<td>${user.name}</td>
-							<td>${user.roleName}</td>
+							<td><c:forEach items="${user.roles}" var="role">
+									${role.role.name}<br>
+								</c:forEach></td>
 							<td>${user.telephone}</td>
 							<td>${user.createDate}</td>
 							<td>
@@ -80,7 +82,9 @@
 							<tr>
 								<td>${user.email}</td>
 								<td>${user.name}</td>
-								<td>${user.roleName}</td>
+								<td><c:forEach items="${user.roles}" var="role">
+									${role.role.name}<br>
+									</c:forEach></td>
 								<td>${user.telephone}</td>
 								<td>${user.createDate}</td>
 								<td><c:if test="${!user.enabled}">
@@ -89,13 +93,13 @@
 												value="<spring:message	code="label.enable" />" />
 										</form>
 									</c:if></td>
-								<td><c:if test="${user.locked}">
+								<td><c:if test="${!user.accountNonLocked}">
 										<form action="unlockuser/${user.id}">
 											<input type="submit"
 												value="<spring:message	code="label.unlock" />" />
 										</form>
 									</c:if></td>
-								<td><c:if test="${user.deleted}">
+								<td><c:if test="${!user.accountNonDeleted}">
 										<form action="undeleteuser/${user.id}">
 											<input type="submit"
 												value="<spring:message	code="label.undelete" />" />

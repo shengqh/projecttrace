@@ -9,15 +9,22 @@
         <mapping class="edu.vanderbilt.cqs.bean.User" />
         <mapping class="edu.vanderbilt.cqs.bean.Role" />
         <mapping class="edu.vanderbilt.cqs.bean.UserRole" />
-        <mapping class="edu.vanderbilt.cqs.bean.Pipeline" />
-        <mapping class="edu.vanderbilt.cqs.bean.PipelineTask" />
-        <mapping class="edu.vanderbilt.cqs.bean.Project" />
-        <mapping class="edu.vanderbilt.cqs.bean.ProjectUser" />
-        <mapping class="edu.vanderbilt.cqs.bean.ProjectTask" />
-        <mapping class="edu.vanderbilt.cqs.bean.ProjectTaskStatus" />
+        <mapping class="edu.vanderbilt.cqs.bean.Permission" />
+        <mapping class="edu.vanderbilt.cqs.bean.RolePermission" />
+
         <mapping class="edu.vanderbilt.cqs.bean.Technology" />
         <mapping class="edu.vanderbilt.cqs.bean.Platform" />
         <mapping class="edu.vanderbilt.cqs.bean.Module" />
+
+        <mapping class="edu.vanderbilt.cqs.bean.Pipeline" />
+        <mapping class="edu.vanderbilt.cqs.bean.PipelineTask" />
+
+        <mapping class="edu.vanderbilt.cqs.bean.Project" />
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectUser" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTechnology" />
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectTechnologyModule" />
+
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectTask" />
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectTaskStatus" />
     </session-factory>
 </hibernate-configuration>

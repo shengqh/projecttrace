@@ -14,7 +14,7 @@
 				<spring:message code="label.projectnew" />
 			</c:when>
 			<c:otherwise>
-				<spring:message code="label.projectedit" /> : ${projectForm.project.studyName}
+				<spring:message code="label.projectedit" /> : ${projectForm.project.name}
 			</c:otherwise>
 		</c:choose>
 	</h1>
@@ -26,8 +26,8 @@
 			<table id="box-table-a">
 				<tr>
 					<td>Study name</td>
-					<td><form:input id="txt" path="project.studyName" cssClass="txt" /></td>
-					<td><form:errors path="project.studyName" cssClass="error" /></td>
+					<td><form:input id="txt" path="project.name" cssClass="txt" /></td>
+					<td><form:errors path="project.name" cssClass="error" /></td>
 				</tr>
 				<tr>
 					<td>Comments</td>
@@ -38,28 +38,28 @@
 				<tr>
 					<td>Contact</td>
 					<td><form:select path="contact" multiple="true"
-							items="${projectForm.users}" itemLabel="name" itemValue="id"
+							items="${projectForm.contactList}" itemLabel="name" itemValue="id"
 							size="4" /></td>
 					<td><form:errors path="contact" cssClass="error" /></td>
 				</tr>
 				<tr>
 					<td>Study PI</td>
 					<td><form:select path="studyPI" multiple="true"
-							items="${projectForm.users}" itemLabel="name" itemValue="id"
+							items="${projectForm.studyPIList}" itemLabel="name" itemValue="id"
 							size="4" /></td>
 					<td><form:errors path="studyPI" cssClass="error" /></td>
 				</tr>
 				<tr>
 					<td>Faculty</td>
 					<td><form:select path="faculty" multiple="true"
-							items="${projectForm.users}" itemLabel="name" itemValue="id"
+							items="${projectForm.facultyList}" itemLabel="name" itemValue="id"
 							size="4" /></td>
 					<td><form:errors path="faculty" cssClass="error" /></td>
 				</tr>
 				<tr>
 					<td>Staff</td>
 					<td><form:select path="staff" multiple="true"
-							items="${projectForm.users}" itemLabel="name" itemValue="id"
+							items="${projectForm.staffList}" itemLabel="name" itemValue="id"
 							size="4" /></td>
 					<td><form:errors path="staff" cssClass="error" /></td>
 				</tr>

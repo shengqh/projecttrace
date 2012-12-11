@@ -15,7 +15,6 @@ public class RootController {
 	}
 
 	protected boolean isCurrentPowerUser() {
-		return currentUser().hasRole(Role.ROLE_ADMIN)
-				|| currentUser().hasRole(Role.ROLE_VANGARD_BUDGET_USER);
+		return currentUser().hasRole(Role.ROLE_ADMIN);
 	}
 }

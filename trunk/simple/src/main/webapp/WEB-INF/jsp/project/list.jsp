@@ -21,6 +21,7 @@
 				<thead>
 					<tr>
 						<th scope="col">Study name</th>
+						<th scope="col">BioVU?</th>
 						<th scope="col">Contact date</th>
 						<th scope="col">Study PI</th>
 						<th scope="col">Technology</th>
@@ -47,10 +48,9 @@
 						</c:choose>
 						<tr ${bc}>
 							<td><a href="showproject?projectid=${project.id}">${project.name}</a></td>
+							<td>${project.isBioVU}</td>
 							<td>${project.contactDateString}</td>
-							<td><c:forEach items="${project.studyPIName}" var="user">
-									${user}<br>
-								</c:forEach></td>
+							<td>${project.studyPI}</td>
 							<td><c:forEach items="${project.technologies}" var="tec">
 									${tec.technology}<br>
 								</c:forEach></td>

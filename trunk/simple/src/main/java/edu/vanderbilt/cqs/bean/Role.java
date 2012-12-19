@@ -18,6 +18,7 @@ import javax.persistence.Table;
 @Table(name = "ROLE")
 public class Role implements Serializable, Comparable<Role> {
 	public static final String ROLE_USER = "ROLE_USER";
+	public static final String ROLE_VANGARD_ADSTAFF = "ROLE_VANGARD_ADSTAFF";
 	public static final String ROLE_VANGARD_FACULTY = "ROLE_VANGARD_FACULTY";
 	public static final String ROLE_VANGARD_STAFF = "ROLE_VANGARD_STAFF";
 	public static final String ROLE_ADMIN = "ROLE_ADMIN";

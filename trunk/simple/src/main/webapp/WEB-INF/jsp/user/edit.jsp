@@ -10,78 +10,94 @@
 	<p>
 	<h1 align="center">
 		<c:choose>
-			<c:when test="${userForm.user.id == null}">
-				<spring:message code="label.newuser" />
+			<c:when test="${userForm.isContact}">
+				<c:set var="targetname" value="Contact" />
 			</c:when>
 			<c:otherwise>
-				<spring:message code="label.edituser" /> : ${userForm.user.email}
+				<c:set var="targetname" value="User" />
+			</c:otherwise>
+		</c:choose>
+		<c:choose>
+			<c:when test="${userForm.id == null}">
+				New ${targetname}
+			</c:when>
+			<c:otherwise>
+				Edit ${targetname} : ${userForm.email}
 			</c:otherwise>
 		</c:choose>
 	</h1>
 	<p>
 		<form:form method="post" action="saveuser.html" commandName="userForm">
-			<form:hidden path="user.id" />
-			<form:hidden path="user.accountNonExpired" />
+			<form:hidden path="id" />
+			<form:hidden path="accountNonExpired" />
+			<form:hidden path="accountNonDeleted" />
 			<form:errors path="*" cssClass="errorblock" element="div" />
 			<table id="box-table-a">
 				<c:choose>
-					<c:when test="${userForm.user.id != null}">
-						<form:hidden path="user.email" />
+					<c:when test="${userForm.id != null}">
+						<form:hidden path="email" />
 					</c:when>
 					<c:otherwise>
 						<tr>
 							<td>Email</td>
-							<td><form:input path="user.email" cssClass="txt" /></td>
-							<td><form:errors path="user.email" cssClass="error" /></td>
+							<td><form:input path="email" cssClass="txt" /></td>
+							<td><form:errors path="email" cssClass="error" /></td>
 						</tr>
 					</c:otherwise>
 				</c:choose>
 				<tr>
-					<td><form:label path="user.firstname">
+					<td><form:label path="firstname">
 							<spring:message code="label.firstname" />
 						</form:label></td>
-					<td><form:input path="user.firstname" cssClass="txt" /></td>
-					<td><form:errors path="user.firstname" cssClass="error" /></td>
+					<td><form:input path="firstname" cssClass="txt" /></td>
+					<td><form:errors path="firstname" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="user.lastname">
+					<td><form:label path="lastname">
 							<spring:message code="label.lastname" />
 						</form:label></td>
-					<td><form:input path="user.lastname" cssClass="txt" /></td>
-					<td><form:errors path="user.lastname" cssClass="error" /></td>
+					<td><form:input path="lastname" cssClass="txt" /></td>
+					<td><form:errors path="lastname" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="user.telephone">
+					<td><form:label path="telephone">
 							<spring:message code="label.telephone" />
 						</form:label></td>
-					<td><form:input path="user.telephone" cssClass="txt" /></td>
-					<td><form:errors path="user.telephone" cssClass="error" /></td>
+					<td><form:input path="telephone" cssClass="txt" /></td>
+					<td><form:errors path="telephone" cssClass="error" /></td>
 				</tr>
 				<tr>
-					<td><form:label path="user.enabled">
+					<td><form:label path="enabled">
 							<spring:message code="label.enabled" />
 						</form:label></td>
-					<td><form:checkbox path="user.enabled" /></td>
+					<td><form:checkbox path="enabled" /></td>
 					<td></td>
 				</tr>
 				<tr>
-					<td><form:label path="user.accountNonLocked">
+					<td><form:label path="accountNonLocked">
 							<spring:message code="label.accountNonlocked" />
 						</form:label></td>
-					<td><form:checkbox path="user.accountNonLocked" /></td>
+					<td><form:checkbox path="accountNonLocked" /></td>
 					<td></td>
 				</tr>
-				<tr>
-					<td><form:label path="roles">
-							<spring:message code="label.role" />
-						</form:label></td>
-					<td><form:select path="roles" items="${userForm.roleList}"
-							multiple="true" itemLabel="name" itemValue="id" /></td>
-					<td></td>
-				</tr>
+				<c:choose>
+					<c:when test="${userForm.isContact}">
+						<form:hidden path="roles" />
+					</c:when>
+					<c:otherwise>
+						<tr>
+							<td><form:label path="roles">
+									<spring:message code="label.role" />
+								</form:label></td>
+							<td><form:select path="roles" items="${userForm.roleList}"
+									multiple="true" itemLabel="name" itemValue="id" size="6" /></td>
+							<td></td>
+						</tr>
+					</c:otherwise>
+				</c:choose>
 				<tr>
 					<td colspan="3" align="center"><c:choose>
-							<c:when test="${userForm.user.id == null}">
+							<c:when test="${userForm.id == null}">
 								<input type="submit" value="<spring:message code="label.add"/>" />
 							</c:when>
 							<c:otherwise>
@@ -90,7 +106,7 @@
 							</c:otherwise>
 
 						</c:choose> <input type="button" value="<spring:message code="label.back" />"
-						onClick="parent.location='alluser.html'" /></td>
+						onClick="parent.location='user.html'" /></td>
 				</tr>
 			</table>
 		</form:form>

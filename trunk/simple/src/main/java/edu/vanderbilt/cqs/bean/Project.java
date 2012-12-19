@@ -38,6 +38,17 @@ public class Project implements Serializable {
 	@Column(name = "NAME")
 	private String name;
 
+	@Column(name = "ISBIOVU")
+	private Boolean isBioVU;
+
+	public Boolean getIsBioVU() {
+		return isBioVU;
+	}
+
+	public void setIsBioVU(Boolean isBioVU) {
+		this.isBioVU = isBioVU;
+	}
+
 	@Column(name = "QUOTEAMOUNT")
 	private Double quoteAmount;
 
@@ -62,17 +73,34 @@ public class Project implements Serializable {
 	@Column(name = "BILLEDBY")
 	private String billedBy;
 
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@Column(name = "BILLEDAMOUNT")
+	private Double billedAmount;
+
+	public Double getBilledAmount() {
+		return billedAmount;
+	}
+
+	public void setBilledAmount(Double billedAmount) {
+		this.billedAmount = billedAmount;
+	}
+
+	@Column(name = "CONTACT")
+	private String contact;
+
+	@Column(name = "STUDYPI")
+	private String studyPI;
+
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OrderBy("commentDate")
 	private List<ProjectComment> comments = new ArrayList<ProjectComment>();
 
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	private Set<ProjectUser> users = new HashSet<ProjectUser>();
 
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OrderBy("technology")
 	private Set<ProjectTechnology> technologies = new HashSet<ProjectTechnology>();
-	
+
 	@Column(name = "CREATOR")
 	private String creator;
 
@@ -225,7 +253,7 @@ public class Project implements Serializable {
 	private List<String> getUserName(Integer uType) {
 		List<String> result = new ArrayList<String>();
 		for (ProjectUser user : getUsers()) {
-			if(user.getUserType().equals(uType)){
+			if (user.getUserType().equals(uType)) {
 				result.add(user.getUser().getName());
 			}
 		}
@@ -255,16 +283,65 @@ public class Project implements Serializable {
 	public void setComments(List<ProjectComment> comments) {
 		this.comments = comments;
 	}
-	
-	public String getContactDateString(){
+
+	public String getContactDateString() {
 		return Utils.getDateString(contactDate);
 	}
-	
-	public String getWorkStartedString(){
+
+	public String getWorkStartedString() {
 		return Utils.getDateString(workStarted);
 	}
-	
-	public String getWorkCompletedString(){
+
+	public String getWorkCompletedString() {
 		return Utils.getDateString(workCompleted);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Project other = (Project) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+
+	public String getStudyPI() {
+		return studyPI;
+	}
+
+	public void setStudyPI(String studyPI) {
+		this.studyPI = studyPI;
+	}
+
+	public String getBilledInCORESString() {
+		return Utils.getDateString(billedInCORES);
+	}
+
+	public String getRequestCostCenterSetupInCORESString() {
+		return Utils.getDateString(requestCostCenterSetupInCORES);
 	}
 }

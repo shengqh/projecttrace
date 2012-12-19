@@ -8,6 +8,7 @@ import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
+import edu.vanderbilt.cqs.bean.ProjectComment;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
@@ -139,7 +140,19 @@ public interface ProjectService {
 
 	Permission findPermission(Long id);
 
+	void updateRole(Role role);
+
+	void addProjectComment(ProjectComment entity);
+
+	ProjectComment findProjectComment(Long id);
+
+	void removeProjectComment(ProjectComment entity);
+
+	ProjectTechnology findProjectTechnology(Long id);
+
+	void addProjectTechnology(ProjectTechnology entity);
+
 	void updateProjectTechnology(ProjectTechnology entity);
 
-	void updateRole(Role role);
+	void removeProjectTechnology(ProjectTechnology entity);
 }

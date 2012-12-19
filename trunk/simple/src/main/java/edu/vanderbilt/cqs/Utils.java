@@ -61,7 +61,7 @@ public final class Utils {
 		if (aDate == null) {
 			return "";
 		} else {
-			return new SimpleDateFormat("yyyyMMdd").format(aDate);
+			return new SimpleDateFormat("yyyy-MM-dd").format(aDate);
 		}
 	}
 }

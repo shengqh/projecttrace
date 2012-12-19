@@ -7,6 +7,13 @@
 <body>
 	<jsp:include page="../menu.jsp" />
 
+	<c:set var="isStaff" value="${projectForm.userType == utStaff || projectForm.userType == utFaculty}" />
+	<c:set var="isFaculty" value="${projectForm.userType == utFaculty}" />
+	<c:set var="isAdStaff" value="false" />
+	<sec:authorize access="hasAnyRole('ROLE_VANGARD_ADSTAFF','ROLE_ADMIN')">
+		<c:set var="isAdStaff" value="true" />
+	</sec:authorize>
+
 	<p>
 	<h1>
 		<c:choose>
@@ -35,207 +42,250 @@
 				<tbody>
 					<tr>
 						<td>Study name</td>
-						<td><c:choose>
-								<c:when
-									test="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.name" cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.name}
-						</c:otherwise>
-							</c:choose></td>
+						<c:choose>
+							<c:when test="${isFaculty}">
+								<td><form:input id="txt" path="project.name" cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.name" />
+								<td>${projectForm.project.name}</td>
+							</c:otherwise>
+						</c:choose>
 						<td></td>
 						<td><form:errors path="project.name" cssClass="error" /></td>
 					</tr>
 					<tr>
+						<td>BioVU project?</td>
+						<c:choose>
+							<c:when test="${isFaculty}">
+								<td><form:checkbox path="project.isBioVU" cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.isBioVU" />
+								<td>${projectForm.project.isBioVU}</td>
+							</c:otherwise>
+						</c:choose>
+						<td></td>
+						<td><form:errors path="project.isBioVU" cssClass="error" /></td>
+					</tr>
+					<tr>
 						<td>Contact date</td>
-						<td><c:choose>
-								<c:when
-									test="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.contactDate" cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.contactDateString}
-						</c:otherwise>
-							</c:choose></td>
-						<td>Format: mm/dd/yyyy</td>
-						<td><form:errors path="project.name" cssClass="error" /></td>
+						<c:choose>
+							<c:when test="${isFaculty}">
+								<td><form:input id="txt" path="project.contactDate"
+										cssClass="txt" /></td>
+								<td>${dateFormat}</td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.contactDate" />
+								<td>${projectForm.project.contactDateString}</td>
+								<td></td>
+							</c:otherwise>
+						</c:choose>
+						<td><form:errors path="project.contactDate" cssClass="error" /></td>
+					</tr>
+					<tr>
+						<td>Contact name</td>
+						<c:choose>
+							<c:when test="${isFaculty}">
+								<td><form:input id="txt" path="project.contact"
+										cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.contact" />
+								<td>${projectForm.project.contact}</td>
+							</c:otherwise>
+						</c:choose>
+						<td></td>
+						<td><form:errors path="project.contact" cssClass="error" /></td>
+					</tr>
+					<tr>
+						<td>Study PI</td>
+						<c:choose>
+							<c:when test="${isFaculty}">
+								<td><form:input id="txt" path="project.studyPI"
+										cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.studyPI" />
+								<td>${projectForm.project.studyPI}</td>
+							</c:otherwise>
+						</c:choose>
+						<td></td>
+						<td><form:errors path="project.studyPI" cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Quote amount</td>
-						<td><c:choose>
-								<c:when
-									test="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.quoteAmount" cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.quoteAmount}
-						</c:otherwise>
-							</c:choose></td>
+						<c:choose>
+							<c:when test="${isFaculty}">
+								<td><form:input id="txt" path="project.quoteAmount"
+										cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.quoteAmount" />
+								<td>${projectForm.project.quoteAmount}</td>
+							</c:otherwise>
+						</c:choose>
 						<td></td>
 						<td><form:errors path="project.quoteAmount" cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Study status</td>
-						<td><c:choose>
-								<c:when
-									test="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
-									<form:select path="project.status"
-										items="${projectForm.statusMap}" />
-								</c:when>
-								<c:otherwise>
-							${project.status}
-						</c:otherwise>
-							</c:choose></td>
+						<c:choose>
+							<c:when test="${isFaculty}">
+								<td><form:select path="project.status"
+										items="${projectForm.statusMap}" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.status" />
+								<td>${projectForm.project.status}</td>
+							</c:otherwise>
+						</c:choose>
 						<td></td>
 						<td><form:errors path="project.status" cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Work started</td>
-						<td><c:choose>
-								<c:when
-									test="${projectForm.userType == utStaff || projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.workStarted" cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.workStartedString}
-						</c:otherwise>
-							</c:choose></td>
-						<td>Format: mm/dd/yyyy</td>
+						<c:choose>
+							<c:when
+								test="${isStaff}">
+								<td><form:input id="txt" path="project.workStarted"
+										cssClass="txt" /></td>
+								<td>${dateFormat}</td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.workStarted" />
+								<td>${projectForm.project.workStartedString}</td>
+								<td></td>
+							</c:otherwise>
+						</c:choose>
 						<td><form:errors path="project.workStarted" cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Work completed</td>
-						<td><c:choose>
-								<c:when
-									test="${projectForm.userType == utStaff || projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.workCompleted"
-										cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.workCompletedString}
-						</c:otherwise>
-							</c:choose></td>
-						<td>Format: mm/dd/yyyy</td>
+						<c:choose>
+							<c:when
+								test="${isStaff}">
+								<td><form:input id="txt" path="project.workCompleted"
+										cssClass="txt" /></td>
+								<td>${dateFormat}</td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.workCompleted" />
+								<td>${projectForm.project.workCompletedString}</td>
+								<td></td>
+							</c:otherwise>
+						</c:choose>
 						<td><form:errors path="project.workCompleted"
 								cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Cost center to bill</td>
-						<td><c:choose>
-								<c:when test="${projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.costCenterToBill"
-										cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.costCenterToBill}
-						</c:otherwise>
-							</c:choose></td>
+						<c:choose>
+							<c:when test="${isAdStaff}">
+								<td><form:input id="txt" path="project.costCenterToBill"
+										cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.costCenterToBill" />
+								<td>${projectForm.project.costCenterToBill}</td>
+							</c:otherwise>
+						</c:choose>
 						<td></td>
 						<td><form:errors path="project.costCenterToBill"
 								cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Request cost center setup in CORES</td>
-						<td><c:choose>
-								<c:when test="${projectForm.userType == utAdmin}">
-									<form:input id="txt"
-										path="project.requestCostCenterSetupInCORES" cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.requestCostCenterSetupInCORES}
-						</c:otherwise>
-							</c:choose></td>
-						<td>Format: mm/dd/yyyy</td>
+						<c:choose>
+							<c:when test="${isAdStaff}">
+								<td><form:input id="txt"
+										path="project.requestCostCenterSetupInCORES" cssClass="txt" /></td>
+								<td>${dateFormat}</td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.requestCostCenterSetupInCORES" />
+								<td>${projectForm.project.requestCostCenterSetupInCORESString}</td>
+								<td></td>
+							</c:otherwise>
+						</c:choose>
 						<td><form:errors path="project.requestCostCenterSetupInCORES"
 								cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Requested by (name)</td>
-						<td><c:choose>
-								<c:when test="${projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.requestedBy" cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.requestedBy}
-						</c:otherwise>
-							</c:choose></td>
+						<c:choose>
+							<c:when test="${isAdStaff}">
+								<td><form:input id="txt" path="project.requestedBy"
+										cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.requestedBy" />
+								<td>${projectForm.project.requestedBy}</td>
+							</c:otherwise>
+						</c:choose>
 						<td></td>
 						<td><form:errors path="project.requestedBy" cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Billed in CORES</td>
-						<td><c:choose>
-								<c:when test="${projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.billedInCORES"
-										cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.billedInCORES}
-						</c:otherwise>
-							</c:choose></td>
-						<td></td>
+						<c:choose>
+							<c:when test="${isAdStaff}">
+								<td><form:input id="txt" path="project.billedInCORES"
+										cssClass="txt" /></td>
+								<td>${dateFormat}</td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.billedInCORES" />
+								<td>${projectForm.project.billedInCORESString}</td>
+								<td></td>
+							</c:otherwise>
+						</c:choose>
 						<td><form:errors path="project.billedInCORES"
 								cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Billed by (name)</td>
-						<td><c:choose>
-								<c:when test="${projectForm.userType == utAdmin}">
-									<form:input id="txt" path="project.billedBy" cssClass="txt" />
-								</c:when>
-								<c:otherwise>
-							${project.billedBy}
-						</c:otherwise>
-							</c:choose></td>
+						<c:choose>
+							<c:when test="${isAdStaff}">
+								<td><form:input id="txt" path="project.billedBy"
+										cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.billedBy" />
+								<td>${projectForm.project.billedBy}</td>
+							</c:otherwise>
+						</c:choose>
 						<td></td>
 						<td><form:errors path="project.billedBy" cssClass="error" /></td>
 					</tr>
 					<tr>
-						<td>Contact</td>
-						<td colspan="2"><c:choose>
-								<c:when
-									test="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
-									<form:select path="contact" multiple="true"
-										items="${projectForm.contactList}" itemLabel="name"
-										itemValue="id" size="6" />
-								</c:when>
-								<c:otherwise>
-									<c:forEach items="${project.contactName}" var="user">
-									${user}<br>
-									</c:forEach>
-								</c:otherwise>
-							</c:choose></td>
-						<td><form:errors path="contact" cssClass="error" /></td>
-					</tr>
-					<tr>
-						<td>Study PI</td>
-						<td colspan="2"><c:choose>
-								<c:when
-									test="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
-									<form:select path="studyPI" multiple="true"
-										items="${projectForm.studyPIList}" itemLabel="name"
-										itemValue="id" size="6" />
-								</c:when>
-								<c:otherwise>
-									<c:forEach items="${project.studyPIName}" var="user">
-									${user}<br>
-									</c:forEach>
-								</c:otherwise>
-							</c:choose></td>
-						<td><form:errors path="studyPI" cssClass="error" /></td>
+						<td>Billed amount</td>
+						<c:choose>
+							<c:when test="${isAdStaff}">
+								<td><form:input id="txt" path="project.billedAmount"
+										cssClass="txt" /></td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.billedAmount" />
+								<td>${projectForm.project.billedAmount}</td>
+							</c:otherwise>
+						</c:choose>
+						<td></td>
+						<td><form:errors path="project.billedAmount" cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Faculty</td>
 						<td colspan="2"><c:choose>
-								<c:when
-									test="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
+								<c:when test="${isFaculty}">
 									<form:select path="faculty" multiple="true"
 										items="${projectForm.facultyList}" itemLabel="name"
 										itemValue="id" size="6" />
 								</c:when>
 								<c:otherwise>
-									<c:forEach items="${project.facultyName}" var="user">
+									<form:hidden path="faculty" />
+									<c:forEach items="${projectForm.project.facultyName}"
+										var="user">
 									${user}<br>
 									</c:forEach>
 								</c:otherwise>
@@ -245,14 +295,14 @@
 					<tr>
 						<td>Staff</td>
 						<td colspan="2"><c:choose>
-								<c:when
-									test="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}">
+								<c:when test="${isFaculty}">
 									<form:select path="staff" multiple="true"
 										items="${projectForm.staffList}" itemLabel="name"
 										itemValue="id" size="6" />
 								</c:when>
 								<c:otherwise>
-									<c:forEach items="${project.staffName}" var="user">
+									<form:hidden path="staff" />
+									<c:forEach items="${projectForm.project.staffName}" var="user">
 									${user}<br>
 									</c:forEach>
 								</c:otherwise>

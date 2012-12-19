@@ -40,8 +40,22 @@
 					<td><form:errors path="name" cssClass="error" /></td>
 				</tr>
 				<tr>
+					<td><form:label path="pricePerProject">
+							Price per project
+						</form:label></td>
+					<td><form:input id="txt" path="pricePerProject" cssClass="txt" /></td>
+					<td><form:errors path="pricePerProject" cssClass="error" /></td>
+				</tr>
+				<tr>
+					<td><form:label path="pricePerUnit">
+							Price per unit
+						</form:label></td>
+					<td><form:input id="txt" path="pricePerUnit" cssClass="txt" /></td>
+					<td><form:errors path="pricePerUnit" cssClass="error" /></td>
+				</tr>
+				<tr>
 					<td><form:label path="description">
-							<spring:message code="label.description" />
+							Notes
 						</form:label></td>
 					<td><form:textarea id="textarea" path="description" rows="10"
 							cols="60" /></td>

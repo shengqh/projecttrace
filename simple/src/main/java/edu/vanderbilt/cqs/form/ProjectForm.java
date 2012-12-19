@@ -16,6 +16,16 @@ public class ProjectForm implements Serializable {
 	private Project project;
 
 	private Integer userType;
+	
+	private Long newTechnology;
+
+	public Long getNewTechnology() {
+		return newTechnology;
+	}
+
+	public void setNewTechnology(Long newTechnology) {
+		this.newTechnology = newTechnology;
+	}
 
 	private List<Long> technology = new ArrayList<Long>();
 
@@ -36,6 +46,16 @@ public class ProjectForm implements Serializable {
 	private List<User> facultyList;
 
 	private List<User> staffList;
+	
+	private String comment;
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
 	public Map<String, String> getStatusMap() {
 		return Status.getStatusMap();

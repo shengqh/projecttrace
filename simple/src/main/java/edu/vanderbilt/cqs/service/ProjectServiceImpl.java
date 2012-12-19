@@ -12,6 +12,7 @@ import edu.vanderbilt.cqs.bean.Pipeline;
 import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
+import edu.vanderbilt.cqs.bean.ProjectComment;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
@@ -23,6 +24,7 @@ import edu.vanderbilt.cqs.dao.PermissionDAO;
 import edu.vanderbilt.cqs.dao.PipelineDAO;
 import edu.vanderbilt.cqs.dao.PipelineTaskDAO;
 import edu.vanderbilt.cqs.dao.PlatformDAO;
+import edu.vanderbilt.cqs.dao.ProjectCommentDAO;
 import edu.vanderbilt.cqs.dao.ProjectDAO;
 import edu.vanderbilt.cqs.dao.ProjectTaskDAO;
 import edu.vanderbilt.cqs.dao.ProjectTaskStatusDAO;
@@ -68,6 +70,9 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	private ProjectTechnologyDAO projectTechnologyDAO;
+
+	@Autowired
+	private ProjectCommentDAO projectCommentDAO;
 
 	@Transactional
 	@Override
@@ -448,5 +453,41 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void updateRole(Role role) {
 		roleDAO.update(role);
+	}
+
+	@Transactional
+	@Override
+	public void addProjectComment(ProjectComment entity) {
+		projectCommentDAO.save(entity);
+	}
+
+	@Transactional
+	@Override
+	public ProjectComment findProjectComment(Long id) {
+		return projectCommentDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public void removeProjectComment(ProjectComment entity) {
+		projectCommentDAO.delete(entity);
+	}
+
+	@Transactional
+	@Override
+	public ProjectTechnology findProjectTechnology(Long id) {
+		return projectTechnologyDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public void addProjectTechnology(ProjectTechnology entity) {
+		projectTechnologyDAO.save(entity);
+	}
+
+	@Transactional
+	@Override
+	public void removeProjectTechnology(ProjectTechnology entity) {
+		projectTechnologyDAO.delete(entity);
 	}
 }

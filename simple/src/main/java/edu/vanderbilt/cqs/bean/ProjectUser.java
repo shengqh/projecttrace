@@ -54,34 +54,42 @@ public class ProjectUser {
 		this.project = project;
 	}
 
-	public boolean equals(Object instance) {
-		if (instance == null)
-			return false;
-
-		if (!(instance instanceof ProjectUser))
-			return false;
-
-		ProjectUser other = (ProjectUser) instance;
-		if (!(user.getId().equals(other.getUser().getId())))
-			return false;
-
-		if (!(project.getId().equals(other.getProject().getId())))
-			return false;
-
-		if (!(userType.equals(other.getUserType())))
-			return false;
-
-		return true;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((project == null) ? 0 : project.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		result = prime * result
+				+ ((userType == null) ? 0 : userType.hashCode());
+		return result;
 	}
 
-	public int hashcode() {
-		int hash = 7;
-		hash = 47 * hash
-				+ (this.user != null ? this.user.getId().intValue() : 0);
-		hash = 47 * hash
-				+ (this.project != null ? this.project.getId().intValue() : 0);
-		hash = 47 * hash + this.userType;
-		return hash;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ProjectUser other = (ProjectUser) obj;
+		if (project == null) {
+			if (other.project != null)
+				return false;
+		} else if (!project.equals(other.project))
+			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
+		if (userType == null) {
+			if (other.userType != null)
+				return false;
+		} else if (!userType.equals(other.userType))
+			return false;
+		return true;
 	}
 
 	public Long getId() {

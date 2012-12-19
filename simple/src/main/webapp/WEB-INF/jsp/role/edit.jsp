@@ -16,7 +16,7 @@
 			<table id="box-table-a">
 				<tr>
 					<td><form:label path="permissions">
-							Permission
+							Permission<br>Ctrl+Click to make multiple selection
 						</form:label></td>
 					<td><form:select path="permissions"
 							items="${roleForm.permissionList}" multiple="true"
@@ -27,7 +27,7 @@
 					<td colspan="3" align="center"><input type="submit"
 						value="<spring:message code="label.update"/>" /> <input
 						type="button" value="<spring:message code="label.back" />"
-						onClick="parent.location='alluser.html'" /></td>
+						onClick="parent.location='role.html'" /></td>
 				</tr>
 			</table>
 		</form:form>

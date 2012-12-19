@@ -70,6 +70,8 @@
 					<tr>
 						<th scope="col">Module Index</th>
 						<th scope="col">Name</th>
+						<th scope="col">Price per project</th>
+						<th scope="col">Price per unit</th>
 						<th scope="col">Description</th>
 						<sec:authorize access="hasRole('ROLE_MODULE_EDIT')">
 							<th scope="col">&nbsp;</th>
@@ -82,6 +84,8 @@
 						<tr>
 							<td>${module.moduleIndex}</td>
 							<td>${module.name}</td>
+							<td>${module.pricePerProject}</td>
+							<td>${module.pricePerUnit}</td>
 							<td>${module.description}</td>
 							<sec:authorize access="hasRole('ROLE_MODULE_EDIT')">
 								<td>

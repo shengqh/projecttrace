@@ -1,8 +1,8 @@
 package edu.vanderbilt.cqs.bean;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,7 +47,7 @@ public class ProjectTechnology implements Serializable {
 	
 	@OneToMany(mappedBy = "technology", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
 	@OrderBy("moduleIndex")
-	private Set<ProjectTechnologyModule> modules = new HashSet<ProjectTechnologyModule>();
+	private List<ProjectTechnologyModule> modules = new ArrayList<ProjectTechnologyModule>();
 
 	public Long getId() {
 		return id;
@@ -105,11 +105,11 @@ public class ProjectTechnology implements Serializable {
 		this.sampleNumber = sampleNumber;
 	}
 
-	public Set<ProjectTechnologyModule> getModules() {
+	public List<ProjectTechnologyModule> getModules() {
 		return modules;
 	}
 
-	public void setModules(Set<ProjectTechnologyModule> modules) {
+	public void setModules(List<ProjectTechnologyModule> modules) {
 		this.modules = modules;
 	}
 }

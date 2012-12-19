@@ -66,22 +66,18 @@ public class UserController extends RootController {
 	protected boolean sendMailToVantageUserOnly = true;
 
 	@RequestMapping("/user")
-	@Secured(Permission.ROLE_USER_VIEW)
+	@Secured({ Permission.ROLE_USER_VIEW, Permission.ROLE_USER_EDIT })
 	public String listUsers(ModelMap model) {
 		model.addAttribute("validUserList", projectService.listValidUser());
-		return "user/list";
-	}
-
-	@RequestMapping("/alluser")
-	@Secured(Permission.ROLE_USER_EDIT)
-	public String listAllUsers(ModelMap model) {
-		model.addAttribute("validUserList", projectService.listValidUser());
-		model.addAttribute("invalidUserList", projectService.listInvalidUser());
+		if (currentUser().hasPermission(Permission.ROLE_USER_EDIT)) {
+			model.addAttribute("invalidUserList",
+					projectService.listInvalidUser());
+		}
 		return "user/list";
 	}
 
 	private void initUserForm(UserForm form, User user) {
-		form.setUser(user);
+		BeanUtils.copyProperties(user, form, new String[] { "roles" });
 		form.setRoleList(new LinkedHashSet<Role>(projectService.listRole()));
 
 		HashSet<Long> roles = new HashSet<Long>();
@@ -92,55 +88,82 @@ public class UserController extends RootController {
 	}
 
 	private void assignRole(User user, Set<Long> roles) {
-		List<UserRole> roleList = new ArrayList<UserRole>();
-		for (UserRole ur : user.getRoles()) {
-			if (roles.contains(ur.getRole().getId())) {
-				roleList.add(ur);
-				roles.remove(ur.getRole().getId());
+		if (roles == null) {
+			user.getRoles().clear();
+		} else {
+			List<UserRole> roleList = new ArrayList<UserRole>();
+			for (UserRole ur : user.getRoles()) {
+				if (roles.contains(ur.getRole().getId())) {
+					roleList.add(ur);
+					roles.remove(ur.getRole().getId());
+				}
 			}
-		}
 
-		for (Long r : roles) {
-			roleList.add(new UserRole(user, projectService.findRole(r)));
-		}
+			for (Long r : roles) {
+				roleList.add(new UserRole(user, projectService.findRole(r)));
+			}
 
-		user.getRoles().clear();
-		user.getRoles().addAll(roleList);
+			user.getRoles().clear();
+			user.getRoles().addAll(roleList);
+		}
 	}
 
 	@RequestMapping("/adduser")
 	@Secured(Permission.ROLE_USER_EDIT)
 	public String addUser(ModelMap model) {
+		return doAddUser(model, false);
+	}
+
+	private String doAddUser(ModelMap model, Boolean isContact) {
 		UserForm form = new UserForm();
+		form.setIsContact(isContact);
 		User user = new User();
 		initUserForm(form, user);
 		model.addAttribute("userForm", form);
 
-		logger.info(currentUser().getUsername() + " try to add user ...");
+		if (isContact) {
+			logger.info(currentUser().getUsername() + " try to add contact ...");
+		} else {
+			logger.info(currentUser().getUsername() + " try to add user ...");
+		}
 		return "user/edit";
 	}
 
 	@RequestMapping("/edituser")
 	@Secured(Permission.ROLE_USER_EDIT)
 	public String editUser(@RequestParam("userid") Long userid, ModelMap model) {
-		logger.info(currentUser().getUsername() + " try to edit user ...");
+		return doEditUser(userid, model, false);
+	}
+
+	private String doEditUser(Long userid, ModelMap model, Boolean isContact) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			UserForm form = new UserForm();
+			form.setIsContact(isContact);
 			initUserForm(form, user);
 			model.addAttribute("userForm", form);
+			if (isContact) {
+				logger.info(currentUser().getUsername()
+						+ " try to edit contact " + user.getEmail() + " ...");
+			} else {
+				logger.info(currentUser().getUsername() + " try to edit user "
+						+ user.getEmail() + " ...");
+			}
 			return "user/edit";
 		} else {
-			return "redirect:/userall";
+			return "redirect:/user";
 		}
 	}
 
 	@RequestMapping("/saveuser")
 	@Secured(Permission.ROLE_USER_EDIT)
 	public String saveUser(@ModelAttribute("userForm") UserForm form,
-			BindingResult result, SessionStatus status) {
-		logger.info(currentUser().getUsername() + " try to save user ...");
+			BindingResult result) {
+		return doSaveUser(form, result, false);
+	}
 
+	private String doSaveUser(UserForm form, BindingResult result,
+			Boolean isContact) {
 		validator.validate(form, result);
 
 		if (result.hasErrors()) {
@@ -148,34 +171,76 @@ public class UserController extends RootController {
 			return "user/edit";
 		}
 
-		if (form.getUser().getId() == null) {
+		if (form.getId() == null) {
 			String password = RandomStringUtils.randomAlphanumeric(8);
 
-			User user = form.getUser();
+			User user = new User();
+			BeanUtils.copyProperties(form, user, new String[] { "roles" });
 			user.setEmail(user.getEmail().toLowerCase());
 			user.setPassword(Utils.md5(password));
 			user.setCreateDate(new Date());
-			assignRole(user, form.getRoles());
+			if (isContact) {
+				user.getRoles().add(
+						new UserRole(user, projectService
+								.findRoleByName(Role.ROLE_USER)));
+			} else {
+				assignRole(user, form.getRoles());
+			}
 
 			projectService.addUser(user);
-			logger.info(currentUser().getUsername() + " add user "
-					+ user.getEmail());
+			if (isContact) {
+				logger.info(currentUser().getUsername() + " add contact "
+						+ user.getEmail());
+			} else {
+				logger.info(currentUser().getUsername() + " add user "
+						+ user.getEmail());
+			}
 			if (sendMail
 					&& (!sendMailToVantageUserOnly || user.isVangardUser())) {
 				sendConfirmationEmail(user, password);
 			}
 		} else {
-			User user = projectService.findUser(form.getUser().getId());
-			BeanUtils.copyProperties(form.getUser(), user, new String[] {
-					"roles", "createDate" });
-			assignRole(user, form.getRoles());
+			User user = projectService.findUser(form.getId());
+			BeanUtils.copyProperties(form, user, new String[] { "roles" });
+			if (isContact) {
+				user.getRoles().add(
+						new UserRole(user, projectService
+								.findRoleByName(Role.ROLE_USER)));
+			} else {
+				assignRole(user, form.getRoles());
+			}
 
 			projectService.updateUser(user);
 
-			logger.info(currentUser().getUsername() + " update user "
-					+ user.getEmail());
+			if (isContact) {
+				logger.info(currentUser().getUsername() + " update contact "
+						+ user.getEmail());
+			} else {
+				logger.info(currentUser().getUsername() + " update user "
+						+ user.getEmail());
+			}
 		}
-		return "redirect:/alluser";
+		return "redirect:/user";
+	}
+
+	@RequestMapping("/addcontact")
+	@Secured(Permission.ROLE_PROJECT_EDIT)
+	public String addContact(ModelMap model) {
+		return doAddUser(model, true);
+	}
+
+	@RequestMapping("/editcontact")
+	@Secured(Permission.ROLE_PROJECT_EDIT)
+	public String editContact(@RequestParam("userid") Long userid,
+			ModelMap model) {
+		return doEditUser(userid, model, true);
+	}
+
+	@RequestMapping("/savecontact")
+	@Secured(Permission.ROLE_PROJECT_EDIT)
+	public String saveContact(@ModelAttribute("userForm") UserForm form,
+			BindingResult result) {
+		return doSaveUser(form, result, true);
 	}
 
 	private String setUserEnabled(Long userid, Boolean value) {
@@ -187,7 +252,7 @@ public class UserController extends RootController {
 					+ user.getEmail() + " enabled=" + value.toString());
 		}
 
-		return "redirect:/alluser";
+		return "redirect:/user";
 	}
 
 	private String setUserLocked(Long userid, Boolean value) {
@@ -199,7 +264,7 @@ public class UserController extends RootController {
 					+ user.getEmail() + " locked=" + value.toString());
 		}
 
-		return "redirect:/alluser";
+		return "redirect:/user";
 	}
 
 	private String setUserDeleted(Long userid, Boolean value) {
@@ -211,7 +276,7 @@ public class UserController extends RootController {
 					+ user.getEmail() + " deleted=" + value.toString());
 		}
 
-		return "redirect:/alluser";
+		return "redirect:/user";
 	}
 
 	@RequestMapping("/enableuser/{userid}")
@@ -262,7 +327,7 @@ public class UserController extends RootController {
 					+ user.getEmail() + " foever");
 		}
 
-		return "redirect:/alluser";
+		return "redirect:/user";
 	}
 
 	@RequestMapping("/changeownpassword")
@@ -312,7 +377,7 @@ public class UserController extends RootController {
 				sendPasswordChangedEmail(user, password);
 			}
 		}
-		return "redirect:/alluser";
+		return "redirect:/user";
 	}
 
 	private String sendConfirmationEmail(final User user, final String password) {

@@ -48,10 +48,17 @@
 
 <body>
 	<jsp:include page="../menu.jsp" />
+	<c:set var="canEdit" value="${projectForm.userType == utFaculty}" />
 	<p>
 	<h1>Project : ${projectForm.project.name}</h1>
 	<hr>
-	<h2>Basic Information</h2>
+	<h2>
+		Basic Information
+		<c:if test="${canEdit}">
+			| <a href="editproject?projectid=${projectForm.project.id}">Edit</a>
+		</c:if>
+
+	</h2>
 	<table id="box-table-a" summary="Project Information">
 		<tr>
 			<td>Contact date</td>
@@ -59,17 +66,11 @@
 		</tr>
 		<tr>
 			<td>Contact name</td>
-			<td><c:forEach items="${projectForm.project.contactName}"
-					var="user">
-						${user}<br>
-				</c:forEach></td>
+			<td>${projectForm.project.contact}</td>
 		</tr>
 		<tr>
 			<td>Study PI</td>
-			<td><c:forEach items="${projectForm.project.studyPIName}"
-					var="user">
-						${user}<br>
-				</c:forEach></td>
+			<td>${projectForm.project.studyPI}</td>
 		</tr>
 		<tr>
 			<td>Quote amount</td>
@@ -103,7 +104,7 @@
 		</tr>
 		<tr>
 			<td>Request cost center setup in CORES (date)</td>
-			<td>${projectForm.project.requestCostCenterSetupInCORES}</td>
+			<td>${projectForm.project.requestCostCenterSetupInCORESString}</td>
 		</tr>
 		<tr>
 			<td>Requested by (name)</td>
@@ -111,14 +112,31 @@
 		</tr>
 		<tr>
 			<td>Billed in CORES (date)</td>
-			<td>${projectForm.project.billedInCORES}</td>
+			<td>${projectForm.project.billedInCORESString}</td>
 		</tr>
 		<tr>
 			<td>Billed by (name)</td>
 			<td>${projectForm.project.billedBy}</td>
 		</tr>
 	</table>
-	<h2>Technologies</h2>
+	<c:choose>
+		<c:when test="${canEdit}">
+			<form:form method="post" action="addprojecttechnology.html"
+				commandName="projectForm">
+				<h2>
+					Technologies |
+					<form:hidden path="project.id" />
+					<form:select path="newTechnology"
+						items="${projectForm.technologyList}" itemLabel="name"
+						itemValue="id" />
+					<input type="submit" value="Add technology" />
+				</h2>
+			</form:form>
+		</c:when>
+		<c:otherwise>
+			<h2>Technologies</h2>
+		</c:otherwise>
+	</c:choose>
 	<table id="box-table-a" summary="Technologies">
 		<thead>
 			<tr>
@@ -126,16 +144,34 @@
 				<th scope="col">Modules</th>
 				<th scope="col">Platform</th>
 				<th scope="col">Sample number</th>
+				<c:if test="${canEdit}">
+					<th scope="col">&nbsp;</th>
+					<th scope="col">&nbsp;</th>
+				</c:if>
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach items="${projectForm.project.technologies}"
-				var="tec">
+			<c:forEach items="${projectForm.project.technologies}" var="tec">
 				<tr>
 					<td>${tec.technology}</td>
 					<td></td>
 					<td>${tec.platform}</td>
 					<td>${tec.sampleNumber}</td>
+					<c:if test="${canEdit}">
+						<td>
+							<form action="editprojecttechnology?id=${tec.id}" method="post">
+								<input type="submit"
+									value="<spring:message	code="label.edit" />" />
+							</form>
+						</td>
+						<td>
+							<form action="deleteprojecttechnology/${tec.id}">
+								<input type="submit"
+									value="<spring:message	code="label.delete" />"
+									onclick="return confirm('Are you sure you want to delete?')" />
+							</form>
+						</td>
+					</c:if>
 				</tr>
 				<c:forEach items="${tec.modules}" var="module">
 					<tr>
@@ -143,6 +179,10 @@
 						<td>${module.name}</td>
 						<td></td>
 						<td></td>
+						<c:if test="${canEdit}">
+							<td></td>
+							<td></td>
+						</c:if>
 					</tr>
 				</c:forEach>
 			</c:forEach>
@@ -155,17 +195,49 @@
 			<tr>
 				<th scope="col">Date</th>
 				<th scope="col">User/Comment</th>
+				<c:if test="${canEdit}">
+					<th scope="col">&nbsp;</th>
+				</c:if>
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach items="${projectForm.project.comments}"
-				var="comment">
+			<c:forEach items="${projectForm.project.comments}" var="comment">
 				<tr>
 					<td>${comment.commentDate}</td>
 					<td>${comment.commentUser} wrote : <br> <pre>${comment.comment}</pre>
 					</td>
+					<c:if test="${canEdit}">
+						<td>
+							<form action="deleteprojectcomment/${comment.id}">
+								<input type="submit"
+									value="<spring:message	code="label.delete" />"
+									onclick="return confirm('Are you sure you want to delete?')" />
+							</form>
+						</td>
+					</c:if>
 				</tr>
 			</c:forEach>
+			<form:form method="post" action="saveprojectcomment.html"
+				commandName="projectForm">
+				<form:hidden path="project.id" />
+				<tr>
+					<td>New comment</td>
+					<c:set var="cols" value="1" />
+					<c:if test="${canEdit}">
+						<c:set var="cols" value="2" />
+					</c:if>
+					<td colspan="${cols}"><form:textarea id="textarea"
+							path="comment" rows="10" /></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td colspan="${cols}">
+						<form action="saveprojectcomment" method="post">
+							<input type="submit" value="<spring:message code="label.add"/>" />
+						</form>
+					</td>
+				</tr>
+			</form:form>
 		</tbody>
 	</table>
 

@@ -134,7 +134,7 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 
 	public String getName() {
 		if (notEmpty(firstname) && notEmpty(lastname)) {
-			return lastname + ", " + firstname;
+			return firstname + " " + lastname;
 		} else if (notEmpty(this.firstname)) {
 			return this.firstname;
 		} else if (notEmpty(this.lastname)) {
@@ -181,20 +181,25 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 		return credentialsNonExpired;
 	}
 
+	@Transient
+	private List<GrantedAuthority> authorities;
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		HashSet<String> gas = new HashSet<String>();
-		for (UserRole role : roles) {
-			gas.add(role.getRole().getName());
-			for (RolePermission rp : role.getRole().getPermissions()) {
-				gas.add(rp.getPermission().getName());
+		if (authorities == null) {
+			HashSet<String> gas = new HashSet<String>();
+			for (UserRole role : roles) {
+				gas.add(role.getRole().getName());
+				for (RolePermission rp : role.getRole().getPermissions()) {
+					gas.add(rp.getPermission().getName());
+				}
+			}
+			authorities = new ArrayList<GrantedAuthority>();
+			for (String ga : gas) {
+				authorities.add(new SimpleGrantedAuthority(ga));
 			}
 		}
-		List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
-		for (String ga : gas) {
-			result.add(new SimpleGrantedAuthority(ga));
-		}
-		return result;
+		return authorities;
 	}
 
 	@Override
@@ -228,15 +233,6 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 
 	public void setRoles(Set<UserRole> roles) {
 		this.roles = roles;
-	}
-
-	public boolean hasRole(String roleName) {
-		for (UserRole role : roles) {
-			if (role.getRole().getName().equals(roleName)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public Boolean getAccountNonDeleted() {
@@ -285,9 +281,28 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 		return email.compareTo(arg0.email);
 	}
 
+	public boolean hasRole(String roleName) {
+		for (UserRole role : roles) {
+			if (role.getRole().getName().equals(roleName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasPermission(String permissionName) {
+		Collection<? extends GrantedAuthority> authes = getAuthorities();
+		for (GrantedAuthority ga : authes) {
+			if (ga.getAuthority().equals(permissionName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean isVangardUser() {
-		for (UserRole ur : roles) {
-			if (!ur.getRole().getName().equals(Role.ROLE_USER)) {
+		for (UserRole role : roles) {
+			if (!role.getRole().equals(Role.ROLE_USER)) {
 				return true;
 			}
 		}

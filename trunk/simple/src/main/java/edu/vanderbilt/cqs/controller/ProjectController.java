@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
-import org.jboss.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -45,9 +44,6 @@ import edu.vanderbilt.cqs.service.ProjectService;
 
 @Controller
 public class ProjectController extends RootController {
-	private static final Logger logger = Logger
-			.getLogger(ProjectController.class);
-
 	@Autowired
 	private ProjectService projectService;
 
@@ -57,21 +53,18 @@ public class ProjectController extends RootController {
 	@Secured({ Permission.ROLE_PROJECT_VIEW })
 	@RequestMapping("/project")
 	public String listProject(ModelMap model) {
-		logger.info(currentUser().getUsername() + " projectList.");
+		addUserLogInfo(currentUser().getUsername() + " list project.", false);
 
 		model.put("projectList", projectService.listProject());
-		/*
-		 * if (isCurrentPowerUser()) { model.put("projectList",
-		 * projectService.listProject()); } else { model.put("projectList",
-		 * projectService.listProject(currentUser().getId())); }
-		 */
+
 		return "/project/list";
 	}
 
 	@RequestMapping("/addproject")
 	@Secured({ Permission.ROLE_PROJECT_EDIT })
 	public String addProject(ModelMap model) {
-		logger.info(currentUser().getUsername() + " addProject.");
+		addUserLogInfo(currentUser().getUsername() + " try to add project.",
+				false);
 
 		ProjectForm form = new ProjectForm();
 		form.setProject(new Project());
@@ -166,9 +159,8 @@ public class ProjectController extends RootController {
 
 	@RequestMapping("/editproject")
 	@Secured({ Permission.ROLE_PROJECT_EDIT })
-	public String editProject(@RequestParam("projectid") Long projectId,
-			ModelMap model) {
-		logger.info(currentUser().getUsername() + " editProject.");
+	public String editProject(@RequestParam("id") Long projectId, ModelMap model) {
+		addUserLogInfo(currentUser().getUsername() + " try to edit project.");
 		Integer userType = getUserType(projectId);
 		if (userType == UserType.NONE) {
 			return "/access/denied";
@@ -265,9 +257,9 @@ public class ProjectController extends RootController {
 			return "/project/edit";
 		}
 
+		Project project;
 		if (form.getProject().getId() != null) {
-			Project project = projectService.findProject(form.getProject()
-					.getId());
+			project = projectService.findProject(form.getProject().getId());
 			BeanUtils.copyProperties(form.getProject(), project, new String[] {
 					"technologies", "users", "comments" });
 
@@ -280,9 +272,11 @@ public class ProjectController extends RootController {
 			}
 
 			projectService.updateProject(project);
-			logger.info(currentUser().getUsername() + " saveProject - update.");
+			addUserLogInfo(String.format("%s updated project %s [%d]",
+					currentUser().getUsername(), project.getName(),
+					project.getId()));
 		} else {
-			Project project = new Project();
+			project = new Project();
 			BeanUtils.copyProperties(form.getProject(), project, new String[] {
 					"technologies", "users" });
 			project.setCreateDate(new Date());
@@ -297,29 +291,32 @@ public class ProjectController extends RootController {
 			}
 
 			projectService.addProject(project);
-			logger.info(currentUser().getUsername() + " saveProject - new.");
+			addUserLogInfo(String.format("%s created project %s [%d}]",
+					currentUser().getUsername(), project.getName(),
+					project.getId()));
 		}
 
-		return "redirect:/project";
+		return toProject(project.getId());
 	}
 
 	@RequestMapping("/deleteproject/{projectid}")
 	@Secured(Permission.ROLE_PROJECT_EDIT)
 	public String deleteProject(@PathVariable Long projectid) {
-		projectService.removeProject(projectid);
+		Project project = projectService.findProject(projectid);
+		if (project != null) {
+			projectService.removeProject(projectid);
 
-		logger.info(currentUser().getUsername() + " deleteProject "
-				+ projectid.toString());
+			addUserLogInfo(String.format("%s deleted project %s [%d]",
+					currentUser().getUsername(), project.getName(),
+					project.getId()));
+		}
 
 		return "redirect:/project";
 	}
 
 	@RequestMapping("/showproject")
 	@Secured({ Permission.ROLE_PROJECT_VIEW })
-	public String showProject(@RequestParam("projectid") Long projectId,
-			ModelMap model) {
-		logger.info(currentUser().getUsername() + " showProject "
-				+ projectId.toString());
+	public String showProject(@RequestParam("id") Long projectId, ModelMap model) {
 		Integer userType = getUserType(projectId);
 		if (userType == UserType.NONE) {
 			return "/access/denied";
@@ -332,6 +329,11 @@ public class ProjectController extends RootController {
 			form.setProject(project);
 			form.setUserType(userType);
 			model.addAttribute("projectForm", form);
+
+			addUserLogInfo(String.format("%s viewed project %s [%d]",
+					currentUser().getUsername(), project.getName(),
+					project.getId()), false);
+
 			return "/project/show";
 		} else {
 			return "redirect:/project";
@@ -371,8 +373,6 @@ public class ProjectController extends RootController {
 	@Secured({ Permission.ROLE_PROJECT_EDIT })
 	public String addProjectTechnology(
 			@ModelAttribute("projectForm") ProjectForm form, ModelMap model) {
-		logger.info(currentUser().getUsername() + " addProjectTechnology.");
-
 		Project project = projectService.findProject(form.getProject().getId());
 		if (project != null) {
 			Technology tec = projectService.findTechnology(form
@@ -389,6 +389,12 @@ public class ProjectController extends RootController {
 				tecform.setReference(tec);
 
 				model.addAttribute("technologyForm", tecform);
+
+				addUserLogInfo(String.format(
+						"%s try to add technology to project %s [%d]",
+						currentUser().getUsername(), project.getName(),
+						project.getId()), false);
+
 				return "/project/edittechnology";
 			} else {
 				return toProject(project.getId());
@@ -399,9 +405,8 @@ public class ProjectController extends RootController {
 
 	@RequestMapping("/editprojecttechnology")
 	@Secured({ Permission.ROLE_PROJECT_EDIT })
-	public String editProjectTechnology(@ModelAttribute("id") Long id,
+	public String editProjectTechnology(@RequestParam("id") Long id,
 			ModelMap model) {
-		logger.info(currentUser().getUsername() + " editProjectTechnology.");
 		ProjectTechnology pt = projectService.findProjectTechnology(id);
 		if (pt == null) {
 			return "redirect:/project";
@@ -425,6 +430,13 @@ public class ProjectController extends RootController {
 		tecform.setModules(oldModules);
 
 		model.addAttribute("technologyForm", tecform);
+
+		addUserLogInfo(String.format(
+				"%s try to edit technology %s of project %s [%d]",
+				currentUser().getUsername(), pt.getTechnology(), pt
+						.getProject().getName(), pt.getProject().getId()),
+				false);
+
 		return "/project/edittechnology";
 	}
 
@@ -433,7 +445,6 @@ public class ProjectController extends RootController {
 	public String saveProjectTechnology(
 			@ModelAttribute("technologyForm") ProjectTechnologyForm form,
 			ModelMap model) {
-		logger.info(currentUser().getUsername() + " saveProjectTechnology.");
 		Project project = projectService.findProject(form.getProjectId());
 		if (project == null) {
 			return "redirect:/project";
@@ -489,13 +500,21 @@ public class ProjectController extends RootController {
 
 		if (form.getTechnology().getId() == null) {
 			projectService.addProjectTechnology(pt);
+			addUserLogInfo(String.format(
+					"%s added technology %s of project %s [%d]",
+					currentUser().getUsername(), pt.getTechnology(), pt
+							.getProject().getName(), pt.getProject().getId()));
 		} else {
 			projectService.updateProjectTechnology(pt);
+			addUserLogInfo(String.format(
+					"%s updated technology %s of project %s [%d]",
+					currentUser().getUsername(), pt.getTechnology(), pt
+							.getProject().getName(), pt.getProject().getId()));
 		}
 
 		return toProject(form.getProjectId());
 	}
-	
+
 	@RequestMapping("/deleteprojecttechnology/{ptid}")
 	@Secured({ Permission.ROLE_PROJECT_EDIT })
 	public String deleteProjectTechnology(@PathVariable Long ptid,
@@ -510,12 +529,14 @@ public class ProjectController extends RootController {
 		if (userType.equals(UserType.VANGARD_FACULTY)
 				|| userType.equals(UserType.ADMIN)) {
 			projectService.removeProjectTechnology(pt);
-			logger.info(currentUser().getUsername() + " deleteProjectTechnology");
+			addUserLogInfo(String.format(
+					"%s deleted technology %s of project %s [%d]",
+					currentUser().getUsername(), pt.getTechnology(), pt
+							.getProject().getName(), pt.getProject().getId()));
 		}
 
 		return toProject(projectId);
 	}
-
 
 	@RequestMapping("/saveprojectcomment")
 	@Secured({ Permission.ROLE_PROJECT_VIEW })
@@ -524,8 +545,6 @@ public class ProjectController extends RootController {
 		if (form.getComment() == null || form.getComment().trim().length() == 0) {
 			return "redirect:/project";
 		}
-
-		logger.info(currentUser().getUsername() + " addProjectComment.");
 
 		Project project = projectService.findProject(form.getProject().getId());
 		if (project == null) {
@@ -540,11 +559,15 @@ public class ProjectController extends RootController {
 
 		projectService.addProjectComment(comment);
 
+		addUserLogInfo(String
+				.format("%s added comment to project %s [%d]", currentUser()
+						.getUsername(), project.getName(), project.getId()));
+
 		return toProject(project.getId());
 	}
 
 	private String toProject(Long projectId) {
-		return "redirect:/showproject?projectid=" + projectId.toString();
+		return "redirect:/showproject?id=" + projectId.toString();
 	}
 
 	@RequestMapping("/deleteprojectcomment/{commentid}")
@@ -556,14 +579,75 @@ public class ProjectController extends RootController {
 			return "redirect:/project";
 		}
 
-		Long projectId = comment.getProject().getId();
-		Integer userType = getUserType(projectId);
+		Project project = comment.getProject();
+		Integer userType = getUserType(project.getId());
 		if (userType.equals(UserType.VANGARD_FACULTY)
 				|| userType.equals(UserType.ADMIN)) {
 			projectService.removeProjectComment(comment);
-			logger.info(currentUser().getUsername() + " deleteProjectComment.");
+			addUserLogInfo(String.format(
+					"%s deleted comment from project %s [%d]", currentUser()
+							.getUsername(), project.getName(), project.getId()));
 		}
 
-		return toProject(projectId);
+		return toProject(project.getId());
+	}
+
+	@RequestMapping("/editptm")
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
+	public String editProjectTechnologyModule(@RequestParam("id") Long id,
+			ModelMap model) {
+		ProjectTechnologyModule ptm = projectService
+				.findProjectTechnologyModule(id);
+		Project project = ptm.getTechnology().getProject();
+		Integer userType = getUserType(project.getId());
+		if (userType == UserType.NONE) {
+			return "/access/denied";
+		}
+
+		model.put("ptmForm", ptm);
+
+		addUserLogInfo(String
+				.format("%s try to edit module %s of technology %s of project %s [%d]",
+						currentUser().getUsername(), ptm.getName(), ptm
+								.getTechnology().getTechnology(), project
+								.getName(), project.getId()));
+
+		return "/project/editptm";
+	}
+
+	@RequestMapping("/saveptm")
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
+	public String saveProjectTechnologyModule(
+			@Valid @ModelAttribute("ptmForm") ProjectTechnologyModule ptm,
+			ModelMap model, BindingResult result) {
+		if (result.hasErrors()) {
+			return "/project/editptm";
+		}
+
+		ProjectTechnologyModule oldptm = projectService
+				.findProjectTechnologyModule(ptm.getId());
+		if (oldptm == null) {
+			return "/access/error?message=cannot find module "
+					+ ptm.getId().toString();
+		}
+
+		oldptm.setSampleNumber(ptm.getSampleNumber());
+		oldptm.setOtherUnit(ptm.getOtherUnit());
+		projectService.updateProjectTechnologyModule(oldptm);
+		addUserLogInfo(String.format(
+				"%s update module %s of technology %s of project %s [%d]",
+				currentUser().getUsername(), oldptm.getName(), oldptm
+						.getTechnology().getTechnology(), oldptm
+						.getTechnology().getProject().getName(), oldptm
+						.getTechnology().getProject().getId()));
+
+		return toProject(oldptm.getTechnology().getProject().getId());
+	}
+
+	@RequestMapping("/showlog")
+	@Secured({ Role.ROLE_ADMIN })
+	public String listLog(ModelMap model) {
+		model.put("logs", projectService.listLog());
+		return "/log/list";
 	}
 }

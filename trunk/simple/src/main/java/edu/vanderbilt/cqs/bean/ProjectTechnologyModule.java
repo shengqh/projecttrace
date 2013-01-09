@@ -29,6 +29,12 @@ public class ProjectTechnologyModule implements Serializable {
 	
 	@Column(name="MODULE_INDEX")
 	private Integer moduleIndex;
+	
+	@Column(name="SAMPLE_NUMBER")
+	private Integer sampleNumber;
+	
+	@Column(name="OTHER_UNIT")
+	private Integer otherUnit;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TECHNOLOGY_ID")
@@ -72,5 +78,21 @@ public class ProjectTechnologyModule implements Serializable {
 
 	public void setModuleIndex(Integer moduleIndex) {
 		this.moduleIndex = moduleIndex;
+	}
+
+	public Integer getSampleNumber() {
+		return sampleNumber;
+	}
+
+	public void setSampleNumber(Integer sampleNumber) {
+		this.sampleNumber = sampleNumber;
+	}
+
+	public Integer getOtherUnit() {
+		return otherUnit;
+	}
+
+	public void setOtherUnit(Integer otherUnit) {
+		this.otherUnit = otherUnit;
 	}
 }

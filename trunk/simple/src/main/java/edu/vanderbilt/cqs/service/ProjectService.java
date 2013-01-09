@@ -2,6 +2,7 @@ package edu.vanderbilt.cqs.service;
 
 import java.util.List;
 
+import edu.vanderbilt.cqs.bean.LogTrace;
 import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Pipeline;
@@ -12,6 +13,7 @@ import edu.vanderbilt.cqs.bean.ProjectComment;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
+import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
@@ -155,4 +157,12 @@ public interface ProjectService {
 	void updateProjectTechnology(ProjectTechnology entity);
 
 	void removeProjectTechnology(ProjectTechnology entity);
+
+	ProjectTechnologyModule findProjectTechnologyModule(Long id);
+	
+	void updateProjectTechnologyModule(ProjectTechnologyModule entity);
+
+	List<LogTrace> listLog();
+
+	void addLogTrace(LogTrace log);
 }

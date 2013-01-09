@@ -47,7 +47,7 @@
 							</c:otherwise>
 						</c:choose>
 						<tr ${bc}>
-							<td><a href="showproject?projectid=${project.id}">${project.name}</a></td>
+							<td><a href="showproject?id=${project.id}">${project.name}</a></td>
 							<td>${project.isBioVU}</td>
 							<td>${project.contactDateString}</td>
 							<td>${project.studyPI}</td>

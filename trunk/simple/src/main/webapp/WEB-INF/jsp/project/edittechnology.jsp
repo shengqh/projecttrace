@@ -27,6 +27,7 @@
 			<form:hidden path="technology.technology" />
 			<form:errors path="*" cssClass="errorblock" element="div" />
 			<table id="box-table-a">
+			  	<col width="200">
 				<tbody>
 					<tr>
 						<td>Sample number</td>
@@ -47,7 +48,7 @@
 						<td>Modules</td>
 						<td><form:select path="modules" multiple="true"
 								items="${technologyForm.reference.modules}" itemLabel="name"
-								itemValue="id" size="6" /></td>
+								itemValue="id" size="20" /></td>
 						<td><form:errors path="modules" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -61,7 +62,7 @@
 								</c:otherwise>
 							</c:choose> <input type="button"
 							value="<spring:message code="label.back" />"
-							onClick="parent.location='showproject.html?id=${technologyForm.technology.project.id}'" /></td>
+							onClick="parent.location='showproject?id=${technologyForm.technology.project.id}'" /></td>
 					</tr>
 				</tbody>
 			</table>

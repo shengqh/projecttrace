@@ -2,6 +2,7 @@
 
 <c:url value="home" var="homeUrl" />
 <c:url value="project" var="projectUrl" />
+<c:url value="showlog" var="logUrl" />
 <c:url value="technology" var="technologyUrl" />
 <c:url value="user" var="userUrl" />
 <c:url value="role" var="roleUrl" />
@@ -24,7 +25,9 @@
 				<li><a href="${roleUrl}">Role</a></li>
 			</sec:authorize>
 		</sec:authorize>
-
+		<sec:authorize ifAnyGranted="ROLE_ADMIN">
+			<li><a href="${logUrl}">Log</a></li>
+		</sec:authorize>
 		<li><a href="${passwordUrl}">Change Password</a></li>
 		<li><a href="${logoutUrl}">Logout</a></li>
 	</ul>

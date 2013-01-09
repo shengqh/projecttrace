@@ -13,7 +13,6 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.velocity.app.VelocityEngine;
-import org.jboss.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -44,8 +43,6 @@ import edu.vanderbilt.cqs.validator.ChangePasswordValidator;
 
 @Controller
 public class UserController extends RootController {
-	private static final Logger logger = Logger.getLogger(UserController.class);
-
 	@Autowired
 	private Validator validator;
 
@@ -122,9 +119,9 @@ public class UserController extends RootController {
 		model.addAttribute("userForm", form);
 
 		if (isContact) {
-			logger.info(currentUser().getUsername() + " try to add contact ...");
+			addUserLogInfo(currentUser().getUsername() + " try to add contact ...", false);
 		} else {
-			logger.info(currentUser().getUsername() + " try to add user ...");
+			addUserLogInfo(currentUser().getUsername() + " try to add user ...", false);
 		}
 		return "user/edit";
 	}
@@ -143,11 +140,11 @@ public class UserController extends RootController {
 			initUserForm(form, user);
 			model.addAttribute("userForm", form);
 			if (isContact) {
-				logger.info(currentUser().getUsername()
-						+ " try to edit contact " + user.getEmail() + " ...");
+				addUserLogInfo(currentUser().getUsername()
+						+ " try to edit contact " + user.getEmail() + " ...", false);
 			} else {
-				logger.info(currentUser().getUsername() + " try to edit user "
-						+ user.getEmail() + " ...");
+				addUserLogInfo(currentUser().getUsername() + " try to edit user "
+						+ user.getEmail() + " ...", false);
 			}
 			return "user/edit";
 		} else {
@@ -189,10 +186,10 @@ public class UserController extends RootController {
 
 			projectService.addUser(user);
 			if (isContact) {
-				logger.info(currentUser().getUsername() + " add contact "
+				addUserLogInfo(currentUser().getUsername() + " added contact "
 						+ user.getEmail());
 			} else {
-				logger.info(currentUser().getUsername() + " add user "
+				addUserLogInfo(currentUser().getUsername() + " added user "
 						+ user.getEmail());
 			}
 			if (sendMail
@@ -213,10 +210,10 @@ public class UserController extends RootController {
 			projectService.updateUser(user);
 
 			if (isContact) {
-				logger.info(currentUser().getUsername() + " update contact "
+				addUserLogInfo(currentUser().getUsername() + " updated contact "
 						+ user.getEmail());
 			} else {
-				logger.info(currentUser().getUsername() + " update user "
+				addUserLogInfo(currentUser().getUsername() + " updated user "
 						+ user.getEmail());
 			}
 		}
@@ -248,7 +245,7 @@ public class UserController extends RootController {
 		if (user != null) {
 			user.setEnabled(value);
 			projectService.updateUser(user);
-			logger.info(currentUser().getUsername() + " set user "
+			addUserLogInfo(currentUser().getUsername() + " set user "
 					+ user.getEmail() + " enabled=" + value.toString());
 		}
 
@@ -260,7 +257,7 @@ public class UserController extends RootController {
 		if (user != null) {
 			user.setAccountNonLocked(!value);
 			projectService.updateUser(user);
-			logger.info(currentUser().getUsername() + " set user "
+			addUserLogInfo(currentUser().getUsername() + " set user "
 					+ user.getEmail() + " locked=" + value.toString());
 		}
 
@@ -272,7 +269,7 @@ public class UserController extends RootController {
 		if (user != null) {
 			user.setAccountNonDeleted(!value);
 			projectService.updateUser(user);
-			logger.info(currentUser().getUsername() + " set user "
+			addUserLogInfo(currentUser().getUsername() + " set user "
 					+ user.getEmail() + " deleted=" + value.toString());
 		}
 
@@ -317,13 +314,11 @@ public class UserController extends RootController {
 
 	@RequestMapping("/deleteuserforever/{userid}")
 	@Secured(Permission.ROLE_USER_EDIT)
-	public String deleteUserForever(
-
-	@PathVariable Long userid) {
+	public String deleteUserForever(	@PathVariable Long userid) {
 		User user = projectService.findUser(userid);
 		if (user != null) {
 			projectService.removeUser(userid);
-			logger.info(currentUser().getUsername() + " delete user "
+			addUserLogInfo(currentUser().getUsername() + " deleted user "
 					+ user.getEmail() + " foever");
 		}
 
@@ -353,6 +348,8 @@ public class UserController extends RootController {
 		} else {
 			String newPassword = Utils.md5(form.getNewPassword());
 			projectService.updatePassword(currentUser().getId(), newPassword);
+			
+			addUserLogInfo(currentUser().getUsername() + " changed own password");
 			return "home";
 		}
 	}
@@ -369,7 +366,7 @@ public class UserController extends RootController {
 			user.setPassword(Utils.md5(password));
 			projectService.updateUser(user);
 
-			logger.info(currentUser.getEmail() + " reseted user "
+			addUserLogInfo(currentUser.getEmail() + " reseted user "
 					+ user.getEmail() + " password.");
 
 			if (sendMail
@@ -396,12 +393,12 @@ public class UserController extends RootController {
 				message.setText(text, true);
 			}
 		};
-		logger.info("Sending mail to " + user.getEmail() + " ...");
 		try {
 			this.mailSender.send(preparator);
+			addSystemLogInfo("Sent mail to " + user.getEmail() + " ...");
 			return null;
 		} catch (MailException ex) {
-			logger.error("Sending mail error " + ex.getMessage());
+			addSystemLogError("Sending mail to " + user.getEmail() + " error: " + ex.getMessage());
 			return ex.getMessage();
 		}
 	}
@@ -423,12 +420,12 @@ public class UserController extends RootController {
 				message.setText(text, true);
 			}
 		};
-		logger.info("Sending mail to " + user.getEmail() + " ...");
 		try {
 			this.mailSender.send(preparator);
+			addSystemLogInfo("Sent mail to " + user.getEmail() + " ...");
 			return null;
 		} catch (MailException ex) {
-			logger.error("Sending mail error " + ex.getMessage());
+			addSystemLogError("Sending mail to " + user.getEmail() + " error: " + ex.getMessage());
 			return ex.getMessage();
 		}
 	}

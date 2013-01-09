@@ -55,11 +55,13 @@
 	<h2>
 		Basic Information
 		<c:if test="${canEdit}">
-			| <a href="editproject?projectid=${projectForm.project.id}">Edit</a>
+			| <a href="editproject?id=${projectForm.project.id}">Edit</a>
 		</c:if>
 
 	</h2>
 	<table id="box-table-a" summary="Project Information">
+	  	<col width="300">
+	  	<col width="300">
 		<tr>
 			<td>Contact date</td>
 			<td>${projectForm.project.contactDateString}</td>
@@ -144,6 +146,7 @@
 				<th scope="col">Modules</th>
 				<th scope="col">Platform</th>
 				<th scope="col">Sample number</th>
+				<th scope="col">Other unit</th>
 				<c:if test="${canEdit}">
 					<th scope="col">&nbsp;</th>
 					<th scope="col">&nbsp;</th>
@@ -154,9 +157,10 @@
 			<c:forEach items="${projectForm.project.technologies}" var="tec">
 				<tr>
 					<td>${tec.technology}</td>
-					<td></td>
+					<td>&nbsp;</td>
 					<td>${tec.platform}</td>
 					<td>${tec.sampleNumber}</td>
+					<td>&nbsp;</td>
 					<c:if test="${canEdit}">
 						<td>
 							<form action="editprojecttechnology?id=${tec.id}" method="post">
@@ -178,9 +182,15 @@
 						<td></td>
 						<td>${module.name}</td>
 						<td></td>
-						<td></td>
+						<td>${module.sampleNumber}</td>
+						<td>${module.otherUnit}</td>
 						<c:if test="${canEdit}">
-							<td></td>
+							<td>
+								<form action="editptm?id=${module.id}" method="post">
+									<input type="submit"
+										value="<spring:message	code="label.edit" />" />
+								</form>
+							</td>
 							<td></td>
 						</c:if>
 					</tr>

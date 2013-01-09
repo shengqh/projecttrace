@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.vanderbilt.cqs.bean.LogTrace;
 import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Pipeline;
@@ -16,9 +17,11 @@ import edu.vanderbilt.cqs.bean.ProjectComment;
 import edu.vanderbilt.cqs.bean.ProjectTask;
 import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
+import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.Role;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
+import edu.vanderbilt.cqs.dao.LogTraceDAO;
 import edu.vanderbilt.cqs.dao.ModuleDAO;
 import edu.vanderbilt.cqs.dao.PermissionDAO;
 import edu.vanderbilt.cqs.dao.PipelineDAO;
@@ -29,6 +32,7 @@ import edu.vanderbilt.cqs.dao.ProjectDAO;
 import edu.vanderbilt.cqs.dao.ProjectTaskDAO;
 import edu.vanderbilt.cqs.dao.ProjectTaskStatusDAO;
 import edu.vanderbilt.cqs.dao.ProjectTechnologyDAO;
+import edu.vanderbilt.cqs.dao.ProjectTechnologyModuleDAO;
 import edu.vanderbilt.cqs.dao.RoleDAO;
 import edu.vanderbilt.cqs.dao.TechnologyDAO;
 import edu.vanderbilt.cqs.dao.UserDAO;
@@ -72,7 +76,13 @@ public class ProjectServiceImpl implements ProjectService {
 	private ProjectTechnologyDAO projectTechnologyDAO;
 
 	@Autowired
+	private ProjectTechnologyModuleDAO ptmDAO;
+
+	@Autowired
 	private ProjectCommentDAO projectCommentDAO;
+	
+	@Autowired
+	private LogTraceDAO logTraceDAO;
 
 	@Transactional
 	@Override
@@ -489,5 +499,29 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void removeProjectTechnology(ProjectTechnology entity) {
 		projectTechnologyDAO.delete(entity);
+	}
+
+	@Transactional
+	@Override
+	public ProjectTechnologyModule findProjectTechnologyModule(Long id) {
+		return ptmDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public void updateProjectTechnologyModule(ProjectTechnologyModule entity) {
+		ptmDAO.update(entity);
+	}
+	
+	@Transactional
+	@Override
+	public void addLogTrace(LogTrace log) {
+		logTraceDAO.save(log);
+	}
+
+	@Transactional
+	@Override
+	public List<LogTrace> listLog() {
+		return logTraceDAO.listAll();
 	}
 }

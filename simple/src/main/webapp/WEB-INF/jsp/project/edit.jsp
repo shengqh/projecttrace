@@ -31,6 +31,7 @@
 			<form:hidden path="project.id" />
 			<form:errors path="*" cssClass="errorblock" element="div" />
 			<table id="box-table-a">
+			  	<col width="300">
 				<thead>
 					<tr>
 						<th scope="col">Information</th>
@@ -51,7 +52,7 @@
 								<td>${projectForm.project.name}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.name" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -65,7 +66,7 @@
 								<td>${projectForm.project.isBioVU}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.isBioVU" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -79,7 +80,7 @@
 							<c:otherwise>
 								<form:hidden path="project.contactDate" />
 								<td>${projectForm.project.contactDateString}</td>
-								<td></td>
+								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
 						<td><form:errors path="project.contactDate" cssClass="error" /></td>
@@ -96,7 +97,7 @@
 								<td>${projectForm.project.contact}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.contact" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -111,7 +112,7 @@
 								<td>${projectForm.project.studyPI}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.studyPI" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -126,7 +127,7 @@
 								<td>${projectForm.project.quoteAmount}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.quoteAmount" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -141,7 +142,7 @@
 								<td>${projectForm.project.status}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.status" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -156,7 +157,7 @@
 							<c:otherwise>
 								<form:hidden path="project.workStarted" />
 								<td>${projectForm.project.workStartedString}</td>
-								<td></td>
+								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
 						<td><form:errors path="project.workStarted" cssClass="error" /></td>
@@ -173,7 +174,7 @@
 							<c:otherwise>
 								<form:hidden path="project.workCompleted" />
 								<td>${projectForm.project.workCompletedString}</td>
-								<td></td>
+								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
 						<td><form:errors path="project.workCompleted"
@@ -191,7 +192,7 @@
 								<td>${projectForm.project.costCenterToBill}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.costCenterToBill"
 								cssClass="error" /></td>
 					</tr>
@@ -206,7 +207,7 @@
 							<c:otherwise>
 								<form:hidden path="project.requestCostCenterSetupInCORES" />
 								<td>${projectForm.project.requestCostCenterSetupInCORESString}</td>
-								<td></td>
+								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
 						<td><form:errors path="project.requestCostCenterSetupInCORES"
@@ -224,7 +225,7 @@
 								<td>${projectForm.project.requestedBy}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.requestedBy" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -238,7 +239,7 @@
 							<c:otherwise>
 								<form:hidden path="project.billedInCORES" />
 								<td>${projectForm.project.billedInCORESString}</td>
-								<td></td>
+								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
 						<td><form:errors path="project.billedInCORES"
@@ -256,7 +257,7 @@
 								<td>${projectForm.project.billedBy}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.billedBy" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -271,12 +272,12 @@
 								<td>${projectForm.project.billedAmount}</td>
 							</c:otherwise>
 						</c:choose>
-						<td></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="project.billedAmount" cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Faculty</td>
-						<td colspan="2"><c:choose>
+						<td><c:choose>
 								<c:when test="${isFaculty}">
 									<form:select path="faculty" multiple="true"
 										items="${projectForm.facultyList}" itemLabel="name"
@@ -290,11 +291,12 @@
 									</c:forEach>
 								</c:otherwise>
 							</c:choose></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="faculty" cssClass="error" /></td>
 					</tr>
 					<tr>
 						<td>Staff</td>
-						<td colspan="2"><c:choose>
+						<td><c:choose>
 								<c:when test="${isFaculty}">
 									<form:select path="staff" multiple="true"
 										items="${projectForm.staffList}" itemLabel="name"
@@ -307,6 +309,7 @@
 									</c:forEach>
 								</c:otherwise>
 							</c:choose></td>
+						<td>&nbsp;</td>
 						<td><form:errors path="staff" cssClass="error" /></td>
 					</tr>
 					<tr>
@@ -320,7 +323,7 @@
 								</c:otherwise>
 							</c:choose> <input type="button"
 							value="<spring:message code="label.back" />"
-							onClick="parent.location='project.html'" /></td>
+							onClick="parent.location='showproject?id=${projectForm.project.id}'" /></td>
 					</tr>
 				</tbody>
 			</table>

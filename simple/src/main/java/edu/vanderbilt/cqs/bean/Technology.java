@@ -1,7 +1,8 @@
 package edu.vanderbilt.cqs.bean;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -46,11 +47,11 @@ public class Technology implements Serializable {
 	}
 
 	@OneToMany(mappedBy = "technology", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	private Set<Platform> platforms;
+	private List<Platform> platforms = new ArrayList<Platform>();
 
 	@OneToMany(mappedBy = "technology", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
 	@OrderBy("moduleIndex")
-	private Set<Module> modules;
+	private List<Module> modules = new ArrayList<Module>();
 
 	public Long getId() {
 		return id;
@@ -76,20 +77,12 @@ public class Technology implements Serializable {
 		this.description = description;
 	}
 
-	public Set<Platform> getPlatforms() {
+	public List<Platform> getPlatforms() {
 		return platforms;
 	}
 
-	public void setPlatforms(Set<Platform> platforms) {
-		this.platforms = platforms;
-	}
-
-	public Set<Module> getModules() {
+	public List<Module> getModules() {
 		return modules;
-	}
-
-	public void setModules(Set<Module> modules) {
-		this.modules = modules;
 	}
 
 	public int getNextModuleIndex() {

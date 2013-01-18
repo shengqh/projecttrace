@@ -9,13 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.vanderbilt.cqs.bean.LogTrace;
 import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
-import edu.vanderbilt.cqs.bean.Pipeline;
-import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectComment;
-import edu.vanderbilt.cqs.bean.ProjectTask;
-import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
+import edu.vanderbilt.cqs.bean.ProjectFile;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
 import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.Role;
@@ -24,13 +21,10 @@ import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.dao.LogTraceDAO;
 import edu.vanderbilt.cqs.dao.ModuleDAO;
 import edu.vanderbilt.cqs.dao.PermissionDAO;
-import edu.vanderbilt.cqs.dao.PipelineDAO;
-import edu.vanderbilt.cqs.dao.PipelineTaskDAO;
 import edu.vanderbilt.cqs.dao.PlatformDAO;
 import edu.vanderbilt.cqs.dao.ProjectCommentDAO;
 import edu.vanderbilt.cqs.dao.ProjectDAO;
-import edu.vanderbilt.cqs.dao.ProjectTaskDAO;
-import edu.vanderbilt.cqs.dao.ProjectTaskStatusDAO;
+import edu.vanderbilt.cqs.dao.ProjectFileDAO;
 import edu.vanderbilt.cqs.dao.ProjectTechnologyDAO;
 import edu.vanderbilt.cqs.dao.ProjectTechnologyModuleDAO;
 import edu.vanderbilt.cqs.dao.RoleDAO;
@@ -49,19 +43,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private PermissionDAO permissionDAO;
 
 	@Autowired
-	private PipelineDAO pipelineDAO;
-
-	@Autowired
-	private PipelineTaskDAO pipelineTaskDAO;
-
-	@Autowired
 	private ProjectDAO projectDAO;
-
-	@Autowired
-	private ProjectTaskDAO projectTaskDAO;
-
-	@Autowired
-	private ProjectTaskStatusDAO projectTaskStatusDAO;
 
 	@Autowired
 	private TechnologyDAO technologyDAO;
@@ -80,9 +62,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	private ProjectCommentDAO projectCommentDAO;
-	
+
 	@Autowired
 	private LogTraceDAO logTraceDAO;
+
+	@Autowired
+	private ProjectFileDAO fileDAO;
 
 	@Transactional
 	@Override
@@ -146,54 +131,6 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public Pipeline findPipeline(Long id) {
-		return pipelineDAO.findById(id);
-	}
-
-	@Transactional
-	@Override
-	public void addPipeline(Pipeline pipeline) {
-		pipelineDAO.save(pipeline);
-	}
-
-	@Transactional
-	@Override
-	public List<Pipeline> listPipeline(User currentUser) {
-		return pipelineDAO.findAll();
-	}
-
-	@Transactional
-	@Override
-	public void removePipeline(Long id) {
-		pipelineDAO.deleteById(id);
-	}
-
-	@Transactional
-	@Override
-	public PipelineTask findPipelineTask(Long id) {
-		return pipelineTaskDAO.findById(id);
-	}
-
-	@Transactional
-	@Override
-	public void addPipelineTask(PipelineTask task) {
-		pipelineTaskDAO.save(task);
-	}
-
-	@Transactional
-	@Override
-	public void removePipelineTask(Long id) {
-		pipelineTaskDAO.deleteById(id);
-	}
-
-	@Transactional
-	@Override
-	public Long findPipelineByTask(Long taskid) {
-		return pipelineTaskDAO.findPipelineIdByTaskId(taskid);
-	}
-
-	@Transactional
-	@Override
 	public void persist(Object obj) {
 		userDAO.persist(obj);
 	}
@@ -206,28 +143,6 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public void addProjectTask(ProjectTask task, ProjectTaskStatus status) {
-		projectTaskDAO.save(task);
-
-		assignTaskToStatus(task, status);
-
-		projectTaskStatusDAO.save(status);
-	}
-
-	@Transactional
-	@Override
-	public void removeProjectTask(Long id) {
-		projectTaskDAO.deleteById(id);
-	}
-
-	@Transactional
-	@Override
-	public void updatePipelineTask(PipelineTask task) {
-		pipelineTaskDAO.update(task);
-	}
-
-	@Transactional
-	@Override
 	public void updateUser(User user) {
 		userDAO.update(user);
 	}
@@ -236,41 +151,6 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void updateProject(Project project) {
 		projectDAO.update(project);
-	}
-
-	@Transactional
-	@Override
-	public void updatePipeline(Pipeline pipeline) {
-		pipelineDAO.update(pipeline);
-	}
-
-	@Transactional
-	@Override
-	public ProjectTask findProjectTask(Long id) {
-		return projectTaskDAO.findById(id);
-	}
-
-	@Transactional
-	@Override
-	public void updateProjectTask(ProjectTask task, ProjectTaskStatus status) {
-		projectTaskDAO.update(task);
-
-		assignTaskToStatus(task, status);
-
-		projectTaskStatusDAO.save(status);
-	}
-
-	private void assignTaskToStatus(ProjectTask task, ProjectTaskStatus status) {
-		status.setStatus(task.getStatus());
-		status.setUpdateUser(task.getUpdateUser());
-		status.setUpdateDate(task.getUpdateDate());
-		status.setTask(task);
-	}
-
-	@Transactional
-	@Override
-	public Long findProjectByTask(Long taskid) {
-		return projectTaskDAO.findProjecIdByTaskId(taskid);
 	}
 
 	@Transactional
@@ -512,7 +392,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public void updateProjectTechnologyModule(ProjectTechnologyModule entity) {
 		ptmDAO.update(entity);
 	}
-	
+
 	@Transactional
 	@Override
 	public void addLogTrace(LogTrace log) {
@@ -523,5 +403,58 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List<LogTrace> listLog() {
 		return logTraceDAO.listAll();
+	}
+
+	@Transactional
+	@Override
+	public void updateProjectTechnologyModules(
+			List<ProjectTechnologyModule> entities) {
+		for (ProjectTechnologyModule module : entities) {
+			ptmDAO.update(module);
+		}
+	}
+
+	@Transactional
+	@Override
+	public void addProjectFile(ProjectFile file) {
+		fileDAO.save(file);
+	}
+
+	@Transactional
+	@Override
+	public void updateProjectFile(ProjectFile file) {
+		fileDAO.update(file);
+	}
+
+	@Transactional
+	@Override
+	public void removeProjectFile(ProjectFile file) {
+		fileDAO.delete(file);
+	}
+
+	@Transactional
+	@Override
+	public ProjectFile findProjectFile(Long fileid) {
+		return fileDAO.findById(fileid);
+	}
+
+	@Transactional
+	@Override
+	public void addProjectFiles(List<ProjectFile> pfiles) {
+		for (ProjectFile file : pfiles) {
+			fileDAO.save(file);
+		}
+	}
+
+	@Transactional
+	@Override
+	public void assignModulePrice(Long projectId) {
+		ptmDAO.assignModulePrice(projectId);
+	}
+
+	@Transactional
+	@Override
+	public List<ProjectTechnologyModule> getModuleInProject(Long projectId) {
+		return ptmDAO.getModuleInProject(projectId);
 	}
 }

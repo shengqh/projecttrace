@@ -32,7 +32,8 @@ public class LogTrace implements Serializable {
 	}
 
 	public String getLogDateString() {
-		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this.getLogDate());
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this
+				.getLogDate());
 	}
 
 	public String getAction() {
@@ -97,4 +98,19 @@ public class LogTrace implements Serializable {
 
 	@Column(name = "IPADDRESS")
 	private String ipaddress;
+
+	@Column(name = "PROJECTID")
+	private Long projectId;
+
+	public Long getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
+
+	public String getProjectName() {
+		return Project.getProjectName(this.projectId);
+	}
 }

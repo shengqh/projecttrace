@@ -51,12 +51,17 @@ public class RootController {
 	}
 
 	private void addLogTrace(String username, Logger.Level level, String action) {
+		addLogTrace(username, level, action, null);
+	}
+
+	private void addLogTrace(String username, Logger.Level level, String action, Long projectId) {
 		LogTrace log = new LogTrace();
 		log.setLogDate(Calendar.getInstance().getTime());
 		log.setUser(username);
 		log.setAction(action);
 		log.setIpaddress(getIpAddress());
 		log.setLevel(level.ordinal());
+		log.setProjectId(projectId);
 		projectService.addLogTrace(log);
 	}
 

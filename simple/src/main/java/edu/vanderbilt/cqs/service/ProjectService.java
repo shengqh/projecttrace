@@ -5,13 +5,10 @@ import java.util.List;
 import edu.vanderbilt.cqs.bean.LogTrace;
 import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
-import edu.vanderbilt.cqs.bean.Pipeline;
-import edu.vanderbilt.cqs.bean.PipelineTask;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectComment;
-import edu.vanderbilt.cqs.bean.ProjectTask;
-import edu.vanderbilt.cqs.bean.ProjectTaskStatus;
+import edu.vanderbilt.cqs.bean.ProjectFile;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
 import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.Role;
@@ -43,39 +40,6 @@ public interface ProjectService {
 
 	void removeProject(Long id);
 
-	// Pipeline
-	Pipeline findPipeline(Long id);
-
-	void addPipeline(Pipeline pipeline);
-
-	void updatePipeline(Pipeline pipeline);
-
-	List<Pipeline> listPipeline(User currentUser);
-
-	void removePipeline(Long id);
-
-	// PipelineTask
-	PipelineTask findPipelineTask(Long id);
-
-	void addPipelineTask(PipelineTask task);
-
-	void updatePipelineTask(PipelineTask task);
-
-	void removePipelineTask(Long id);
-
-	Long findPipelineByTask(Long taskid);
-
-	// ProjectTask
-	ProjectTask findProjectTask(Long id);
-
-	void addProjectTask(ProjectTask task, ProjectTaskStatus status);
-
-	void updateProjectTask(ProjectTask task, ProjectTaskStatus status);
-
-	void removeProjectTask(Long id);
-
-	Long findProjectByTask(Long taskid);
-
 	// Other
 	void persist(Object obj);
 
@@ -90,7 +54,7 @@ public interface ProjectService {
 	List<User> listValidUser();
 
 	List<User> listInvalidUser();
-	
+
 	Integer getUserType(Long userid, Long projectid);
 
 	// Technology
@@ -115,7 +79,7 @@ public interface ProjectService {
 	void removePlatform(Platform entity);
 
 	List<Module> listModule(Long technologyId);
-	
+
 	Module findModule(Long id);
 
 	void updateModule(Module obj);
@@ -159,10 +123,26 @@ public interface ProjectService {
 	void removeProjectTechnology(ProjectTechnology entity);
 
 	ProjectTechnologyModule findProjectTechnologyModule(Long id);
-	
+
 	void updateProjectTechnologyModule(ProjectTechnologyModule entity);
 
 	List<LogTrace> listLog();
 
 	void addLogTrace(LogTrace log);
+
+	void updateProjectTechnologyModules(List<ProjectTechnologyModule> entities);
+
+	void addProjectFile(ProjectFile file);
+
+	void updateProjectFile(ProjectFile file);
+
+	void removeProjectFile(ProjectFile file);
+
+	ProjectFile findProjectFile(Long fileid);
+
+	void addProjectFiles(List<ProjectFile> pfiles);
+	
+	void assignModulePrice(Long projectId);
+	
+	List<ProjectTechnologyModule> getModuleInProject(Long projectId);
 }

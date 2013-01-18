@@ -1,3 +1,4 @@
+<META http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <link rel="stylesheet" type="text/css" media="screen"
 	href="resources/css/style.css" />
 <script src="resources/js/jquery-1.8.1.js"></script>

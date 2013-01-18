@@ -24,6 +24,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import edu.vanderbilt.cqs.Utils;
+
 @Entity
 @Table(name = "USER")
 public class User implements Serializable, Comparable<User>, UserDetails {
@@ -231,10 +233,6 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 		return roles;
 	}
 
-	public void setRoles(Set<UserRole> roles) {
-		this.roles = roles;
-	}
-
 	public Boolean getAccountNonDeleted() {
 		return accountNonDeleted;
 	}
@@ -307,5 +305,9 @@ public class User implements Serializable, Comparable<User>, UserDetails {
 			}
 		}
 		return false;
+	}
+	
+	public String getCreateDateString(){
+		return Utils.getDateString(this.getCreateDate());
 	}
 }

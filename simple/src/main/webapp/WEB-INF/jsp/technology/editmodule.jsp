@@ -62,6 +62,14 @@
 					<td><form:errors path="description" cssClass="error" /></td>
 				</tr>
 				<tr>
+					<td><form:label path="moduleType">
+							Module type
+						</form:label></td>
+					<td><form:select path="moduleType" items="${module.moduleTypeMap}" />
+					</td>
+					<td><form:errors path="moduleType" cssClass="error" /></td>
+				</tr>
+				<tr>
 					<td colspan="2" align="center"><c:choose>
 							<c:when test="${module.id == null}">
 								<input type="submit" value="<spring:message code="label.add"/>" />
@@ -77,6 +85,7 @@
 				</tr>
 			</table>
 		</form:form>
-	<p class="message">${message}</p>
-</body>
+	<p class="message">${message}
+</p>
+	</body>
 </html>

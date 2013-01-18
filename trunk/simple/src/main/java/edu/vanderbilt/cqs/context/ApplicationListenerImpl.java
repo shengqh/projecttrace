@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Repository;
 
+import edu.vanderbilt.cqs.ModuleType;
 import edu.vanderbilt.cqs.UserType;
 import edu.vanderbilt.cqs.Utils;
 import edu.vanderbilt.cqs.bean.Module;
@@ -135,7 +136,7 @@ public class ApplicationListenerImpl implements
 		if (projectService.listTechnology().size() == 0) {
 			addTechnology("ChIP-seq", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
-							"Unit: per sample per month"),
+							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
 					new Module("Communications", 200.07, 0.0),
 					new Module("Alignment", 0, 11.94),
 					new Module("QC - raw data", 0, 11.53),
@@ -145,7 +146,7 @@ public class ApplicationListenerImpl implements
 					new Module("Analysis (20-80 samples)", 0, 266.76) });
 			addTechnology("DNA-seq (exome)", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
-							"Unit: per sample per month"),
+							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
 					new Module("Communications", 200.07, 0.0),
 					new Module("Alignment", 0, 11.94),
 					new Module("QC - raw data", 0, 11.53),
@@ -162,7 +163,7 @@ public class ApplicationListenerImpl implements
 			addTechnology("DNA-seq (whole genome)", new String[] {},
 					new Module[] {
 							new Module("Data storage", 10.8, 3.6,
-									"Unit: per sample per month"),
+									"Unit: per sample per month", ModuleType.PerSamplePerUnit),
 							new Module("Communications", 200.07, 0.0),
 							new Module("Alignment", 0, 14.2),
 							new Module("QC - raw data", 0, 35.4),
@@ -181,7 +182,7 @@ public class ApplicationListenerImpl implements
 							new Module("Gene-level analysis", 2134.11, 0) });
 			addTechnology("Genotyping", new String[] {}, new Module[] {
 					new Module("Data storage", 0, 0,
-							"Unit: per sample per month"),
+							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
 					new Module("Communications", 200.07, 0),
 					new Module("Pre-QC SNP call", 266.76, 0),
 					new Module("Analysis (QC & SNP call) (<1,000 samples)",
@@ -192,13 +193,13 @@ public class ApplicationListenerImpl implements
 							"Unit: per model") });
 			addTechnology("Methylation array", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
-							"Unit: per sample per month"),
+							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
 					new Module("Communications", 200.07, 0.0),
 					new Module("Analysis (<20 samples)", 266.76, 0),
 					new Module("Analysis (20-80 samples)", 0, 26.68) });
 			addTechnology("Microarray", new String[] {}, new Module[] {
 					new Module("Data storage", 0, 0,
-							"Unit: per sample per month"),
+							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
 					new Module("Communications", 200.07, 0.0),
 					new Module(
 							"Differential expression analysis (<100 samples)",
@@ -209,7 +210,7 @@ public class ApplicationListenerImpl implements
 					new Module("Pathway/functional analysis", 200.07, 0) });
 			addTechnology("miRNA", new String[] {}, new Module[] {
 					new Module("Data storage", 0.27, 0.09,
-							"Unit: per sample per month"),
+							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
 					new Module("Communications", 200.07, 0.0),
 					new Module("Flicker (alignment & QC)", 0, 11.32),
 					new Module("Analysis", 533.53, 0),
@@ -219,7 +220,7 @@ public class ApplicationListenerImpl implements
 					new String[] {},
 					new Module[] {
 							new Module("Data storage", 1.62, 0.54,
-									"Unit: per sample per month"),
+									"Unit: per sample per month", ModuleType.PerSamplePerUnit),
 							new Module("Communications", 200.07, 0.0),
 							new Module("Alignment", 0, 11.94),
 							new Module("QC - raw data", 0, 11.53),
@@ -279,8 +280,8 @@ public class ApplicationListenerImpl implements
 			project.setCreateDate(new Date());
 
 			project.setName("2144");
-			project.setIsBioVU(true);
-			project.setContactDate(sdf.parse("2012-04-02"));
+			project.setIsBioVUSampleRequest(true);
+			project.setContractDate(sdf.parse("2012-04-02"));
 			project.setContact("Test User");
 			project.setStudyPI("Test PI");
 			project.setQuoteAmount(11000.0);

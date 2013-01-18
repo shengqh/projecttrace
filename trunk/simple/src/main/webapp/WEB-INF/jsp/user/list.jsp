@@ -42,7 +42,7 @@
 									${role.role.name}<br>
 								</c:forEach></td>
 							<td>${user.telephone}</td>
-							<td>${user.createDate}</td>
+							<td>${user.createDateString}</td>
 							<sec:authorize access="hasRole('ROLE_USER_EDIT')">
 								<td>
 									<form action="disableuser/${user.id}">

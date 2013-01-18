@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import edu.vanderbilt.cqs.ModuleType;
+
 @Entity
 @Table(name = "PROJECTTECHNOLOGYMODULE")
 public class ProjectTechnologyModule implements Serializable {
@@ -20,21 +22,33 @@ public class ProjectTechnologyModule implements Serializable {
 	@GeneratedValue
 	@Column(name = "ID")
 	private Long id;
-	
-	@Column(name="NAME")
+
+	@Column(name = "NAME")
 	private String name;
-	
-	@Column(name="MODULE_ID")
+
+	@Column(name = "MODULE_ID")
 	private Long moduleId;
-	
-	@Column(name="MODULE_INDEX")
+
+	@Column(name = "MODULE_INDEX")
 	private Integer moduleIndex;
-	
-	@Column(name="SAMPLE_NUMBER")
+
+	@Column(name = "SAMPLE_NUMBER")
 	private Integer sampleNumber;
-	
-	@Column(name="OTHER_UNIT")
+
+	@Column(name = "OTHER_UNIT")
 	private Integer otherUnit;
+
+	@Column(name = "PRICEPERPROJECT")
+	private Double pricePerProject;
+
+	@Column(name = "PRICEPERUNIT")
+	private Double pricePerUnit;
+
+	@Column(name = "MODULETYPE")
+	private Integer moduleType;
+
+	@Column(name = "DESCRIPTION")
+	private String description;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TECHNOLOGY_ID")
@@ -94,5 +108,80 @@ public class ProjectTechnologyModule implements Serializable {
 
 	public void setOtherUnit(Integer otherUnit) {
 		this.otherUnit = otherUnit;
+	}
+
+	public Double getPricePerProject() {
+		return pricePerProject;
+	}
+
+	public void setPricePerProject(Double pricePerProject) {
+		this.pricePerProject = pricePerProject;
+	}
+
+	public Double getPricePerUnit() {
+		return pricePerUnit;
+	}
+
+	public void setPricePerUnit(Double pricePerUnit) {
+		this.pricePerUnit = pricePerUnit;
+	}
+
+	private boolean hasSampleNumber() {
+		return this.sampleNumber != null && this.sampleNumber > 0;
+	}
+
+	private boolean hasOtherUnit() {
+		return this.otherUnit != null && this.otherUnit > 0;
+	}
+
+	public double getProjectSetupFee() {
+		if (this.moduleType == ModuleType.PerSamplePerUnit) {
+			if (this.pricePerProject != null && hasSampleNumber()) {
+				return this.sampleNumber * this.pricePerProject;
+			}
+		} else {
+			if (hasSampleNumber()) {
+				return this.pricePerProject;
+			}
+		}
+		return 0.0;
+	}
+
+	public double getUnitFee() {
+		if (this.moduleType == ModuleType.PerSamplePerUnit) {
+			if (this.pricePerUnit != null && hasSampleNumber()
+					&& hasOtherUnit()) {
+				return this.sampleNumber * this.otherUnit * this.pricePerUnit;
+			}
+		} else {
+			if (this.pricePerUnit != null && hasSampleNumber()) {
+				return this.pricePerUnit * this.sampleNumber;
+			}
+		}
+		return 0.0;
+	}
+
+	public Integer getModuleType() {
+		return moduleType;
+	}
+
+	public void setModuleType(Integer moduleType) {
+		this.moduleType = moduleType;
+	}
+
+	public String getModuleTypeString() {
+		return ModuleType.getString(this.moduleType);
+	}
+
+	public double getTotalFee() {
+		return this.getProjectSetupFee() + this.getUnitFee();
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

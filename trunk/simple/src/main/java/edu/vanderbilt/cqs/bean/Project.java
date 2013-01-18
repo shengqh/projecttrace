@@ -3,9 +3,7 @@ package edu.vanderbilt.cqs.bean;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,9 +15,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.UserType;
-import edu.vanderbilt.cqs.Utils;
 
 @Entity
 @Table(name = "PROJECT")
@@ -33,41 +32,62 @@ public class Project implements Serializable {
 	private Long id;
 
 	@Column(name = "CONTACTDATE")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date contactDate;
 
+	@Column(name = "CONTRACTDATE")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date contractDate;
+
 	@Column(name = "NAME")
-	private String name;
+	private String name = "";
 
-	@Column(name = "ISBIOVU")
-	private Boolean isBioVU;
+	@Column(name = "IS_BIOVU_SAMPLE_REQUEST")
+	private Boolean isBioVUSampleRequest = false;
 
-	public Boolean getIsBioVU() {
-		return isBioVU;
-	}
+	@Column(name = "IS_BIOVU_DATA_REQUEST")
+	private Boolean isBioVUDataRequest = false;
 
-	public void setIsBioVU(Boolean isBioVU) {
-		this.isBioVU = isBioVU;
-	}
+	@Column(name = "BIOVU_DATA_DELIVERY_DATE")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date bioVUDataDeliveryDate;
+
+	@Column(name = "BIOVU_REDEPOSIT_DATE")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date bioVURedepositDate;
+
+	@Column(name = "ISVANTAGE")
+	private Boolean isVantage = false;
+
+	@Column(name = "ISOUTSIDE")
+	private Boolean isOutside = false;
+
+	@Column(name = "ISGRANTED")
+	private Boolean isGranted = false;
 
 	@Column(name = "QUOTEAMOUNT")
 	private Double quoteAmount;
 
 	@Column(name = "WORKSTARTED")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date workStarted;
 
 	@Column(name = "WORKCOMPLETED")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date workCompleted;
 
 	@Column(name = "COSTCENTERTOBILL")
 	private Double costCenterToBill;
 
 	@Column(name = "REQUESTCOSTCENTERSETUPINCORES")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date requestCostCenterSetupInCORES;
 
 	@Column(name = "REQUESTEDBY")
 	private String requestedBy;
 
 	@Column(name = "BILLEDBYCORES")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date billedInCORES;
 
 	@Column(name = "BILLEDBY")
@@ -95,16 +115,21 @@ public class Project implements Serializable {
 	private List<ProjectComment> comments = new ArrayList<ProjectComment>();
 
 	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
-	private Set<ProjectUser> users = new HashSet<ProjectUser>();
+	private List<ProjectUser> users = new ArrayList<ProjectUser>();
 
 	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OrderBy("technology")
-	private Set<ProjectTechnology> technologies = new HashSet<ProjectTechnology>();
+	private List<ProjectTechnology> technologies = new ArrayList<ProjectTechnology>();
+
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OrderBy("id")
+	private List<ProjectFile> files = new ArrayList<ProjectFile>();
 
 	@Column(name = "CREATOR")
 	private String creator;
 
 	@Column(name = "CREATEDATE")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date createDate;
 
 	@Column(name = "STATUS")
@@ -121,14 +146,6 @@ public class Project implements Serializable {
 		this.id = id;
 	}
 
-	public Date getContactDate() {
-		return contactDate;
-	}
-
-	public void setContactDate(Date contactDate) {
-		this.contactDate = contactDate;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -137,12 +154,8 @@ public class Project implements Serializable {
 		this.name = name;
 	}
 
-	public Set<ProjectTechnology> getTechnologies() {
+	public List<ProjectTechnology> getTechnologies() {
 		return technologies;
-	}
-
-	public void setTechnologies(Set<ProjectTechnology> technologies) {
-		this.technologies = technologies;
 	}
 
 	public Double getQuoteAmount() {
@@ -210,12 +223,8 @@ public class Project implements Serializable {
 		this.billedBy = billedBy;
 	}
 
-	public Set<ProjectUser> getUsers() {
+	public List<ProjectUser> getUsers() {
 		return users;
-	}
-
-	public void setUsers(Set<ProjectUser> users) {
-		this.users = users;
 	}
 
 	public String getCreator() {
@@ -280,22 +289,6 @@ public class Project implements Serializable {
 		return comments;
 	}
 
-	public void setComments(List<ProjectComment> comments) {
-		this.comments = comments;
-	}
-
-	public String getContactDateString() {
-		return Utils.getDateString(contactDate);
-	}
-
-	public String getWorkStartedString() {
-		return Utils.getDateString(workStarted);
-	}
-
-	public String getWorkCompletedString() {
-		return Utils.getDateString(workCompleted);
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -337,11 +330,108 @@ public class Project implements Serializable {
 		this.studyPI = studyPI;
 	}
 
-	public String getBilledInCORESString() {
-		return Utils.getDateString(billedInCORES);
+	public static String getProjectName(Long id) {
+		if (id == null) {
+			return "";
+		} else {
+			return String.format("VANGARD%05d", id);
+		}
 	}
 
-	public String getRequestCostCenterSetupInCORESString() {
-		return Utils.getDateString(requestCostCenterSetupInCORES);
+	public String getProjectName() {
+		return getProjectName(this.id);
+	}
+
+	public Boolean getIsVantage() {
+		return isVantage;
+	}
+
+	public void setIsVantage(Boolean isVantage) {
+		this.isVantage = isVantage;
+	}
+
+	public Boolean getIsOutside() {
+		return isOutside;
+	}
+
+	public void setIsOutside(Boolean isOutside) {
+		this.isOutside = isOutside;
+	}
+
+	public Boolean getIsBioVUSampleRequest() {
+		return isBioVUSampleRequest;
+	}
+
+	public void setIsBioVUSampleRequest(Boolean isBioVUSampleRequest) {
+		this.isBioVUSampleRequest = isBioVUSampleRequest;
+	}
+
+	public Boolean getIsBioVUDataRequest() {
+		return isBioVUDataRequest;
+	}
+
+	public void setIsBioVUDataRequest(Boolean isBioVUDataRequest) {
+		this.isBioVUDataRequest = isBioVUDataRequest;
+	}
+
+	public Date getBioVUDataDeliveryDate() {
+		return bioVUDataDeliveryDate;
+	}
+
+	public void setBioVUDataDeliveryDate(Date bioVUDataDeliveryDate) {
+		this.bioVUDataDeliveryDate = bioVUDataDeliveryDate;
+	}
+
+	public Date getBioVURedepositDate() {
+		return bioVURedepositDate;
+	}
+
+	public void setBioVURedepositDate(Date bioVURedepositDate) {
+		this.bioVURedepositDate = bioVURedepositDate;
+	}
+
+	public Date getContractDate() {
+		return contractDate;
+	}
+
+	public void setContractDate(Date contractDate) {
+		this.contractDate = contractDate;
+	}
+
+	public Boolean getIsBioVU() {
+		return (isBioVUDataRequest != null && isBioVUDataRequest)
+				|| (isBioVUSampleRequest != null && isBioVUSampleRequest);
+	}
+
+	public Date getContactDate() {
+		return contactDate;
+	}
+
+	public void setContactDate(Date contactDate) {
+		this.contactDate = contactDate;
+	}
+
+	public String getBioVUType() {
+		if (isBioVUSampleRequest != null && isBioVUSampleRequest) {
+			return "Sample request";
+		}
+
+		if (isBioVUDataRequest != null && isBioVUDataRequest) {
+			return "Data request";
+		}
+
+		return "";
+	}
+
+	public List<ProjectFile> getFiles() {
+		return files;
+	}
+
+	public Boolean getIsGranted() {
+		return isGranted;
+	}
+
+	public void setIsGranted(Boolean isGranted) {
+		this.isGranted = isGranted;
 	}
 }

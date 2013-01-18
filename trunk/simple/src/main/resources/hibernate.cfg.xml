@@ -17,16 +17,12 @@
         <mapping class="edu.vanderbilt.cqs.bean.Platform" />
         <mapping class="edu.vanderbilt.cqs.bean.Module" />
 
-        <mapping class="edu.vanderbilt.cqs.bean.Pipeline" />
-        <mapping class="edu.vanderbilt.cqs.bean.PipelineTask" />
-
         <mapping class="edu.vanderbilt.cqs.bean.Project" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectUser" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTechnology" />
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectFile" />
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectFileData" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTechnologyModule" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectComment" />
-
-        <mapping class="edu.vanderbilt.cqs.bean.ProjectTask" />
-        <mapping class="edu.vanderbilt.cqs.bean.ProjectTaskStatus" />
     </session-factory>
 </hibernate-configuration>

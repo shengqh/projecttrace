@@ -1,6 +1,7 @@
 package edu.vanderbilt.cqs.bean;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import edu.vanderbilt.cqs.ModuleType;
 
 @Entity
 @Table(name = "MODULE")
@@ -32,6 +35,9 @@ public class Module implements Serializable {
 
 	@Column(name = "PRICEPERUNIT")
 	private double pricePerUnit;
+
+	@Column(name = "MODULETYPE")
+	private Integer moduleType = ModuleType.OneSamplePerUnit;
 
 	public Module() {
 	}
@@ -58,6 +64,15 @@ public class Module implements Serializable {
 		this.pricePerProject = pricePerProject;
 		this.pricePerUnit = pricePerUnit;
 		this.description = notes;
+	}
+
+	public Module(String name, double pricePerProject, double pricePerUnit,
+			String notes, int moduleType) {
+		this.name = name;
+		this.pricePerProject = pricePerProject;
+		this.pricePerUnit = pricePerUnit;
+		this.description = notes;
+		this.moduleType = moduleType;
 	}
 
 	public String getDescription() {
@@ -121,5 +136,20 @@ public class Module implements Serializable {
 
 	public void setPricePerUnit(double pricePerUnit) {
 		this.pricePerUnit = pricePerUnit;
+	}
+	public Map<Integer, String> getModuleTypeMap() {
+		return ModuleType.getModuleTypeMap();
+	}
+
+	public String getModuleTypeString() {
+		return ModuleType.getString(this.moduleType);
+	}
+
+	public Integer getModuleType() {
+		return moduleType;
+	}
+
+	public void setModuleType(Integer moduleType) {
+		this.moduleType = moduleType;
 	}
 }

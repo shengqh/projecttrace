@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 @Entity
@@ -37,6 +38,7 @@ public class Role implements Serializable, Comparable<Role> {
 	private Set<UserRole> roles = new HashSet<UserRole>();
 
 	@OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@OrderBy("permission.id")
 	private Set<RolePermission> permissions = new HashSet<RolePermission>();
 
 	public Long getId() {
@@ -57,10 +59,6 @@ public class Role implements Serializable, Comparable<Role> {
 
 	public Set<UserRole> getRoles() {
 		return roles;
-	}
-
-	public void setRoles(Set<UserRole> roles) {
-		this.roles = roles;
 	}
 
 	@Override

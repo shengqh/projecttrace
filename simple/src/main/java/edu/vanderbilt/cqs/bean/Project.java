@@ -76,8 +76,8 @@ public class Project implements Serializable {
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date workCompleted;
 
-	@Column(name = "COSTCENTERTOBILL")
-	private Double costCenterToBill;
+	@Column(name = "COSTCENTERTOBILL_STRING")
+	private String costCenterToBill;
 
 	@Column(name = "REQUESTCOSTCENTERSETUPINCORES")
 	@DateTimeFormat(pattern="yyyy-MM-dd")
@@ -182,11 +182,11 @@ public class Project implements Serializable {
 		this.workCompleted = workCompleted;
 	}
 
-	public Double getCostCenterToBill() {
+	public String getCostCenterToBill() {
 		return costCenterToBill;
 	}
 
-	public void setCostCenterToBill(Double costCenterToBill) {
+	public void setCostCenterToBill(String costCenterToBill) {
 		this.costCenterToBill = costCenterToBill;
 	}
 

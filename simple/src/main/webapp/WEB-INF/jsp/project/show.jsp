@@ -303,7 +303,7 @@
 
 	<h2>
 		Files
-		<c:if test="${isFaculty}">
+		<c:if test="${isFaculty || isAdStaff}">
 			| <a href="addfiles?projectid=${projectForm.project.id}">Add</a>
 		</c:if>
 	</h2>
@@ -336,11 +336,12 @@
 							</form>
 						</td>
 					</c:if>
-					<c:if test="${isFaculty}">
+					<c:if test="${isFaculty || isAdStaff}">
 						<td>
 							<form action="deletefile/${file.id}" method="post">
 								<input type="submit"
-									value="<spring:message	code="label.delete" />" />
+									value="<spring:message	code="label.delete" />" 
+									onclick="return confirm('Are you sure you want to delete file ${file.fileName}?')"/>
 							</form>
 						</td>
 					</c:if>

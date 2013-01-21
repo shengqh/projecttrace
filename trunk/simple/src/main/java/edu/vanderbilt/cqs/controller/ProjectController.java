@@ -738,6 +738,7 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping(value = "/addfiles", method = RequestMethod.GET)
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
 	public String inputfiles(@RequestParam("projectid") Long projectId,
 			ModelMap model) {
 		FileUploadForm uploadForm = new FileUploadForm();
@@ -747,6 +748,7 @@ public class ProjectController extends RootController {
 	}
 
 	@RequestMapping(value = "/savefiles", method = RequestMethod.POST)
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
 	public String saveFiles(
 			@ModelAttribute("uploadForm") FileUploadForm uploadForm,
 			ModelMap model) {

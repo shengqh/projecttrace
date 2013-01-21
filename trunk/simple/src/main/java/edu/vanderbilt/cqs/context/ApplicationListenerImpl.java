@@ -292,7 +292,7 @@ public class ApplicationListenerImpl implements
 			project.setBilledBy("Sandra");
 			project.setRequestCostCenterSetupInCORES(sdf.parse("2012-05-07"));
 			project.setBilledInCORES(sdf.parse("2012-05-08"));
-			project.setCostCenterToBill(9000.0);
+			project.setCostCenterToBill("9000.0");
 			project.setRequestedBy("Jill Shell");
 
 			ProjectComment pc = new ProjectComment();

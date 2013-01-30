@@ -15,6 +15,6 @@
 	</p>
 	<p>The project trace system is used to monitor the procedure of
 		project running at CQS/VUMC.</p>
-	<p>Last modified: 2013-01-22.</p>
+	<p>Last modified: 2013-01-28.</p>
 </body>
 </html>

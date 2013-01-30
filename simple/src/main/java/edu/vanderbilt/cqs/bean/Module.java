@@ -31,10 +31,10 @@ public class Module implements Serializable {
 	private String description;
 
 	@Column(name = "PRICEPERPROJECT")
-	private double pricePerProject;
+	private Double pricePerProject;
 
 	@Column(name = "PRICEPERUNIT")
-	private double pricePerUnit;
+	private Double pricePerUnit;
 
 	@Column(name = "MODULETYPE")
 	private Integer moduleType = ModuleType.OneSamplePerUnit;
@@ -122,7 +122,7 @@ public class Module implements Serializable {
 		this.technology = technology;
 	}
 
-	public double getPricePerProject() {
+	public Double getPricePerProject() {
 		return pricePerProject;
 	}
 
@@ -130,7 +130,7 @@ public class Module implements Serializable {
 		this.pricePerProject = pricePerProject;
 	}
 
-	public double getPricePerUnit() {
+	public Double getPricePerUnit() {
 		return pricePerUnit;
 	}
 

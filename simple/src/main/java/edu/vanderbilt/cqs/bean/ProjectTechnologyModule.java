@@ -135,30 +135,31 @@ public class ProjectTechnologyModule implements Serializable {
 	}
 
 	public double getProjectSetupFee() {
-		if (this.moduleType == ModuleType.PerSamplePerUnit) {
-			if (this.pricePerProject != null && hasSampleNumber()) {
-				return this.sampleNumber * this.pricePerProject;
-			}
-		} else {
-			if (hasSampleNumber()) {
-				return this.pricePerProject;
-			}
+		if (this.pricePerProject == null || !hasSampleNumber()) {
+			return 0.0;
 		}
-		return 0.0;
+
+		if (this.moduleType == ModuleType.PerSamplePerUnit) {
+			return this.sampleNumber * this.pricePerProject;
+		} else {
+			return this.pricePerProject;
+		}
 	}
 
 	public double getUnitFee() {
+		if (this.pricePerProject == null || !hasSampleNumber()) {
+			return 0.0;
+		}
+
 		if (this.moduleType == ModuleType.PerSamplePerUnit) {
-			if (this.pricePerUnit != null && hasSampleNumber()
-					&& hasOtherUnit()) {
+			if (hasOtherUnit()) {
 				return this.sampleNumber * this.otherUnit * this.pricePerUnit;
+			} else {
+				return 0.0;
 			}
 		} else {
-			if (this.pricePerUnit != null && hasSampleNumber()) {
-				return this.pricePerUnit * this.sampleNumber;
-			}
+			return this.pricePerUnit * this.sampleNumber;
 		}
-		return 0.0;
 	}
 
 	public Integer getModuleType() {

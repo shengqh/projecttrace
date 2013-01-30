@@ -13,8 +13,15 @@ import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 public class ProjectTechnologyModuleDAOImpl extends
 		GenericDAOImpl<ProjectTechnologyModule, Long> implements
 		ProjectTechnologyModuleDAO {
-	@Autowired 
+	@Autowired
 	private ModuleDAO mDAO;
+
+	private boolean ObjectEquals(Object obj1, Object obj2) {
+		if (obj1 == null && obj2 == null) {
+			return true;
+		}
+		return obj1.equals(obj2);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -22,22 +29,28 @@ public class ProjectTechnologyModuleDAOImpl extends
 		String hql = String
 				.format("From ProjectTechnologyModule as ptm where ptm.technology.project.id=%d",
 						projectId);
-		List<ProjectTechnologyModule> modules = getSession().createQuery(hql).list();
-		
+		List<ProjectTechnologyModule> modules = getSession().createQuery(hql)
+				.list();
+
 		List<ProjectTechnologyModule> updated = new ArrayList<ProjectTechnologyModule>();
-		for(ProjectTechnologyModule ptm:modules){
+		for (ProjectTechnologyModule ptm : modules) {
 			Module m = mDAO.findById(ptm.getModuleId());
-			if(m != null && (m.getPricePerProject() != ptm.getPricePerProject() ||
-					m.getPricePerUnit() != ptm.getPricePerUnit() ||m.getModuleType() != ptm.getModuleType())){
-				ptm.setPricePerProject(m.getPricePerProject());
-				ptm.setPricePerUnit(m.getPricePerUnit());
-				ptm.setModuleType(m.getModuleType());
-				updated.add(ptm);
+			if (m == null) {
+				continue;
 			}
+			if (ObjectEquals(m.getPricePerProject(), ptm.getPricePerProject())
+					&& ObjectEquals(m.getPricePerUnit(), ptm.getPricePerUnit())
+					&& ObjectEquals(m.getModuleType(), ptm.getModuleType())) {
+				continue;
+			}
+			ptm.setPricePerProject(m.getPricePerProject());
+			ptm.setPricePerUnit(m.getPricePerUnit());
+			ptm.setModuleType(m.getModuleType());
+			updated.add(ptm);
 		}
 
-		if(updated.size() > 0){
-			for(ProjectTechnologyModule ptm:updated){
+		if (updated.size() > 0) {
+			for (ProjectTechnologyModule ptm : updated) {
 				update(ptm);
 			}
 		}

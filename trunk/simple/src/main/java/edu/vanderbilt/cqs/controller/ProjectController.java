@@ -17,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -38,7 +39,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import edu.vanderbilt.cqs.UserType;
-import edu.vanderbilt.cqs.Utils;
 import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Platform;
@@ -461,10 +461,10 @@ public class ProjectController extends RootController {
 				if (ptm.getModuleId().equals(moduleid)) {
 					ptm.setModuleIndex(mindex);
 					ptm.setName(mod.getName());
-					if(ptm.getSampleNumber() == null){
+					if (ptm.getSampleNumber() == null) {
 						ptm.setSampleNumber(pt.getSampleNumber());
 					}
-					
+
 					newModules.add(ptm);
 					bfound = true;
 					break;
@@ -478,6 +478,8 @@ public class ProjectController extends RootController {
 				ptm.setModuleId(mod.getId());
 				ptm.setName(mod.getName());
 				ptm.setSampleNumber(pt.getSampleNumber());
+				ptm.setPricePerProject(mod.getPricePerProject());
+				ptm.setPricePerUnit(mod.getPricePerUnit());
 				newModules.add(ptm);
 			}
 		}
@@ -494,7 +496,7 @@ public class ProjectController extends RootController {
 
 		if (form.getTechnology().getId() == null) {
 			service.addProjectTechnology(pt);
-			addUserLogInfo(String.format("added technology %s of project %s",
+			addUserLogInfo(String.format("added technology %s for project %s",
 					pt.getTechnology(), pt.getProject().getProjectName()));
 		} else {
 			service.updateProjectTechnology(pt);
@@ -594,7 +596,7 @@ public class ProjectController extends RootController {
 		addUserLogInfo(String.format(
 				"try to edit module %s of technology %s of project %s",
 				ptm.getName(), ptm.getTechnology().getTechnology(),
-				project.getProjectName()));
+				project.getProjectName()), false);
 
 		return "/project/editptm";
 	}
@@ -619,7 +621,7 @@ public class ProjectController extends RootController {
 		oldptm.setOtherUnit(ptm.getOtherUnit());
 		service.updateProjectTechnologyModule(oldptm);
 		addUserLogInfo(String.format(
-				"update module %s of technology %s of project %s",
+				"updated module %s of technology %s of project %s",
 				oldptm.getName(), oldptm.getTechnology().getTechnology(),
 				oldptm.getTechnology().getProject().getProjectName()));
 
@@ -649,8 +651,9 @@ public class ProjectController extends RootController {
 				estimateProjectPrice(modules)));
 		model.put("ptmForm", form);
 
-		addUserLogInfo(String.format("try to edit modules of project %s",
-				project.getProjectName()));
+		addUserLogInfo(
+				String.format("try to edit modules of project %s",
+						project.getProjectName()), false);
 
 		return "/project/editptms";
 	}
@@ -790,9 +793,12 @@ public class ProjectController extends RootController {
 			if (pfiles.size() > 0) {
 				try {
 					service.addProjectFiles(pfiles);
-					addUserLogInfo(String.format(
-							"uploaded %d files for project %s", pfiles.size(),
-							project.getProjectName()), false);
+					for (int i = 0; i < pfiles.size(); i++) {
+						addUserLogInfo(String.format("uploaded "
+								+ pfiles.get(i).getFileName()
+								+ " for project %s", pfiles.size(),
+								project.getProjectName()), true);
+					}
 				} catch (Exception ex) {
 					addUserLogError(String.format(
 							"upload %d files to project %s failed : %s",
@@ -897,17 +903,7 @@ public class ProjectController extends RootController {
 		Font bodyFont = workbook.createFont();
 		bodyFont.setFontHeightInPoints((short) 10);
 
-		CellStyle bodyStyle = workbook.createCellStyle();
-		bodyStyle.setFont(bodyFont);
-		bodyStyle.setAlignment(CellStyle.ALIGN_LEFT);
-		bodyStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-		bodyStyle.setWrapText(false);
-
-		CellStyle purposeStyle = workbook.createCellStyle();
-		purposeStyle.setFont(bodyFont);
-		purposeStyle.setAlignment(CellStyle.ALIGN_LEFT);
-		purposeStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-		purposeStyle.setWrapText(true);
+		CellStyle bodyStyle = getStringStyle(workbook, bodyFont);
 
 		Sheet sheet = workbook.createSheet();
 
@@ -1013,80 +1009,77 @@ public class ProjectController extends RootController {
 		Font bodyFont = workbook.createFont();
 		bodyFont.setFontHeightInPoints((short) 10);
 
-		CellStyle bodyStyle = workbook.createCellStyle();
-		bodyStyle.setFont(bodyFont);
-		bodyStyle.setAlignment(CellStyle.ALIGN_LEFT);
-		bodyStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-		bodyStyle.setWrapText(false);
-
-		CellStyle purposeStyle = workbook.createCellStyle();
-		purposeStyle.setFont(bodyFont);
-		purposeStyle.setAlignment(CellStyle.ALIGN_LEFT);
-		purposeStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-		purposeStyle.setWrapText(true);
+		CellStyle stringStyle = getStringStyle(workbook, bodyFont);
+		CellStyle wrapStringStyle = getWrapStringStyle(workbook, bodyFont);
+		CellStyle leftMoneyStyle = getLeftAlignMoneyStyle(workbook, bodyFont);
+		CellStyle moneyStyle = getMoneyStyle(workbook, bodyFont);
+		CellStyle intStyle = getIntegerStyle(workbook, bodyFont);
+		CellStyle dateStyle = getDateStyle(workbook, bodyFont);
+		CellStyle dateTimeStyle = getDateTimeStyle(workbook, bodyFont);
 
 		Sheet sheet = workbook.createSheet("Overview");
 		int rowNo = 0;
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Project",
-				bodyStyle, project.getProjectName());
+				stringStyle, project.getProjectName());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Contact date",
-				bodyStyle, project.getContactDate());
+				dateStyle, project.getContactDate());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Contact",
-				bodyStyle, project.getContact());
+				stringStyle, project.getContact());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"BioVU data request?", bodyStyle,
+				"BioVU data request?", stringStyle,
 				project.getIsBioVUDataRequest());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"BioVU sample request?", bodyStyle,
+				"BioVU sample request?", stringStyle,
 				project.getIsBioVUSampleRequest());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"VANTAGE project?", bodyStyle, project.getIsVantage());
+				"VANTAGE project?", stringStyle, project.getIsVantage());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Outside project?", bodyStyle, project.getIsOutside());
+				"Outside project?", stringStyle, project.getIsOutside());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Granted?",
-				bodyStyle, project.getIsGranted());
+				stringStyle, project.getIsGranted());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Study descriptive name", bodyStyle, project.getName());
+				"Study descriptive name", stringStyle, project.getName());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Study PI",
-				bodyStyle, project.getStudyPI());
+				stringStyle, project.getStudyPI());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Quote amount",
-				bodyStyle, project.getQuoteAmount());
+				leftMoneyStyle, project.getQuoteAmount());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Contract date", bodyStyle, project.getContractDate());
+				"Contract date", dateStyle, project.getContractDate());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Assigned to (faculty)", bodyStyle, project.getFacultyName());
+				"Assigned to (faculty)", stringStyle, project.getFacultyName());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Study status",
-				bodyStyle, project.getStatus());
+				stringStyle, project.getStatus());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Assigned to (staff)", bodyStyle, project.getStaffName());
+				"Assigned to (staff)", stringStyle, project.getStaffName());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Work started",
-				bodyStyle, project.getWorkStarted());
+				dateStyle, project.getWorkStarted());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Work completed", bodyStyle, project.getWorkCompleted());
+				"Work completed", dateStyle, project.getWorkCompleted());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"BioVU data delivery to investigator (date)", bodyStyle,
+				"BioVU data delivery to investigator (date)", dateStyle,
 				project.getBioVUDataDeliveryDate());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"BioVU redeposit (date)", bodyStyle,
+				"BioVU redeposit (date)", dateStyle,
 				project.getBioVURedepositDate());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Cost center to bill", bodyStyle, project.getCostCenterToBill());
+				"Cost center to bill", stringStyle,
+				project.getCostCenterToBill());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Request cost center setup in CORES (date)", bodyStyle,
+				"Request cost center setup in CORES (date)", dateStyle,
 				project.getRequestCostCenterSetupInCORES());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Requested by (name)", bodyStyle, project.getRequestedBy());
+				"Requested by (name)", stringStyle, project.getRequestedBy());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Billed in CORES (date)", bodyStyle, project.getBilledInCORES());
+				"Billed in CORES (date)", dateStyle, project.getBilledInCORES());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Billed by (name)", bodyStyle, project.getBilledBy());
+				"Billed by (name)", stringStyle, project.getBilledBy());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Billed amount", bodyStyle, project.getBilledAmount());
+				"Billed amount", leftMoneyStyle, project.getBilledAmount());
 
 		sheet.autoSizeColumn(0);
 		sheet.autoSizeColumn(1);
 
-		sheet = workbook.createSheet("technology");
+		sheet = workbook.createSheet("Details");
 		Row row = sheet.createRow(0);
 
 		int colNo = 0;
@@ -1098,8 +1091,7 @@ public class ProjectController extends RootController {
 		colNo = createCell(createHelper, headerStyle, row, colNo, "Module");
 		colNo = createCell(createHelper, headerStyle, row, colNo, "Per project");
 		colNo = createCell(createHelper, headerStyle, row, colNo, "Per unit");
-		colNo = createCell(createHelper, headerStyle, row, colNo,
-				"Module type");
+		colNo = createCell(createHelper, headerStyle, row, colNo, "Module type");
 		colNo = createCell(createHelper, headerStyle, row, colNo,
 				"Project setup fee");
 		colNo = createCell(createHelper, headerStyle, row, colNo, "Unit fee");
@@ -1114,9 +1106,9 @@ public class ProjectController extends RootController {
 			row.setHeight((short) -1);
 
 			colNo = 0;
-			colNo = createCell(createHelper, bodyStyle, row, colNo,
+			colNo = createCell(createHelper, stringStyle, row, colNo,
 					tec.getTechnology());
-			colNo = createCell(createHelper, bodyStyle, row, colNo,
+			colNo = createCell(createHelper, stringStyle, row, colNo,
 					tec.getPlatform());
 
 			boolean bFirst = true;
@@ -1128,31 +1120,94 @@ public class ProjectController extends RootController {
 				} else {
 					bFirst = false;
 				}
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
+				lastColNo = createCell(createHelper, intStyle, row, lastColNo,
 						mod.getSampleNumber());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
+				lastColNo = createCell(createHelper, intStyle, row, lastColNo,
 						mod.getOtherUnit());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
-						mod.getName());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
-						mod.getPricePerProject());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
-						mod.getPricePerUnit());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
-						mod.getModuleTypeString());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
-						mod.getProjectSetupFee());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
-						mod.getUnitFee());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
-						mod.getTotalFee());
-				lastColNo = createCell(createHelper, bodyStyle, row, lastColNo,
-						mod.getDescription());
+				lastColNo = createCell(createHelper, stringStyle, row,
+						lastColNo, mod.getName());
+				lastColNo = createCell(createHelper, moneyStyle, row,
+						lastColNo, mod.getPricePerProject());
+				lastColNo = createCell(createHelper, moneyStyle, row,
+						lastColNo, mod.getPricePerUnit());
+				lastColNo = createCell(createHelper, stringStyle, row,
+						lastColNo, mod.getModuleTypeString());
+				lastColNo = createCell(createHelper, moneyStyle, row,
+						lastColNo, mod.getProjectSetupFee());
+				lastColNo = createCell(createHelper, moneyStyle, row,
+						lastColNo, mod.getUnitFee());
+				lastColNo = createCell(createHelper, moneyStyle, row,
+						lastColNo, mod.getTotalFee());
+				lastColNo = createCell(createHelper, stringStyle, row,
+						lastColNo, mod.getDescription());
 			}
 			rowNo++;
 		}
 
+		row = sheet.createRow(rowNo);
+		row.setHeight((short) -1);
+		colNo = createCell(createHelper, stringStyle, row, 0,
+				"Amount estimated");
+		Cell c = doCreateCell(moneyStyle, row, totalColCount - 1);
+		c.setCellFormula("SUM(K2:K" + String.valueOf(rowNo) + ")");
+
 		for (int i = 0; i <= totalColCount; i++) {
+			sheet.autoSizeColumn(i);
+		}
+
+		// Export files
+		sheet = workbook.createSheet("Files");
+		row = sheet.createRow(0);
+		colNo = 0;
+		colNo = createCell(createHelper, headerStyle, row, colNo, "Upload date");
+		colNo = createCell(createHelper, headerStyle, row, colNo, "Upload user");
+		colNo = createCell(createHelper, headerStyle, row, colNo, "File name");
+		colNo = createCell(createHelper, headerStyle, row, colNo, "File size");
+		rowNo = 1;
+		for (ProjectFile file : project.getFiles()) {
+			row = sheet.createRow(rowNo);
+			row.setHeight((short) -1);
+			colNo = 0;
+			colNo = createCell(createHelper, dateTimeStyle, row, colNo,
+					file.getCreateDate());
+			colNo = createCell(createHelper, stringStyle, row, colNo,
+					file.getCreateUser());
+			colNo = createCell(createHelper, stringStyle, row, colNo,
+					file.getFileName());
+			colNo = createCell(createHelper, stringStyle, row, colNo,
+					file.getFileSizeString());
+			rowNo++;
+		}
+
+		for (int i = 0; i < 4; i++) {
+			sheet.autoSizeColumn(i);
+		}
+
+		// Export comments
+		sheet = workbook.createSheet("Comments");
+		row = sheet.createRow(0);
+		colNo = 0;
+		colNo = createCell(createHelper, headerStyle, row, colNo, "Date");
+		colNo = createCell(createHelper, headerStyle, row, colNo,
+				"User/Comment");
+		rowNo = 1;
+		for (ProjectComment comment : project.getComments()) {
+			row = sheet.createRow(rowNo);
+			row.setHeight((short) -1);
+			colNo = 0;
+			colNo = createCell(createHelper, dateTimeStyle, row, colNo,
+					comment.getCommentDate());
+			colNo = createCell(
+					createHelper,
+					wrapStringStyle,
+					row,
+					colNo,
+					comment.getCommentUser() + "wrote:\n"
+							+ comment.getComment());
+			rowNo++;
+		}
+
+		for (int i = 0; i < 2; i++) {
 			sheet.autoSizeColumn(i);
 		}
 
@@ -1163,14 +1218,64 @@ public class ProjectController extends RootController {
 		addUserLogInfo(loginfo);
 	}
 
-	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
-			Row row, int colNo, Double value) {
-		return createCell(createHelper, bodyStyle, row, colNo,
-				getDoubleString(value));
+	private CellStyle getDateTimeStyle(Workbook workbook, Font bodyFont) {
+		CellStyle result = workbook.createCellStyle();
+		DataFormat df = workbook.createDataFormat();
+		result.setFont(bodyFont);
+		result.setAlignment(CellStyle.ALIGN_LEFT);
+		result.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+		result.setWrapText(false);
+		result.setDataFormat(df.getFormat("yyyy-MM-dd hh:mm:ss"));
+		return result;
 	}
 
-	private String getDoubleString(Double value) {
-		return value != null ? String.format("%.2f", value) : "";
+	private CellStyle getStringStyle(Workbook workbook, Font bodyFont) {
+		CellStyle result = workbook.createCellStyle();
+		result.setFont(bodyFont);
+		result.setAlignment(CellStyle.ALIGN_LEFT);
+		result.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+		result.setWrapText(false);
+		return result;
+	}
+
+	private CellStyle getWrapStringStyle(Workbook workbook, Font bodyFont) {
+		CellStyle result = workbook.createCellStyle();
+		result.setFont(bodyFont);
+		result.setAlignment(CellStyle.ALIGN_LEFT);
+		result.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+		result.setWrapText(true);
+		return result;
+	}
+
+	private CellStyle getIntegerStyle(Workbook workbook, Font bodyFont) {
+		CellStyle result = getStringStyle(workbook, bodyFont);
+		result.setAlignment(CellStyle.ALIGN_RIGHT);
+		result.setDataFormat((short) 1);
+		return result;
+	}
+
+	private CellStyle getLeftAlignMoneyStyle(Workbook workbook, Font bodyFont) {
+		CellStyle result = getStringStyle(workbook, bodyFont);
+		result.setDataFormat((short) 4);
+		return result;
+	}
+
+	private CellStyle getMoneyStyle(Workbook workbook, Font bodyFont) {
+		CellStyle result = getStringStyle(workbook, bodyFont);
+		result.setAlignment(CellStyle.ALIGN_RIGHT);
+		result.setDataFormat((short) 4);
+		return result;
+	}
+
+	private CellStyle getDateStyle(Workbook workbook, Font bodyFont) {
+		CellStyle result = workbook.createCellStyle();
+		DataFormat df = workbook.createDataFormat();
+		result.setFont(bodyFont);
+		result.setAlignment(CellStyle.ALIGN_LEFT);
+		result.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+		result.setWrapText(false);
+		result.setDataFormat(df.getFormat("yyyy-MM-dd"));
+		return result;
 	}
 
 	private int addRow(CreationHelper createHelper, Sheet sheet, int rowNo,
@@ -1183,14 +1288,18 @@ public class ProjectController extends RootController {
 	private int addRow(CreationHelper createHelper, Sheet sheet, int rowNo,
 			CellStyle headerStyle, String name, CellStyle bodyStyle,
 			Double value) {
-		return addRow(createHelper, sheet, rowNo, headerStyle, name, bodyStyle,
-				getDoubleString(value));
+		Row row = sheet.createRow(rowNo);
+		createCell(createHelper, headerStyle, row, 0, name);
+		createCell(createHelper, bodyStyle, row, 1, value);
+		return rowNo + 1;
 	}
 
 	private int addRow(CreationHelper createHelper, Sheet sheet, int rowNo,
 			CellStyle headerStyle, String name, CellStyle bodyStyle, Date value) {
-		return addRow(createHelper, sheet, rowNo, headerStyle, name, bodyStyle,
-				Utils.getDateString(value));
+		Row row = sheet.createRow(rowNo);
+		createCell(createHelper, headerStyle, row, 0, name);
+		createCell(createHelper, bodyStyle, row, 1, value);
+		return rowNo + 1;
 	}
 
 	private int addRow(CreationHelper createHelper, Sheet sheet, int rowNo,
@@ -1207,35 +1316,6 @@ public class ProjectController extends RootController {
 		createCell(createHelper, headerStyle, row, 0, name);
 		createCell(createHelper, bodyStyle, row, 1, value);
 		return rowNo + 1;
-	}
-
-	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
-			Row row, int colNo, Integer sampleNumber) {
-		return createCell(createHelper, bodyStyle, row, colNo,
-				sampleNumber != null ? sampleNumber.toString() : "");
-	}
-
-	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
-			Row row, int colNo, Boolean value) {
-		return createCell(createHelper, bodyStyle, row, colNo,
-				getBoolString(value));
-	}
-
-	private String getBoolString(Boolean isBioVUDataRequest) {
-		return (isBioVUDataRequest != null) && isBioVUDataRequest ? "yes"
-				: "no";
-	}
-
-	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
-			Row row, int colNo, Date aDate) {
-		return createCell(createHelper, bodyStyle, row, colNo,
-				Utils.getDateString(aDate));
-	}
-
-	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
-			Row row, int colNo, List<String> aList) {
-		return createCell(createHelper, bodyStyle, row, colNo,
-				convertList(aList));
 	}
 
 	private String convertList(List<String> aList) {
@@ -1255,12 +1335,62 @@ public class ProjectController extends RootController {
 		return value;
 	}
 
+	private Cell doCreateCell(CellStyle bodyStyle, Row row, int colNo) {
+		Cell result = row.createCell(colNo);
+		result.setCellStyle(bodyStyle);
+		return result;
+	}
+
 	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
 			Row row, int colNo, String value) {
-		Cell c;
-		c = row.createCell(colNo);
-		c.setCellStyle(bodyStyle);
-		c.setCellValue(createHelper.createRichTextString(value));
+		Cell c = doCreateCell(bodyStyle, row, colNo);
+		if (value != null) {
+			c.setCellValue(createHelper.createRichTextString(value));
+		}
 		return colNo + 1;
+	}
+
+	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
+			Row row, int colNo, Double value) {
+		Cell c = doCreateCell(bodyStyle, row, colNo);
+		if (value != null) {
+			c.setCellValue(value);
+		}
+		return colNo + 1;
+	}
+
+	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
+			Row row, int colNo, Integer value) {
+		Cell c = doCreateCell(bodyStyle, row, colNo);
+		if (value != null) {
+			c.setCellValue(value);
+		}
+		return colNo + 1;
+	}
+
+	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
+			Row row, int colNo, Boolean value) {
+		return createCell(createHelper, bodyStyle, row, colNo,
+				getBoolString(value));
+	}
+
+	private String getBoolString(Boolean isBioVUDataRequest) {
+		return (isBioVUDataRequest != null) && isBioVUDataRequest ? "yes"
+				: "no";
+	}
+
+	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
+			Row row, int colNo, Date value) {
+		Cell c = doCreateCell(bodyStyle, row, colNo);
+		if (value != null) {
+			c.setCellValue(value);
+		}
+		return colNo + 1;
+	}
+
+	private int createCell(CreationHelper createHelper, CellStyle bodyStyle,
+			Row row, int colNo, List<String> aList) {
+		return createCell(createHelper, bodyStyle, row, colNo,
+				convertList(aList));
 	}
 }

@@ -26,9 +26,11 @@
 	<jsp:include page="../menu.jsp" />
 
 	<c:set var="isStaff"
-		value="${projectForm.userType == utStaff || projectForm.userType == utFaculty}" />
-	<c:set var="isFaculty" value="${projectForm.userType == utFaculty}" />
+		value="${projectForm.userType == utStaff || projectForm.userType == utFaculty || projectForm.userType == utAdmin}" />
+	<c:set var="isFaculty"
+		value="${projectForm.userType == utFaculty || projectForm.userType == utAdmin}" />
 	<c:set var="isAdStaff" value="false" />
+	<c:set var="isNewProject" value="${projectForm.project.id == null}" />
 	<sec:authorize access="hasAnyRole('ROLE_VANGARD_ADSTAFF','ROLE_ADMIN')">
 		<c:set var="isAdStaff" value="true" />
 	</sec:authorize>
@@ -36,7 +38,7 @@
 	<p>
 	<h1>
 		<c:choose>
-			<c:when test="${projectForm.project.id == null}">
+			<c:when test="${isNewProject}">
 				<spring:message code="label.projectnew" />
 			</c:when>
 			<c:otherwise>
@@ -76,7 +78,8 @@
 							</c:when>
 							<c:otherwise>
 								<form:hidden path="project.contactDate" />
-								<td><spring:eval expression="projectForm.project.contactDate" /></td>
+								<td><spring:eval
+										expression="projectForm.project.contactDate" /></td>
 								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
@@ -265,7 +268,8 @@
 							</c:when>
 							<c:otherwise>
 								<form:hidden path="project.contractDate" />
-								<td><spring:eval expression="projectForm.project.contractDate" /></td>
+								<td><spring:eval
+										expression="projectForm.project.contractDate" /></td>
 								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
@@ -299,7 +303,8 @@
 							</c:when>
 							<c:otherwise>
 								<form:hidden path="project.workStarted" />
-								<td><spring:eval expression="projectForm.project.workStarted" /></td>
+								<td><spring:eval
+										expression="projectForm.project.workStarted" /></td>
 								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
@@ -308,14 +313,15 @@
 					<tr>
 						<td>Work completed</td>
 						<c:choose>
-							<c:when test="${isStaff}">
+							<c:when test="${isFaculty}">
 								<td><form:input id="txt" path="project.workCompleted"
 										cssClass="txt" /></td>
 								<td>${dateFormat}</td>
 							</c:when>
 							<c:otherwise>
 								<form:hidden path="project.workCompleted" />
-								<td><spring:eval expression="projectForm.project.workCompleted" /></td>
+								<td><spring:eval
+										expression="projectForm.project.workCompleted" /></td>
 								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
@@ -332,32 +338,32 @@
 							</c:when>
 							<c:otherwise>
 								<form:hidden path="project.bioVUDataDeliveryDate" />
-								<td><spring:eval expression="projectForm.project.bioVUDataDeliveryDate" /></td>
+								<td><spring:eval
+										expression="projectForm.project.bioVUDataDeliveryDate" /></td>
 								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
 						<td><form:errors path="project.bioVUDataDeliveryDate"
 								cssClass="error" /></td>
 					</tr>
-					<c:if test="${projectForm.project.isBioVUDataRequest}">
-						<tr>
-							<td>BioVU project - redeposit (date)</td>
-							<c:choose>
-								<c:when test="${isFaculty}">
-									<td><form:input id="txt" path="project.bioVURedepositDate"
-											cssClass="txt" /></td>
-									<td>${dateFormat}</td>
-								</c:when>
-								<c:otherwise>
-									<form:hidden path="project.bioVURedepositDate" />
-									<td><spring:eval expression="project.bioVURedepositDate" /></td>
-									<td>&nbsp;</td>
-								</c:otherwise>
-							</c:choose>
-							<td><form:errors path="project.bioVURedepositDate"
-									cssClass="error" /></td>
-						</tr>
-					</c:if>
+					<tr>
+						<td>BioVU project - redeposit (date)</td>
+						<c:choose>
+							<c:when test="${isFaculty}">
+								<td><form:input id="txt" path="project.bioVURedepositDate"
+										cssClass="txt" /></td>
+								<td>${dateFormat}</td>
+							</c:when>
+							<c:otherwise>
+								<form:hidden path="project.bioVURedepositDate" />
+								<td><spring:eval
+										expression="projectForm.project.bioVURedepositDate" /></td>
+								<td>&nbsp;</td>
+							</c:otherwise>
+						</c:choose>
+						<td><form:errors path="project.bioVURedepositDate"
+								cssClass="error" /></td>
+					</tr>
 					<tr>
 						<td>Cost center to bill</td>
 						<c:choose>
@@ -384,7 +390,8 @@
 							</c:when>
 							<c:otherwise>
 								<form:hidden path="project.requestCostCenterSetupInCORES" />
-								<td><spring:eval expression="projectForm.project.requestCostCenterSetupInCORES" /></td>
+								<td><spring:eval
+										expression="projectForm.project.requestCostCenterSetupInCORES" /></td>
 								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
@@ -417,7 +424,8 @@
 							</c:when>
 							<c:otherwise>
 								<form:hidden path="project.billedInCORES" />
-								<td><spring:eval expression="projectForm.project.billedInCORES" /></td>
+								<td><spring:eval
+										expression="projectForm.project.billedInCORES" /></td>
 								<td>&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
@@ -457,16 +465,20 @@
 					</tr>
 					<tr>
 						<td colspan="4" align="center"><c:choose>
-								<c:when test="${projectForm.project.id == null}">
+								<c:when test="${isNewProject}">
 									<input type="submit" value="<spring:message code="label.add"/>" />
+									<input type="button"
+										value="<spring:message code="label.back" />"
+										onClick="parent.location='project'" />
 								</c:when>
 								<c:otherwise>
 									<input type="submit"
 										value="<spring:message code="label.update"/>" />
+									<input type="button"
+										value="<spring:message code="label.back" />"
+										onClick="parent.location='showproject?id=${projectForm.project.id}'" />
 								</c:otherwise>
-							</c:choose> <input type="button"
-							value="<spring:message code="label.back" />"
-							onClick="parent.location='showproject?id=${projectForm.project.id}'" /></td>
+							</c:choose></td>
 					</tr>
 				</tbody>
 			</table>

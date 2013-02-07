@@ -37,7 +37,7 @@ public class Module implements Serializable {
 	private Double pricePerUnit;
 
 	@Column(name = "MODULETYPE")
-	private Integer moduleType = ModuleType.OneSamplePerUnit;
+	private Integer moduleType = ModuleType.PerSample;
 
 	public Module() {
 	}
@@ -126,7 +126,7 @@ public class Module implements Serializable {
 		return pricePerProject;
 	}
 
-	public void setPricePerProject(double pricePerProject) {
+	public void setPricePerProject(Double pricePerProject) {
 		this.pricePerProject = pricePerProject;
 	}
 
@@ -134,7 +134,7 @@ public class Module implements Serializable {
 		return pricePerUnit;
 	}
 
-	public void setPricePerUnit(double pricePerUnit) {
+	public void setPricePerUnit(Double pricePerUnit) {
 		this.pricePerUnit = pricePerUnit;
 	}
 	public Map<Integer, String> getModuleTypeMap() {

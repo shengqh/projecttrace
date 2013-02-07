@@ -64,7 +64,7 @@ public class ModuleController extends RootController {
 
 	@RequestMapping(value = "/savemodule", method = RequestMethod.POST)
 	@Secured(Permission.ROLE_MODULE_EDIT)
-	public String save(@Valid @ModelAttribute("module") Module plat,
+	public String save(@ModelAttribute("module") Module plat,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			return "/technology/editmodule";

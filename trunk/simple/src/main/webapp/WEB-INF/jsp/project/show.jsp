@@ -96,11 +96,13 @@
 		</tr>
 		<tr>
 			<td>BioVU data request?</td>
-			<td><tags:yesno value="${projectForm.project.isBioVUDataRequest}" /></td>
+			<td><tags:yesno
+					value="${projectForm.project.isBioVUDataRequest}" /></td>
 		</tr>
 		<tr>
 			<td>BioVU sample request?</td>
-			<td><tags:yesno value="${projectForm.project.isBioVUSampleRequest}" /></td>
+			<td><tags:yesno
+					value="${projectForm.project.isBioVUSampleRequest}" /></td>
 		</tr>
 		<tr>
 			<td>VANTAGE project?</td>
@@ -218,8 +220,8 @@
 							action="editptms.html?id=${projectForm.project.id}">
 							=&gt;<input type="submit" value="Edit modules" />
 						</form:form></td>
-					<td><form>=&gt;
-							<input type="button" value="Estimate"
+					<td><form>
+							=&gt; <input type="button" value="Estimate"
 								onclick="estimatePrice(${projectForm.project.id})" />
 						</form></td>
 				</tr>
@@ -240,6 +242,9 @@
 				<th scope="col">Per project</th>
 				<th scope="col">Per unit</th>
 				<th scope="col">Module type</th>
+				<th scope="col">Project setup fee</th>
+				<th scope="col">Unit fee</th>
+				<th scope="col">Total fee</th>
 				<th scope="col">Notes</th>
 				<c:if test="${isFaculty}">
 					<th scope="col">&nbsp;</th>
@@ -258,6 +263,9 @@
 					<td>&nbsp;</td>
 					<td>&nbsp;</td>
 					<td>&nbsp;</td>
+					<td>${tec.projectSetupFee}</td>
+					<td>${tec.unitFee}</td>
+					<td>${tec.totalFee}</td>
 					<td>&nbsp;</td>
 					<c:if test="${isFaculty}">
 						<td>
@@ -285,6 +293,9 @@
 						<td>${module.pricePerProject}</td>
 						<td>${module.pricePerUnit}</td>
 						<td>${module.moduleTypeString}</td>
+						<td>${module.projectSetupFee}</td>
+						<td>${module.unitFee}</td>
+						<td>${module.totalFee}</td>
 						<td>${module.description}</td>
 						<c:if test="${isFaculty}">
 							<td>
@@ -340,8 +351,8 @@
 						<td>
 							<form action="deletefile/${file.id}" method="post">
 								<input type="submit"
-									value="<spring:message	code="label.delete" />" 
-									onclick="return confirm('Are you sure you want to delete file ${file.fileName}?')"/>
+									value="<spring:message	code="label.delete" />"
+									onclick="return confirm('Are you sure you want to delete file ${file.fileName}?')" />
 							</form>
 						</td>
 					</c:if>

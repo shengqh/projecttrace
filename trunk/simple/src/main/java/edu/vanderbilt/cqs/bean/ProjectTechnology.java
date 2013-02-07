@@ -44,8 +44,8 @@ public class ProjectTechnology implements Serializable {
 
 	@Column(name = "SAMPLENUMBER")
 	private Integer sampleNumber;
-	
-	@OneToMany(mappedBy = "technology", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+
+	@OneToMany(mappedBy = "technology", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OrderBy("moduleIndex")
 	private List<ProjectTechnologyModule> modules = new ArrayList<ProjectTechnologyModule>();
 
@@ -139,5 +139,29 @@ public class ProjectTechnology implements Serializable {
 		} else if (!technologyId.equals(other.technologyId))
 			return false;
 		return true;
+	}
+
+	public double getProjectSetupFee() {
+		double result = 0.0;
+		for (ProjectTechnologyModule mod : modules) {
+			result += mod.getProjectSetupFee();
+		}
+		return result;
+	}
+
+	public double getUnitFee() {
+		double result = 0.0;
+		for (ProjectTechnologyModule mod : modules) {
+			result += mod.getUnitFee();
+		}
+		return result;
+	}
+
+	public double getTotalFee() {
+		double result = 0.0;
+		for (ProjectTechnologyModule mod : modules) {
+			result += mod.getTotalFee();
+		}
+		return result;
 	}
 }

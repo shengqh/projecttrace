@@ -137,7 +137,7 @@ public class ApplicationListenerImpl implements
 			addTechnology("ChIP-seq", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
 							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
-					new Module("Communications", 200.07, 0.0),
+					new Module("Project coordination", 200.07, 0.0),
 					new Module("Alignment", 0, 11.94),
 					new Module("QC - raw data", 0, 11.53),
 					new Module("QC - alignment", 0, 22.64),
@@ -147,7 +147,7 @@ public class ApplicationListenerImpl implements
 			addTechnology("DNA-seq (exome)", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
 							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
-					new Module("Communications", 200.07, 0.0),
+					new Module("Project coordination", 200.07, 0.0),
 					new Module("Alignment", 0, 11.94),
 					new Module("QC - raw data", 0, 11.53),
 					new Module("QC - alignment", 0, 22.64),
@@ -164,7 +164,7 @@ public class ApplicationListenerImpl implements
 					new Module[] {
 							new Module("Data storage", 10.8, 3.6,
 									"Unit: per sample per month", ModuleType.PerSamplePerUnit),
-							new Module("Communications", 200.07, 0.0),
+							new Module("Project coordination", 200.07, 0.0),
 							new Module("Alignment", 0, 14.2),
 							new Module("QC - raw data", 0, 35.4),
 							new Module("QC - alignment", 0, 46.52),
@@ -183,24 +183,24 @@ public class ApplicationListenerImpl implements
 			addTechnology("Genotyping", new String[] {}, new Module[] {
 					new Module("Data storage", 0, 0,
 							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
-					new Module("Communications", 200.07, 0),
+					new Module("Project coordination", 200.07, 0),
 					new Module("Pre-QC SNP call", 266.76, 0),
 					new Module("Analysis (QC & SNP call) (<1,000 samples)",
 							2667.64, 0),
 					new Module("Analysis (QC & SNP call) (>1,000 samples)", 0,
 							6.67),
 					new Module("Association analysis", 933.68, 133.38,
-							"Unit: per model") });
+							"Unit: per model", ModuleType.PerUnit) });
 			addTechnology("Methylation array", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
 							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
-					new Module("Communications", 200.07, 0.0),
+					new Module("Project coordination", 200.07, 0.0),
 					new Module("Analysis (<20 samples)", 266.76, 0),
 					new Module("Analysis (20-80 samples)", 0, 26.68) });
 			addTechnology("Microarray", new String[] {}, new Module[] {
 					new Module("Data storage", 0, 0,
 							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
-					new Module("Communications", 200.07, 0.0),
+					new Module("Project coordination", 200.07, 0.0),
 					new Module(
 							"Differential expression analysis (<100 samples)",
 							266.76, 0),
@@ -211,7 +211,7 @@ public class ApplicationListenerImpl implements
 			addTechnology("miRNA", new String[] {}, new Module[] {
 					new Module("Data storage", 0.27, 0.09,
 							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
-					new Module("Communications", 200.07, 0.0),
+					new Module("Project coordination", 200.07, 0.0),
 					new Module("Flicker (alignment & QC)", 0, 11.32),
 					new Module("Analysis", 533.53, 0),
 					new Module("Pathway/functional analysis", 533.53, 0) });
@@ -221,7 +221,7 @@ public class ApplicationListenerImpl implements
 					new Module[] {
 							new Module("Data storage", 1.62, 0.54,
 									"Unit: per sample per month", ModuleType.PerSamplePerUnit),
-							new Module("Communications", 200.07, 0.0),
+							new Module("Project coordination", 200.07, 0.0),
 							new Module("Alignment", 0, 11.94),
 							new Module("QC - raw data", 0, 11.53),
 							new Module("QC - alignment", 0, 22.64),
@@ -245,15 +245,15 @@ public class ApplicationListenerImpl implements
 									"Gene fusion analysis (fusion hunter) (>=10 samples)",
 									0, 55.82),
 							new Module("Comparison 1", 0.41, 66.69,
-									"Unit: per comparison"),
+									"Unit: per comparison", ModuleType.PerUnit),
 							new Module("Comparison 2 (de novo)", 0.62, 133.38,
-									"Unit: per comparison"),
+									"Unit: per comparison", ModuleType.PerUnit),
 							new Module(
 									"Comparison 3 (additional models) (<10 samples)",
-									2.47, 133.38, "Unit: per comparison"),
+									2.47, 133.38, "Unit: per comparison", ModuleType.PerUnit),
 							new Module(
 									"Comparison 3 (additional models) (>=10 samples)",
-									4.93, 200.07, "Unit: per comparison"),
+									4.93, 200.07, "Unit: per comparison", ModuleType.PerUnit),
 							new Module(
 									"Functional/pathway analysis (<10 samples)",
 									266.76, 0),

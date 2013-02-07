@@ -461,8 +461,19 @@ public class ProjectController extends RootController {
 				if (ptm.getModuleId().equals(moduleid)) {
 					ptm.setModuleIndex(mindex);
 					ptm.setName(mod.getName());
+					ptm.setModuleType(mod.getModuleType());
+					ptm.setDescription(mod.getDescription());
+
 					if (ptm.getSampleNumber() == null) {
 						ptm.setSampleNumber(pt.getSampleNumber());
+					}
+					
+					if(ptm.getPricePerProject() == null){
+						ptm.setPricePerProject(mod.getPricePerProject());
+					}
+					
+					if(ptm.getPricePerUnit() == null){
+						ptm.setPricePerUnit(mod.getPricePerUnit());
 					}
 
 					newModules.add(ptm);
@@ -473,13 +484,17 @@ public class ProjectController extends RootController {
 
 			if (!bfound) {
 				ProjectTechnologyModule ptm = new ProjectTechnologyModule();
-				ptm.setTechnology(pt);
-				ptm.setModuleIndex(mindex);
-				ptm.setModuleId(mod.getId());
+				
 				ptm.setName(mod.getName());
-				ptm.setSampleNumber(pt.getSampleNumber());
+				ptm.setModuleType(mod.getModuleType());
+				ptm.setDescription(mod.getDescription());
 				ptm.setPricePerProject(mod.getPricePerProject());
 				ptm.setPricePerUnit(mod.getPricePerUnit());
+
+				ptm.setModuleId(mod.getId());
+				ptm.setModuleIndex(mindex);
+				ptm.setSampleNumber(pt.getSampleNumber());
+				ptm.setTechnology(pt);
 				newModules.add(ptm);
 			}
 		}
@@ -1148,7 +1163,11 @@ public class ProjectController extends RootController {
 		row.setHeight((short) -1);
 		colNo = createCell(createHelper, stringStyle, row, 0,
 				"Amount estimated");
-		Cell c = doCreateCell(moneyStyle, row, totalColCount - 1);
+		Cell c = doCreateCell(moneyStyle, row, totalColCount - 3);
+		c.setCellFormula("SUM(I2:I" + String.valueOf(rowNo) + ")");
+		c = doCreateCell(moneyStyle, row, totalColCount - 2);
+		c.setCellFormula("SUM(J2:J" + String.valueOf(rowNo) + ")");
+		c = doCreateCell(moneyStyle, row, totalColCount - 1);
 		c.setCellFormula("SUM(K2:K" + String.valueOf(rowNo) + ")");
 
 		for (int i = 0; i <= totalColCount; i++) {

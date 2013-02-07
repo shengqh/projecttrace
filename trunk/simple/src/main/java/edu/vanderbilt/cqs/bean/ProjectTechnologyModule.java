@@ -135,31 +135,67 @@ public class ProjectTechnologyModule implements Serializable {
 	}
 
 	public double getProjectSetupFee() {
-		if (this.pricePerProject == null || !hasSampleNumber()) {
+		if (this.pricePerProject == null) {
 			return 0.0;
 		}
-
-		if (this.moduleType == ModuleType.PerSamplePerUnit) {
-			return this.sampleNumber * this.pricePerProject;
-		} else {
-			return this.pricePerProject;
+		
+		Integer mType = this.moduleType;
+		if(mType == null){
+			mType = ModuleType.PerSample;
 		}
+
+		double result = 0.0;
+		if (mType == ModuleType.PerSample) {
+			if (hasSampleNumber()) {
+				result = this.pricePerProject;
+			}
+		} else if (mType == ModuleType.PerSamplePerUnit) {
+			if (hasSampleNumber()) {
+				result = this.sampleNumber * this.pricePerProject;
+			}
+		} else if (mType == ModuleType.PerUnit) {
+			if (hasOtherUnit()) {
+				result = this.pricePerProject;
+			}
+		} else {
+			throw new RuntimeException(
+					"I don't know how to calcuate project setup fee for module type "
+							+ String.valueOf(mType));
+		}
+		
+		return Math.round(result);
 	}
 
 	public double getUnitFee() {
-		if (this.pricePerProject == null || !hasSampleNumber()) {
+		if (this.pricePerUnit == null) {
 			return 0.0;
 		}
 
-		if (this.moduleType == ModuleType.PerSamplePerUnit) {
+		Integer mType = this.moduleType;
+		if(mType == null){
+			mType = ModuleType.PerSample;
+		}
+
+		double result = 0.0;
+		if (mType == ModuleType.PerSample) {
+			if (hasSampleNumber()) {
+				result = this.sampleNumber * this.pricePerUnit;
+			}
+		} else if (mType == ModuleType.PerSamplePerUnit) {
+			if (hasSampleNumber() && hasOtherUnit()) {
+				result = this.sampleNumber * this.otherUnit * this.pricePerUnit;
+			}
+		} else if (mType == ModuleType.PerUnit) {
 			if (hasOtherUnit()) {
-				return this.sampleNumber * this.otherUnit * this.pricePerUnit;
-			} else {
-				return 0.0;
+				result = this.pricePerUnit * this.otherUnit;
 			}
 		} else {
-			return this.pricePerUnit * this.sampleNumber;
+			throw new RuntimeException(
+					"I don't know how to calcuate project unit fee for module type "
+							+ String.valueOf(mType));
 		}
+		
+		return Math.round(result);
 	}
 
 	public Integer getModuleType() {

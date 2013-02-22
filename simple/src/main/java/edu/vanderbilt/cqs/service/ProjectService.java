@@ -8,10 +8,12 @@ import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectComment;
+import edu.vanderbilt.cqs.bean.ProjectCostCenter;
 import edu.vanderbilt.cqs.bean.ProjectFile;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
 import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.Role;
+import edu.vanderbilt.cqs.bean.RolePermission;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
 
@@ -145,4 +147,10 @@ public interface ProjectService {
 	void assignModulePrice(Long projectId);
 	
 	List<ProjectTechnologyModule> getModuleInProject(Long projectId);
+
+	ProjectCostCenter findProjectCostCenter(Long id);
+
+	void addRolePermission(RolePermission rp);
+
+	void addProjectCostCenter(ProjectCostCenter pcc);
 }

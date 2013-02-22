@@ -86,51 +86,87 @@
 	<table id="box-table-a" summary="Project Information">
 		<col width="300">
 		<col width="300">
+		<c:if test="${isStaff || isAdStaff}">
+			<col width="50">
+		</c:if>
 		<tr>
 			<td>Contact date</td>
 			<td><spring:eval expression="projectForm.project.contactDate" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Contact name</td>
 			<td>${projectForm.project.contact}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>BioVU data request?</td>
 			<td><tags:yesno
 					value="${projectForm.project.isBioVUDataRequest}" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>BioVU sample request?</td>
 			<td><tags:yesno
 					value="${projectForm.project.isBioVUSampleRequest}" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>VANTAGE project?</td>
 			<td><tags:yesno value="${projectForm.project.isVantage}" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Outside project?</td>
 			<td><tags:yesno value="${projectForm.project.isOutside}" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Grant?</td>
 			<td><tags:yesno value="${projectForm.project.isGranted}" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Study descriptive name</td>
 			<td>${projectForm.project.name}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Study PI</td>
 			<td>${projectForm.project.studyPI}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Quote amount</td>
 			<td>${projectForm.project.quoteAmount}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Contract date</td>
 			<td><spring:eval expression="projectForm.project.contractDate" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Assigned to (faculty)</td>
@@ -138,10 +174,16 @@
 					var="user">
 						${user}<br>
 				</c:forEach></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Study status</td>
 			<td>${projectForm.project.status}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Assigned to (staff)</td>
@@ -149,50 +191,101 @@
 					var="user">
 						${user}<br>
 				</c:forEach></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Work started (date)</td>
 			<td><spring:eval expression="projectForm.project.workStarted" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Work completed (date)</td>
 			<td><spring:eval expression="projectForm.project.workCompleted" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>BioVU data delivery to investigator (date)</td>
 			<td><spring:eval
 					expression="projectForm.project.bioVUDataDeliveryDate" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>BioVU redeposit (date)</td>
 			<td><spring:eval
 					expression="projectForm.project.bioVURedepositDate" /></td>
-		</tr>
-		<tr>
-			<td>Cost center to bill</td>
-			<td>${projectForm.project.costCenterToBill}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Request cost center setup in CORES (date)</td>
 			<td><spring:eval
 					expression="projectForm.project.requestCostCenterSetupInCORES" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Requested by (name)</td>
 			<td>${projectForm.project.requestedBy}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Billed in CORES (date)</td>
 			<td><spring:eval expression="projectForm.project.billedInCORES" /></td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Billed by (name)</td>
 			<td>${projectForm.project.billedBy}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
 		<tr>
 			<td>Billed amount</td>
 			<td>${projectForm.project.billedAmount}</td>
+			<c:if test="${isStaff || isAdStaff}">
+				<td />
+			</c:if>
 		</tr>
+	</table>
+
+	<h2>
+		Cost Center To Bill
+		<c:if test="${isFaculty || isAdStaff}">
+			| <a href="editprojectcostcenter.html?id=${projectForm.project.id}">Edit</a>
+		</c:if>
+	</h2>
+	<table id="box-table-a" summary="Cost Center To Bill">
+		<thead>
+			<tr>
+				<th scope="col">Name</th>
+				<th scope="col">Percentage</th>
+				<th scope="col">Is remaining cost</th>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach items="${projectForm.project.costCenters}" var="pcc">
+				<tr>
+					<td>${pcc.name}</td>
+					<td>${pcc.percentage}%</td>
+					<td>${pcc.isRemainingCost}</td>
+			</tr>
+			</c:forEach>
+		</tbody>
 	</table>
 
 	<c:choose>
@@ -200,30 +293,37 @@
 			<br>
 			<table>
 				<tr>
-					<td><form:form method="post"
-							action="addprojecttechnology.html" commandName="projectForm">
-							<h2>
+
+					<td><h2>
+							<form:form method="post" action="addprojecttechnology.html"
+								commandName="projectForm">
 								Technologies |
 								<form:hidden path="project.id" />
 								<form:select path="newTechnology"
 									items="${projectForm.technologyList}" itemLabel="name"
 									itemValue="id" />
 								<input type="submit" value="Add technology" />
-							</h2>
-						</form:form></td>
-					<td><form:form method="post"
-							action="assignmoduleprices.html?projectid=${projectForm.project.id}">
+							</form:form>
+						</h2></td>
+					<td><h2>
+							<form:form method="post"
+								action="assignmoduleprices.html?projectid=${projectForm.project.id}">
 							=&gt;<input type="submit" value="Assign prices"
-								onclick="return confirm('Are you sure you want to assign current prices to this project? The old price information will be OVERRIDED and CANNOT be recovered!')" />
-						</form:form></td>
-					<td><form:form method="post"
-							action="editptms.html?id=${projectForm.project.id}">
+									onclick="return confirm('Are you sure you want to assign current prices to this project? The old price information will be OVERRIDED and CANNOT be recovered!')" />
+							</form:form>
+						</h2></td>
+					<td><h2>
+							<form:form method="post"
+								action="editptms.html?id=${projectForm.project.id}">
 							=&gt;<input type="submit" value="Edit modules" />
-						</form:form></td>
-					<td><form>
-							=&gt; <input type="button" value="Estimate"
-								onclick="estimatePrice(${projectForm.project.id})" />
-						</form></td>
+							</form:form>
+						</h2></td>
+					<td><h2>
+							<form:form>
+								=&gt; <input type="button" value="Estimate"
+									onclick="estimatePrice(${projectForm.project.id})" />
+							</form:form>
+						</h2></td>
 				</tr>
 			</table>
 		</c:when>

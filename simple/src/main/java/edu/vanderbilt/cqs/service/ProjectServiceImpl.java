@@ -1,5 +1,7 @@
 package edu.vanderbilt.cqs.service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +14,12 @@ import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectComment;
+import edu.vanderbilt.cqs.bean.ProjectCostCenter;
 import edu.vanderbilt.cqs.bean.ProjectFile;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
 import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.Role;
+import edu.vanderbilt.cqs.bean.RolePermission;
 import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.dao.LogTraceDAO;
@@ -23,11 +27,13 @@ import edu.vanderbilt.cqs.dao.ModuleDAO;
 import edu.vanderbilt.cqs.dao.PermissionDAO;
 import edu.vanderbilt.cqs.dao.PlatformDAO;
 import edu.vanderbilt.cqs.dao.ProjectCommentDAO;
+import edu.vanderbilt.cqs.dao.ProjectCostCenterDAO;
 import edu.vanderbilt.cqs.dao.ProjectDAO;
 import edu.vanderbilt.cqs.dao.ProjectFileDAO;
 import edu.vanderbilt.cqs.dao.ProjectTechnologyDAO;
 import edu.vanderbilt.cqs.dao.ProjectTechnologyModuleDAO;
 import edu.vanderbilt.cqs.dao.RoleDAO;
+import edu.vanderbilt.cqs.dao.RolePermissionDAO;
 import edu.vanderbilt.cqs.dao.TechnologyDAO;
 import edu.vanderbilt.cqs.dao.UserDAO;
 
@@ -68,6 +74,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	private ProjectFileDAO fileDAO;
+
+	@Autowired
+	private ProjectCostCenterDAO costCenterDAO;
+
+	@Autowired
+	private RolePermissionDAO rpDAO;
 
 	@Transactional
 	@Override
@@ -291,10 +303,22 @@ public class ProjectServiceImpl implements ProjectService {
 		return roleDAO.findByName(name);
 	}
 
+	private class MyProjectComparable implements Comparator<Project> {
+		@Override
+		public int compare(Project o1, Project o2) {
+			if (o1.getId() == null) {
+				return -1;
+			}
+			return o1.getId().compareTo(o2.getId());
+		}
+	}
+
 	@Transactional
 	@Override
 	public List<Project> listProject() {
-		return projectDAO.findAll();
+		List<Project> result = projectDAO.findAll();
+		Collections.sort(result, new MyProjectComparable());
+		return result;
 	}
 
 	@Transactional
@@ -456,5 +480,23 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List<ProjectTechnologyModule> getModuleInProject(Long projectId) {
 		return ptmDAO.getModuleInProject(projectId);
+	}
+
+	@Transactional
+	@Override
+	public ProjectCostCenter findProjectCostCenter(Long id) {
+		return costCenterDAO.findById(id);
+	}
+
+	@Transactional
+	@Override
+	public void addRolePermission(RolePermission rp) {
+		rpDAO.save(rp);
+	}
+
+	@Transactional
+	@Override
+	public void addProjectCostCenter(ProjectCostCenter pcc) {
+		costCenterDAO.save(pcc);
 	}
 }

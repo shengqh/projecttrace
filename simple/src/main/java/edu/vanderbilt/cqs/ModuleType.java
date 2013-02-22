@@ -4,9 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ModuleType {
-	public static final Integer PerSample = 1;
-	public static final Integer PerSamplePerUnit = 2;
-	public static final Integer PerUnit = 3;
+	public static final int PerSample = 1;
+	public static final int PerSamplePerUnit = 2;
+	public static final int PerUnit = 3;
 
 	private static Map<Integer, String> unitTypeMap;
 

@@ -2,8 +2,9 @@
 
 <c:url value="home" var="homeUrl" />
 <c:url value="project" var="projectUrl" />
-<c:url value="showlog" var="logUrl" />
 <c:url value="technology" var="technologyUrl" />
+<c:url value="estimateptms" var="estimationUrl" />
+<c:url value="showlog" var="logUrl" />
 <c:url value="user" var="userUrl" />
 <c:url value="role" var="roleUrl" />
 <c:url value="changeownpassword" var="passwordUrl" />
@@ -18,7 +19,10 @@
 			<li><a href="${projectUrl}">Project</a></li>
 			<li><a href="${technologyUrl}">Technology</a></li>
 		</sec:authorize>
-
+		<sec:authorize
+			access="hasAnyRole('ROLE_ESTIMATION')">
+			<li><a href="${estimationUrl}">Estimation</a></li>
+		</sec:authorize>
 		<sec:authorize access="hasAnyRole('ROLE_USER_VIEW', 'ROLE_USER_EDIT')">
 			<li><a href="${userUrl}">User</a></li>
 			<sec:authorize ifAnyGranted="ROLE_USER_EDIT">

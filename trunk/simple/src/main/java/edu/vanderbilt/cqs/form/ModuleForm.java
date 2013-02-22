@@ -34,4 +34,14 @@ public class ModuleForm {
 	public void setEstimatedPrice(String estimatedPrice) {
 		this.estimatedPrice = estimatedPrice;
 	}
+	
+	public Boolean getEstimateOnly() {
+		return estimateOnly;
+	}
+
+	public void setEstimateOnly(Boolean estimateOnly) {
+		this.estimateOnly = estimateOnly;
+	}
+
+	private Boolean estimateOnly=false;
 }

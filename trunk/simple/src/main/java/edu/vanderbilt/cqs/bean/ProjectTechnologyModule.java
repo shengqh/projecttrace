@@ -139,10 +139,7 @@ public class ProjectTechnologyModule implements Serializable {
 			return 0.0;
 		}
 		
-		Integer mType = this.moduleType;
-		if(mType == null){
-			mType = ModuleType.PerSample;
-		}
+		int mType = getModuleTypeValue();
 
 		double result = 0.0;
 		if (mType == ModuleType.PerSample) {
@@ -166,15 +163,23 @@ public class ProjectTechnologyModule implements Serializable {
 		return Math.round(result);
 	}
 
+	public int getModuleTypeValue() {
+		int mType;
+		if(this.moduleType == null){
+			mType = ModuleType.PerSample;
+		}
+		else{
+			mType = this.moduleType;
+		}
+		return mType;
+	}
+
 	public double getUnitFee() {
 		if (this.pricePerUnit == null) {
 			return 0.0;
 		}
 
-		Integer mType = this.moduleType;
-		if(mType == null){
-			mType = ModuleType.PerSample;
-		}
+		int mType = getModuleTypeValue();
 
 		double result = 0.0;
 		if (mType == ModuleType.PerSample) {

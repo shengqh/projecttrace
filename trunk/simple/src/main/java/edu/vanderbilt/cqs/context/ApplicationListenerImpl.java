@@ -19,6 +19,7 @@ import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectComment;
+import edu.vanderbilt.cqs.bean.ProjectCostCenter;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
 import edu.vanderbilt.cqs.bean.ProjectTechnologyModule;
 import edu.vanderbilt.cqs.bean.ProjectUser;
@@ -49,16 +50,29 @@ public class ApplicationListenerImpl implements
 	}
 
 	private void initializeDatabase() throws ParseException {
-		if (projectService.listPermission().size() == 0) {
+		List<Permission> permissions = projectService.listPermission();
+		
+		//update new version
+		//1)new permission
+		//2)cost center to bill => list
+		if (permissions.size() > 0
+				&& !hasPermission(permissions, Permission.ROLE_ESTIMATION)) {
+			addNewPermission(Permission.ROLE_ESTIMATION);
+			updateCostCenterToBill();
+		}
+
+		if (permissions.size() == 0) {
 			addPermission(Permission.ROLE_USER_VIEW);
 			addPermission(Permission.ROLE_USER_EDIT);
 			addPermission(Permission.ROLE_PROJECT_VIEW);
 			addPermission(Permission.ROLE_PROJECT_EDIT);
 			addPermission(Permission.ROLE_MODULE_VIEW);
 			addPermission(Permission.ROLE_MODULE_EDIT);
+			addPermission(Permission.ROLE_ESTIMATION);
 		}
 
-		if (projectService.listRole().size() == 0) {
+		List<Role> roles = projectService.listRole();
+		if (roles.size() == 0) {
 			Permission uv = projectService
 					.findPermissionByName(Permission.ROLE_USER_VIEW);
 			Permission ue = projectService
@@ -71,16 +85,18 @@ public class ApplicationListenerImpl implements
 					.findPermissionByName(Permission.ROLE_MODULE_VIEW);
 			Permission me = projectService
 					.findPermissionByName(Permission.ROLE_MODULE_EDIT);
+			Permission es = projectService
+					.findPermissionByName(Permission.ROLE_ESTIMATION);
 
-			addRole(Role.ROLE_USER, new Permission[] {});
-			addRole(Role.ROLE_VANGARD_STAFF,
-					new Permission[] { uv, pv, pe, mv });
+			addRole(Role.ROLE_USER, new Permission[] { es });
+			addRole(Role.ROLE_VANGARD_STAFF, new Permission[] { uv, pv, pe, mv,
+					es });
 			addRole(Role.ROLE_VANGARD_ADSTAFF, new Permission[] { uv, pv, pe,
-					mv, me });
+					mv, me, es });
 			addRole(Role.ROLE_VANGARD_FACULTY, new Permission[] { uv, ue, pv,
-					pe, mv, me });
-			addRole(Role.ROLE_ADMIN,
-					new Permission[] { uv, ue, pv, pe, mv, me });
+					pe, mv, me, es });
+			addRole(Role.ROLE_ADMIN, new Permission[] { uv, ue, pv, pe, mv, me,
+					es });
 		}
 
 		if (projectService.listUser().size() == 0) {
@@ -136,7 +152,8 @@ public class ApplicationListenerImpl implements
 		if (projectService.listTechnology().size() == 0) {
 			addTechnology("ChIP-seq", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
-							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
+							"Unit: per sample per month",
+							ModuleType.PerSamplePerUnit),
 					new Module("Project coordination", 200.07, 0.0),
 					new Module("Alignment", 0, 11.94),
 					new Module("QC - raw data", 0, 11.53),
@@ -146,7 +163,8 @@ public class ApplicationListenerImpl implements
 					new Module("Analysis (20-80 samples)", 0, 266.76) });
 			addTechnology("DNA-seq (exome)", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
-							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
+							"Unit: per sample per month",
+							ModuleType.PerSamplePerUnit),
 					new Module("Project coordination", 200.07, 0.0),
 					new Module("Alignment", 0, 11.94),
 					new Module("QC - raw data", 0, 11.53),
@@ -163,7 +181,8 @@ public class ApplicationListenerImpl implements
 			addTechnology("DNA-seq (whole genome)", new String[] {},
 					new Module[] {
 							new Module("Data storage", 10.8, 3.6,
-									"Unit: per sample per month", ModuleType.PerSamplePerUnit),
+									"Unit: per sample per month",
+									ModuleType.PerSamplePerUnit),
 							new Module("Project coordination", 200.07, 0.0),
 							new Module("Alignment", 0, 14.2),
 							new Module("QC - raw data", 0, 35.4),
@@ -182,7 +201,8 @@ public class ApplicationListenerImpl implements
 							new Module("Gene-level analysis", 2134.11, 0) });
 			addTechnology("Genotyping", new String[] {}, new Module[] {
 					new Module("Data storage", 0, 0,
-							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
+							"Unit: per sample per month",
+							ModuleType.PerSamplePerUnit),
 					new Module("Project coordination", 200.07, 0),
 					new Module("Pre-QC SNP call", 266.76, 0),
 					new Module("Analysis (QC & SNP call) (<1,000 samples)",
@@ -193,13 +213,15 @@ public class ApplicationListenerImpl implements
 							"Unit: per model", ModuleType.PerUnit) });
 			addTechnology("Methylation array", new String[] {}, new Module[] {
 					new Module("Data storage", 1.62, 0.54,
-							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
+							"Unit: per sample per month",
+							ModuleType.PerSamplePerUnit),
 					new Module("Project coordination", 200.07, 0.0),
 					new Module("Analysis (<20 samples)", 266.76, 0),
 					new Module("Analysis (20-80 samples)", 0, 26.68) });
 			addTechnology("Microarray", new String[] {}, new Module[] {
 					new Module("Data storage", 0, 0,
-							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
+							"Unit: per sample per month",
+							ModuleType.PerSamplePerUnit),
 					new Module("Project coordination", 200.07, 0.0),
 					new Module(
 							"Differential expression analysis (<100 samples)",
@@ -210,7 +232,8 @@ public class ApplicationListenerImpl implements
 					new Module("Pathway/functional analysis", 200.07, 0) });
 			addTechnology("miRNA", new String[] {}, new Module[] {
 					new Module("Data storage", 0.27, 0.09,
-							"Unit: per sample per month", ModuleType.PerSamplePerUnit),
+							"Unit: per sample per month",
+							ModuleType.PerSamplePerUnit),
 					new Module("Project coordination", 200.07, 0.0),
 					new Module("Flicker (alignment & QC)", 0, 11.32),
 					new Module("Analysis", 533.53, 0),
@@ -220,7 +243,8 @@ public class ApplicationListenerImpl implements
 					new String[] {},
 					new Module[] {
 							new Module("Data storage", 1.62, 0.54,
-									"Unit: per sample per month", ModuleType.PerSamplePerUnit),
+									"Unit: per sample per month",
+									ModuleType.PerSamplePerUnit),
 							new Module("Project coordination", 200.07, 0.0),
 							new Module("Alignment", 0, 11.94),
 							new Module("QC - raw data", 0, 11.53),
@@ -250,10 +274,12 @@ public class ApplicationListenerImpl implements
 									"Unit: per comparison", ModuleType.PerUnit),
 							new Module(
 									"Comparison 3 (additional models) (<10 samples)",
-									2.47, 133.38, "Unit: per comparison", ModuleType.PerUnit),
+									2.47, 133.38, "Unit: per comparison",
+									ModuleType.PerUnit),
 							new Module(
 									"Comparison 3 (additional models) (>=10 samples)",
-									4.93, 200.07, "Unit: per comparison", ModuleType.PerUnit),
+									4.93, 200.07, "Unit: per comparison",
+									ModuleType.PerUnit),
 							new Module(
 									"Functional/pathway analysis (<10 samples)",
 									266.76, 0),
@@ -279,7 +305,7 @@ public class ApplicationListenerImpl implements
 			project.setCreator(vfaculty.getEmail());
 			project.setCreateDate(new Date());
 
-			project.setName("2144");
+			project.setName("P2144");
 			project.setIsBioVUSampleRequest(true);
 			project.setContractDate(sdf.parse("2012-04-02"));
 			project.setContact("Test User");
@@ -292,7 +318,7 @@ public class ApplicationListenerImpl implements
 			project.setBilledBy("Sandra");
 			project.setRequestCostCenterSetupInCORES(sdf.parse("2012-05-07"));
 			project.setBilledInCORES(sdf.parse("2012-05-08"));
-			project.setCostCenterToBill("9000.0");
+			project.setCostCenterToBill("target cost center");
 			project.setRequestedBy("Jill Shell");
 
 			ProjectComment pc = new ProjectComment();
@@ -318,10 +344,46 @@ public class ApplicationListenerImpl implements
 		}
 	}
 
-	private void addPermission(String name) {
-		Permission permission = new Permission();
-		permission.setName(name);
-		projectService.addPermission(permission);
+	private void updateCostCenterToBill() {
+		List<Project> projects  =projectService.listProject();
+		for(Project p : projects){
+			if(p.getCostCenterToBill() != null && p.getCostCenterToBill().length() > 0){
+				ProjectCostCenter pcc = new ProjectCostCenter();
+				pcc.setName(p.getCostCenterToBill());
+				pcc.setPercentage(100.0);
+				pcc.setIsRemainingCost(true);
+				pcc.setProject(p);
+				projectService.addProjectCostCenter(pcc);
+			}
+		}
+	}
+
+	private void addNewPermission(String permission) {
+		Permission p = addPermission(permission);
+		for (String roleName : Role.ROLES) {
+			Role role = projectService.findRoleByName(roleName);
+			RolePermission rp = new RolePermission();
+			rp.setPermission(p);
+			rp.setRole(role);
+			projectService.addRolePermission(rp);
+		}
+	}
+
+	private boolean hasPermission(List<Permission> permissions,
+			String permission) {
+		for (Permission p : permissions) {
+			if (p.getName().equals(permission)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Permission addPermission(String name) {
+		Permission result = new Permission();
+		result.setName(name);
+		projectService.addPermission(result);
+		return result;
 	}
 
 	private void addRole(String roleName, Permission[] permissions) {

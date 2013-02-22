@@ -24,5 +24,6 @@
         <mapping class="edu.vanderbilt.cqs.bean.ProjectFileData" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectTechnologyModule" />
         <mapping class="edu.vanderbilt.cqs.bean.ProjectComment" />
+        <mapping class="edu.vanderbilt.cqs.bean.ProjectCostCenter" />
     </session-factory>
 </hibernate-configuration>

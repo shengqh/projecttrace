@@ -24,6 +24,10 @@ public class Role implements Serializable, Comparable<Role> {
 	public static final String ROLE_VANGARD_STAFF = "ROLE_VANGARD_STAFF";
 	public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
+	public static final String[] ROLES = new String[] { ROLE_USER,
+			ROLE_VANGARD_STAFF, ROLE_VANGARD_FACULTY, ROLE_VANGARD_ADSTAFF,
+			ROLE_ADMIN };
+
 	private static final long serialVersionUID = -6330012869746878952L;
 
 	@Id
@@ -31,13 +35,13 @@ public class Role implements Serializable, Comparable<Role> {
 	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "NAME",unique=true)
+	@Column(name = "NAME", unique = true)
 	private String name = "";
 
-	@OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	private Set<UserRole> roles = new HashSet<UserRole>();
 
-	@OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval=true)
+	@OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OrderBy("permission.id")
 	private Set<RolePermission> permissions = new HashSet<RolePermission>();
 
@@ -101,20 +105,20 @@ public class Role implements Serializable, Comparable<Role> {
 
 	@Override
 	public int compareTo(Role o) {
-		if(o == null){
+		if (o == null) {
 			return -1;
 		}
-		
-		if(this.name == null){
+
+		if (this.name == null) {
 			return -1;
 		}
-		
+
 		return this.name.compareTo(o.name);
 	}
-	
-	public Set<Long> getPermissionIds(){
+
+	public Set<Long> getPermissionIds() {
 		Set<Long> result = new LinkedHashSet<Long>();
-		for(RolePermission rp:permissions){
+		for (RolePermission rp : permissions) {
 			result.add(rp.getPermission().getId());
 		}
 		return result;

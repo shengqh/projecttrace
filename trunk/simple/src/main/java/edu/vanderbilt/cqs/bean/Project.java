@@ -125,6 +125,10 @@ public class Project implements Serializable {
 	@OrderBy("id")
 	private List<ProjectFile> files = new ArrayList<ProjectFile>();
 
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OrderBy("id")
+	private List<ProjectCostCenter> costCenters = new ArrayList<ProjectCostCenter>();
+
 	@Column(name = "CREATOR")
 	private String creator;
 
@@ -288,6 +292,15 @@ public class Project implements Serializable {
 	public List<ProjectComment> getComments() {
 		return comments;
 	}
+	
+	public List<String> getCostCenterToBillList(){
+		List<String> result = new ArrayList<String>();
+		for(ProjectCostCenter cc:getCostCenters()){
+			result.add(cc.getName() + " : " + cc.getPercentage().toString() + "%");
+		}
+		
+		return result;
+	}
 
 	@Override
 	public int hashCode() {
@@ -433,5 +446,9 @@ public class Project implements Serializable {
 
 	public void setIsGranted(Boolean isGranted) {
 		this.isGranted = isGranted;
+	}
+
+	public List<ProjectCostCenter> getCostCenters() {
+		return costCenters;
 	}
 }

@@ -10,13 +10,18 @@ import edu.vanderbilt.cqs.bean.Permission;
 @Controller
 public class HomeController extends RootController {
 	@RequestMapping("/")
-	@Secured({Permission.ROLE_PROJECT_VIEW})
+	@Secured({ Permission.ROLE_ESTIMATION, Permission.ROLE_PROJECT_VIEW,
+			Permission.ROLE_PROJECT_EDIT })
 	public String goindex() {
-		return "redirect:/project";
+		if (currentUser().hasPermission(Permission.ROLE_PROJECT_VIEW)
+				|| currentUser().hasPermission(Permission.ROLE_PROJECT_EDIT)) {
+			return "redirect:/project";
+		} else {
+			return "redirect:/estimateptms";
+		}
 	}
 
 	@RequestMapping("/home")
-	@Secured({Permission.ROLE_PROJECT_VIEW})
 	public String gohome(ModelMap model) {
 		return "home";
 	}

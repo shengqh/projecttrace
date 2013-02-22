@@ -365,22 +365,6 @@
 								cssClass="error" /></td>
 					</tr>
 					<tr>
-						<td>Cost center to bill</td>
-						<c:choose>
-							<c:when test="${isAdStaff}">
-								<td><form:input id="txt" path="project.costCenterToBill"
-										cssClass="txt" /></td>
-							</c:when>
-							<c:otherwise>
-								<form:hidden path="project.costCenterToBill" />
-								<td>${projectForm.project.costCenterToBill}</td>
-							</c:otherwise>
-						</c:choose>
-						<td>&nbsp;</td>
-						<td><form:errors path="project.costCenterToBill"
-								cssClass="error" /></td>
-					</tr>
-					<tr>
 						<td>Request cost center setup in CORES</td>
 						<c:choose>
 							<c:when test="${isAdStaff}">

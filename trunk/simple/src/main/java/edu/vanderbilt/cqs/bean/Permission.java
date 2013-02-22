@@ -24,6 +24,7 @@ public class Permission implements Serializable {
 	public static final String ROLE_USER_EDIT = "ROLE_USER_EDIT";
 	public static final String ROLE_MODULE_VIEW = "ROLE_MODULE_VIEW";
 	public static final String ROLE_MODULE_EDIT = "ROLE_MODULE_EDIT";
+	public static final String ROLE_ESTIMATION = "ROLE_ESTIMATION";
 
 	@Id
 	@GeneratedValue

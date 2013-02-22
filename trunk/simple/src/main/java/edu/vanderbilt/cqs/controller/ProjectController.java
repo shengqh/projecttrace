@@ -38,12 +38,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import edu.vanderbilt.cqs.ModuleType;
 import edu.vanderbilt.cqs.UserType;
 import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
 import edu.vanderbilt.cqs.bean.Platform;
 import edu.vanderbilt.cqs.bean.Project;
 import edu.vanderbilt.cqs.bean.ProjectComment;
+import edu.vanderbilt.cqs.bean.ProjectCostCenter;
 import edu.vanderbilt.cqs.bean.ProjectFile;
 import edu.vanderbilt.cqs.bean.ProjectFileData;
 import edu.vanderbilt.cqs.bean.ProjectTechnology;
@@ -54,6 +56,7 @@ import edu.vanderbilt.cqs.bean.Technology;
 import edu.vanderbilt.cqs.bean.User;
 import edu.vanderbilt.cqs.form.FileUploadForm;
 import edu.vanderbilt.cqs.form.ModuleForm;
+import edu.vanderbilt.cqs.form.ProjectCostCenterForm;
 import edu.vanderbilt.cqs.form.ProjectForm;
 import edu.vanderbilt.cqs.form.ProjectTechnologyForm;
 import edu.vanderbilt.cqs.service.ProjectService;
@@ -151,7 +154,7 @@ public class ProjectController extends RootController {
 
 	private boolean checkUser(List<User> userList, ProjectUser user,
 			Integer uType) {
-		if (user.getUserType() != uType) {
+		if (!user.getUserType().equals(uType)) {
 			return false;
 		}
 
@@ -164,7 +167,7 @@ public class ProjectController extends RootController {
 
 	private boolean hasUser(List<User> userList, User user) {
 		for (User item : userList) {
-			if (item.getId() == user.getId()) {
+			if (item.getId().equals(user.getId())) {
 				return true;
 			}
 		}
@@ -177,7 +180,7 @@ public class ProjectController extends RootController {
 	public String editProject(@RequestParam("id") Long projectId, ModelMap model) {
 		addUserLogInfo("try to edit project.", false);
 		Integer userType = getUserType(projectId);
-		if (userType == UserType.NONE) {
+		if (userType.equals(UserType.NONE)) {
 			return "/access/denied";
 		}
 
@@ -328,7 +331,7 @@ public class ProjectController extends RootController {
 	@Secured({ Permission.ROLE_PROJECT_VIEW })
 	public String showProject(@RequestParam("id") Long projectId, ModelMap model) {
 		Integer userType = getUserType(projectId);
-		if (userType == UserType.NONE) {
+		if (userType.equals(UserType.NONE)) {
 			return "/access/denied";
 		}
 
@@ -360,6 +363,106 @@ public class ProjectController extends RootController {
 		}
 
 		return service.getUserType(currentUser().getId(), projectid);
+	}
+
+	@RequestMapping("/editprojectcostcenter")
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
+	public String editProjectCostCenter(@RequestParam("id") Long projectId,
+			ModelMap model) {
+		Project project = service.findProject(projectId);
+		if (project == null) {
+			return "redirect:/project";
+		}
+
+		ProjectCostCenterForm form = new ProjectCostCenterForm();
+		form.setProjectId(projectId);
+		form.getCostCenters().addAll(project.getCostCenters());
+		form.getCostCenters().add(new ProjectCostCenter());
+		while (form.getCostCenters().size() < 5) {
+			form.getCostCenters().add(new ProjectCostCenter());
+		}
+
+		model.addAttribute("costForm", form);
+
+		return "/project/editcostcenter";
+	}
+
+	@RequestMapping("/saveprojectcostcenter")
+	@Secured({ Permission.ROLE_PROJECT_EDIT })
+	public String saveProjectCostCenter(
+			@Valid @ModelAttribute("costForm") ProjectCostCenterForm form,
+			ModelMap model) {
+		Project project = service.findProject(form.getProjectId());
+		if (project == null) {
+			return "redirect:/project";
+		}
+
+		List<ProjectCostCenter> centers = new ArrayList<ProjectCostCenter>(
+				form.getCostCenters());
+		for (int i = centers.size() - 1; i >= 0; i--) {
+			if (centers.get(i).getName() == null
+					|| centers.get(i).getName().trim().length() == 0) {
+				centers.remove(i);
+				continue;
+			} else if (centers.get(i).getPercentage() == null) {
+				centers.get(i).setPercentage(0.0);
+			}
+
+			if (centers.get(i).getId() != null) {
+				for (ProjectCostCenter pcc : project.getCostCenters()) {
+					if (pcc.getId().equals(centers.get(i).getId())) {
+						BeanUtils.copyProperties(centers.get(i), pcc);
+						centers.set(i, pcc);
+					}
+				}
+			}
+
+			centers.get(i).setProject(project);
+		}
+
+		if (centers.size() > 0) {
+			ProjectCostCenter remainPCC = null;
+			int remainCount = 0;
+			for (ProjectCostCenter pcc : centers) {
+				if (pcc.getIsRemainingCost()) {
+					remainCount++;
+					remainPCC = pcc;
+				}
+			}
+			if (remainCount > 1) {
+				model.addAttribute("message",
+						"Only one cost center allowed for remaining cost!");
+				return "/project/editcostcenter";
+			}
+
+			double totalPercentage = 0;
+			for (ProjectCostCenter pcc : centers) {
+				if (!pcc.getIsRemainingCost()) {
+					totalPercentage += pcc.getPercentage();
+				}
+			}
+			if (totalPercentage > 100) {
+				model.addAttribute("message",
+						"Total percentage cannot larger than 100!");
+				return "/project/editcostcenter";
+			}
+
+			if (totalPercentage < 100 && remainCount == 0) {
+				model.addAttribute("message",
+						"Total percentage is less than 100 but no remaining cost center defined!");
+				return "/project/editcostcenter";
+			}
+			
+			if(remainPCC != null){
+				remainPCC.setPercentage(100.0 - totalPercentage);
+			}
+		}
+		
+		project.getCostCenters().clear();
+		project.getCostCenters().addAll(centers);
+		service.updateProject(project);
+
+		return toProject(project.getId());
 	}
 
 	@RequestMapping("/addprojecttechnology")
@@ -467,12 +570,17 @@ public class ProjectController extends RootController {
 					if (ptm.getSampleNumber() == null) {
 						ptm.setSampleNumber(pt.getSampleNumber());
 					}
-					
-					if(ptm.getPricePerProject() == null){
+
+					if (ptm.getModuleType().equals(ModuleType.PerUnit)
+							&& ptm.getOtherUnit() == null) {
+						ptm.setOtherUnit(1);
+					}
+
+					if (ptm.getPricePerProject() == null) {
 						ptm.setPricePerProject(mod.getPricePerProject());
 					}
-					
-					if(ptm.getPricePerUnit() == null){
+
+					if (ptm.getPricePerUnit() == null) {
 						ptm.setPricePerUnit(mod.getPricePerUnit());
 					}
 
@@ -484,7 +592,7 @@ public class ProjectController extends RootController {
 
 			if (!bfound) {
 				ProjectTechnologyModule ptm = new ProjectTechnologyModule();
-				
+
 				ptm.setName(mod.getName());
 				ptm.setModuleType(mod.getModuleType());
 				ptm.setDescription(mod.getDescription());
@@ -602,7 +710,7 @@ public class ProjectController extends RootController {
 		ProjectTechnologyModule ptm = service.findProjectTechnologyModule(id);
 		Project project = ptm.getTechnology().getProject();
 		Integer userType = getUserType(project.getId());
-		if (userType == UserType.NONE) {
+		if (userType.equals(UserType.NONE)) {
 			return "/access/denied";
 		}
 
@@ -653,7 +761,7 @@ public class ProjectController extends RootController {
 		}
 
 		Integer userType = getUserType(project.getId());
-		if (userType == UserType.NONE) {
+		if (userType.equals(UserType.NONE)) {
 			return "/access/denied";
 		}
 
@@ -664,6 +772,7 @@ public class ProjectController extends RootController {
 		form.setProjectId(projectId);
 		form.setEstimatedPrice(String.format("%.0f",
 				estimateProjectPrice(modules)));
+		form.setEstimateOnly(false);
 		model.put("ptmForm", form);
 
 		addUserLogInfo(
@@ -685,7 +794,7 @@ public class ProjectController extends RootController {
 
 		Project project = service.findProject(form.getProjectId());
 		Integer userType = getUserType(project.getId());
-		if (userType != UserType.VANGARD_FACULTY) {
+		if (!userType.equals(UserType.VANGARD_FACULTY)) {
 			return "/access/denied";
 		}
 
@@ -715,8 +824,37 @@ public class ProjectController extends RootController {
 		}
 	}
 
-	@RequestMapping("/estimateptms")
-	private String estimateProjectTechnologyModules(ModuleForm form,
+	@RequestMapping(value = "/estimateptms", method = RequestMethod.GET)
+	@Secured({ Permission.ROLE_ESTIMATION })
+	public String estimatePrice(ModelMap model) {
+		ModuleForm form = new ModuleForm();
+
+		List<ProjectTechnologyModule> lst = new ArrayList<ProjectTechnologyModule>();
+
+		List<Technology> tecs = service.listTechnology();
+		for (Technology tec : tecs) {
+			ProjectTechnology pt = new ProjectTechnology();
+			pt.setTechnology(tec.getName());
+			BeanUtils.copyProperties(tec, pt, new String[] {});
+			for (Module mod : tec.getModules()) {
+				ProjectTechnologyModule ptm = new ProjectTechnologyModule();
+				BeanUtils.copyProperties(mod, ptm, new String[] { "id",
+						"technology" });
+				ptm.setTechnology(pt);
+				lst.add(ptm);
+			}
+		}
+
+		form.setModules(lst);
+		form.setEstimatedPrice("0.0");
+		form.setEstimateOnly(true);
+		model.put("ptmForm", form);
+		return "/project/editptms";
+	}
+
+	@RequestMapping(value = "/estimateptms", method = RequestMethod.POST)
+	@Secured({ Permission.ROLE_ESTIMATION })
+	public String estimateProjectTechnologyModules(ModuleForm form,
 			ModelMap model, BindingResult result) {
 		if (!result.hasErrors()) {
 			form.setEstimatedPrice("0");
@@ -724,6 +862,26 @@ public class ProjectController extends RootController {
 
 			double totalValue = estimateProjectPrice(modules);
 			form.setEstimatedPrice(String.format("%.0f", totalValue));
+
+			if (form.getEstimateOnly()) {
+				HashSet<String> tecs = new HashSet<String>();
+				for (ProjectTechnologyModule mod : modules) {
+					if (mod.getTotalFee() > 0) {
+						tecs.add(mod.getTechnology().getTechnology());
+					}
+				}
+
+				if (tecs.size() > 0) {
+					for (int i = modules.size() - 1; i >= 0; i--) {
+						if (!tecs.contains(modules.get(i).getTechnology()
+								.getTechnology())) {
+							modules.remove(i);
+						}
+					}
+
+					form.setModules(modules);
+				}
+			}
 		}
 		model.put("ptmForm", form);
 		return "/project/editptms";
@@ -880,7 +1038,7 @@ public class ProjectController extends RootController {
 	public String assignModulePrices(@RequestParam("projectid") Long projectId,
 			ModelMap model) {
 		Integer userType = getUserType(projectId);
-		if (userType != UserType.VANGARD_FACULTY) {
+		if (!userType.equals(UserType.VANGARD_FACULTY)) {
 			return "/access/denied";
 		}
 
@@ -919,6 +1077,7 @@ public class ProjectController extends RootController {
 		bodyFont.setFontHeightInPoints((short) 10);
 
 		CellStyle bodyStyle = getStringStyle(workbook, bodyFont);
+		CellStyle dateStyle = getDateStyle(workbook, bodyFont);
 
 		Sheet sheet = workbook.createSheet();
 
@@ -950,18 +1109,18 @@ public class ProjectController extends RootController {
 			createCell(createHelper, bodyStyle, row, 3,
 					project.getFacultyName());
 			createCell(createHelper, bodyStyle, row, 4, project.getStaffName());
-			createCell(createHelper, bodyStyle, row, 5,
+			createCell(createHelper, dateStyle, row, 5,
 					project.getWorkCompleted());
 			createCell(createHelper, bodyStyle, row, 6,
 					project.getIsBioVUDataRequest());
-			createCell(createHelper, bodyStyle, row, 7,
+			createCell(createHelper, dateStyle, row, 7,
 					project.getBioVUDataDeliveryDate());
 			createCell(createHelper, bodyStyle, row, 8,
 					project.getIsBioVUSampleRequest());
-			createCell(createHelper, bodyStyle, row, 9,
+			createCell(createHelper, dateStyle, row, 9,
 					project.getBioVURedepositDate());
 			createCell(createHelper, bodyStyle, row, 10, project.getIsGranted());
-			createCell(createHelper, bodyStyle, row, 11,
+			createCell(createHelper, dateStyle, row, 11,
 					project.getBilledInCORES());
 			createCell(createHelper, bodyStyle, row, 12, project.getStatus());
 			rowNo++;
@@ -1039,7 +1198,7 @@ public class ProjectController extends RootController {
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Contact date",
 				dateStyle, project.getContactDate());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Contact",
-				stringStyle, project.getContact());
+				wrapStringStyle, project.getContact());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
 				"BioVU data request?", stringStyle,
 				project.getIsBioVUDataRequest());
@@ -1055,17 +1214,17 @@ public class ProjectController extends RootController {
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
 				"Study descriptive name", stringStyle, project.getName());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Study PI",
-				stringStyle, project.getStudyPI());
+				wrapStringStyle, project.getStudyPI());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Quote amount",
 				leftMoneyStyle, project.getQuoteAmount());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
 				"Contract date", dateStyle, project.getContractDate());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Assigned to (faculty)", stringStyle, project.getFacultyName());
+				"Assigned to (faculty)", wrapStringStyle, project.getFacultyName());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Study status",
 				stringStyle, project.getStatus());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Assigned to (staff)", stringStyle, project.getStaffName());
+				"Assigned to (staff)", wrapStringStyle, project.getStaffName());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Work started",
 				dateStyle, project.getWorkStarted());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
@@ -1077,8 +1236,8 @@ public class ProjectController extends RootController {
 				"BioVU redeposit (date)", dateStyle,
 				project.getBioVURedepositDate());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Cost center to bill", stringStyle,
-				project.getCostCenterToBill());
+				"Cost center to bill", wrapStringStyle,
+				project.getCostCenterToBillList());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
 				"Request cost center setup in CORES (date)", dateStyle,
 				project.getRequestCostCenterSetupInCORES());

@@ -408,6 +408,7 @@ public class UserController extends RootController {
 		MimeMessagePreparator preparator = new MimeMessagePreparator() {
 			public void prepare(MimeMessage mimeMessage) throws Exception {
 				MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+				message.setFrom("noreply@vanderbilt.edu");
 				message.setTo(user.getEmail());
 				message.setSubject("Password reset confirmation");
 				Map<String, Object> model = new HashMap<String, Object>();

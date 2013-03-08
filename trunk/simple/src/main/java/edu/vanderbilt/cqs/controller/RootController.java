@@ -21,18 +21,17 @@ import edu.vanderbilt.cqs.service.ProjectService;
 
 @Controller
 public class RootController {
-	private static final Logger logger = Logger
-			.getLogger(RootController.class);
-	
+	private static final Logger logger = Logger.getLogger(RootController.class);
+
 	@Autowired
 	private ProjectService projectService;
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
-	    // custom date binding
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	    binder.registerCustomEditor(Date.class, new CustomDateEditor(
-	            dateFormat, true));
+		// custom date binding
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(
+				dateFormat, true));
 	}
 
 	protected User currentUser() {
@@ -40,11 +39,22 @@ public class RootController {
 				.getPrincipal();
 	}
 
-	protected boolean isCurrentPowerUser() {
+	protected boolean isAdmin() {
 		return currentUser().hasRole(Role.ROLE_ADMIN);
 	}
-	
 
+	protected boolean isAdStaff() {
+		return currentUser().hasRole(Role.ROLE_VANGARD_ADSTAFF);
+	}
+
+	protected boolean isVangardUser() {
+		User curUser = currentUser();
+		return curUser.hasRole(Role.ROLE_ADMIN)
+				|| curUser.hasRole(Role.ROLE_VANGARD_ADSTAFF)
+				|| curUser.hasRole(Role.ROLE_VANGARD_FACULTY)
+				|| curUser.hasRole(Role.ROLE_VANGARD_STAFF);
+	}
+	
 	protected String getIpAddress() {
 		return ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest().getRemoteAddr();
@@ -54,7 +64,8 @@ public class RootController {
 		addLogTrace(username, level, action, null);
 	}
 
-	private void addLogTrace(String username, Logger.Level level, String action, Long projectId) {
+	private void addLogTrace(String username, Logger.Level level,
+			String action, Long projectId) {
 		LogTrace log = new LogTrace();
 		log.setLogDate(Calendar.getInstance().getTime());
 		log.setUser(username);
@@ -67,10 +78,11 @@ public class RootController {
 
 	protected void addUserLogInfo(String action, boolean addtodatabase) {
 		logger.info(currentUser().getUsername() + ": " + action);
-		if(addtodatabase){
+		if (addtodatabase) {
 			addLogTrace(currentUser().getUsername(), Logger.Level.INFO, action);
 		}
 	}
+
 	protected void addUserLogInfo(String action) {
 		addUserLogInfo(action, true);
 	}
@@ -83,7 +95,7 @@ public class RootController {
 	protected void addUserLogError(String action) {
 		addUserLogError(action, true);
 	}
-	
+
 	protected void addSystemLogInfo(String action) {
 		logger.info("system : " + action);
 		addLogTrace("system", Logger.Level.INFO, action);

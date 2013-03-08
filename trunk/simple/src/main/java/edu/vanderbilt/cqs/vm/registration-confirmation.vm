@@ -1,13 +1,13 @@
 <html>
 <body>
-<h3>Hi ${user.name}, welcome to the <a href="http://cqs.mc.vanderbilt.edu/projecttrace/">Project Trace System of CQS/VUMC! </a></h3>
-
-
+<h3>Hi ${user.name}, welcome to the <a href="http://cqs.mc.vanderbilt.edu/projecttrace/">Project Trace System of CQS/VUMC!</a></h3>
 <div>
 	<p>
    	Your login name is ${user.email}
    	<p>
    	Your password is: ${password} 
+   	<p>
+   	You can change your password after you login into the system.
 </div>
 </body>
 

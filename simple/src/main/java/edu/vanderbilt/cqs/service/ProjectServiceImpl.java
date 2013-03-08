@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.vanderbilt.cqs.UserType;
 import edu.vanderbilt.cqs.bean.LogTrace;
 import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
@@ -174,7 +175,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	@Override
 	public Integer getUserType(Long userid, Long projectId) {
-		return projectDAO.getUserType(userid, projectId);
+		Integer result = projectDAO.getUserType(userid, projectId);
+		if (result == null) {
+			result = UserType.NONE;
+		}
+		return result;
 	}
 
 	@Transactional

@@ -1,7 +1,5 @@
 package edu.vanderbilt.cqs.controller;
 
-import javax.validation.Valid;
-
 import org.jboss.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

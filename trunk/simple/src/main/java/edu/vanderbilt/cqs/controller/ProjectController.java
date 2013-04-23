@@ -573,58 +573,65 @@ public class ProjectController extends RootController {
 		pt.setProject(project);
 
 		List<ProjectTechnologyModule> newModules = new ArrayList<ProjectTechnologyModule>();
-		int mindex = 0;
-		for (Long moduleid : form.getModules()) {
-			Module mod = service.findModule(moduleid);
-			mindex++;
-			boolean bfound = false;
-			for (ProjectTechnologyModule ptm : pt.getModules()) {
-				if (ptm.getModuleId().equals(moduleid)) {
-					ptm.setModuleIndex(mindex);
+		if (null != form.getModules()) {
+			int mindex = 0;
+			for (Long moduleid : form.getModules()) {
+				Module mod = service.findModule(moduleid);
+				mindex++;
+				boolean bfound = false;
+				for (ProjectTechnologyModule ptm : pt.getModules()) {
+					if (ptm.getModuleId().equals(moduleid)) {
+						ptm.setModuleIndex(mindex);
+						ptm.setName(mod.getName());
+						ptm.setModuleType(mod.getModuleType());
+						ptm.setDescription(mod.getDescription());
+
+						if (ptm.getSampleNumber() == null) {
+							ptm.setSampleNumber(pt.getSampleNumber());
+						}
+
+						if (ptm.getModuleType().equals(ModuleType.PerUnit)
+								&& ptm.getOtherUnit() == null) {
+							ptm.setOtherUnit(1);
+						}
+
+						if (ptm.getPricePerProject() == null) {
+							ptm.setPricePerProject(mod.getPricePerProject());
+						}
+
+						if (ptm.getPricePerUnit() == null) {
+							ptm.setPricePerUnit(mod.getPricePerUnit());
+						}
+
+						newModules.add(ptm);
+						bfound = true;
+						break;
+					}
+				}
+
+				if (!bfound) {
+					ProjectTechnologyModule ptm = new ProjectTechnologyModule();
+
 					ptm.setName(mod.getName());
 					ptm.setModuleType(mod.getModuleType());
 					ptm.setDescription(mod.getDescription());
+					ptm.setPricePerProject(mod.getPricePerProject());
+					ptm.setPricePerUnit(mod.getPricePerUnit());
 
-					if (ptm.getSampleNumber() == null) {
-						ptm.setSampleNumber(pt.getSampleNumber());
-					}
-
+					ptm.setModuleId(mod.getId());
+					ptm.setModuleIndex(mindex);
+					ptm.setSampleNumber(pt.getSampleNumber());
+					ptm.setTechnology(pt);
+					
 					if (ptm.getModuleType().equals(ModuleType.PerUnit)
 							&& ptm.getOtherUnit() == null) {
 						ptm.setOtherUnit(1);
 					}
-
-					if (ptm.getPricePerProject() == null) {
-						ptm.setPricePerProject(mod.getPricePerProject());
-					}
-
-					if (ptm.getPricePerUnit() == null) {
-						ptm.setPricePerUnit(mod.getPricePerUnit());
-					}
-
+					
 					newModules.add(ptm);
-					bfound = true;
-					break;
 				}
 			}
-
-			if (!bfound) {
-				ProjectTechnologyModule ptm = new ProjectTechnologyModule();
-
-				ptm.setName(mod.getName());
-				ptm.setModuleType(mod.getModuleType());
-				ptm.setDescription(mod.getDescription());
-				ptm.setPricePerProject(mod.getPricePerProject());
-				ptm.setPricePerUnit(mod.getPricePerUnit());
-
-				ptm.setModuleId(mod.getId());
-				ptm.setModuleIndex(mindex);
-				ptm.setSampleNumber(pt.getSampleNumber());
-				ptm.setTechnology(pt);
-				newModules.add(ptm);
-			}
 		}
-
 		pt.getModules().clear();
 		pt.getModules().addAll(newModules);
 

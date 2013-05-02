@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mysql.jdbc.StringUtils;
+
 import edu.vanderbilt.cqs.ModuleType;
+import edu.vanderbilt.cqs.Status;
 import edu.vanderbilt.cqs.UserType;
 import edu.vanderbilt.cqs.bean.Module;
 import edu.vanderbilt.cqs.bean.Permission;
@@ -263,6 +267,22 @@ public class ProjectController extends RootController {
 	public String saveProject(
 			@Valid @ModelAttribute("projectForm") ProjectForm form,
 			BindingResult result) {
+		if (!result.hasErrors()) {
+			if(Status.COMPLETE.equals(form.getProject().getStatus())){
+				if(StringUtils.isNullOrEmpty(form.getProject().getStudyPI())){
+					result.addError(new FieldError("Project","StudyPI","Study PI cannot be empty"));
+				}
+				
+				if(null == form.getProject().getQuoteAmount() || 0.0 == form.getProject().getQuoteAmount()){
+					result.addError(new FieldError("Project","QuoteAmount","Quote amount cannot be zero"));
+				}
+				
+				if(null == form.getFaculty() || form.getFaculty().size() == 0){
+					result.addError(new FieldError("Project","Faculty","Assigned to (faculty) cannot be empty"));
+				}
+			}
+		}
+		
 		if (result.hasErrors()) {
 			initializeProjectForm(form);
 			form.setUserType(getUserType(form.getProject().getId()));

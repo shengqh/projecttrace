@@ -29,6 +29,7 @@
 						<th scope="col">Study PI</th>
 						<th scope="col">Faculty</th>
 						<th scope="col">Staff</th>
+						<th scope="col">Started</th>
 						<th scope="col">Completed</th>
 						<th scope="col">BV-data?</th>
 						<th scope="col">BV-data to PI</th>
@@ -66,6 +67,7 @@
 							<td><c:forEach items="${project.staffName}" var="user">
 									${user}<br>
 								</c:forEach></td>
+							<td><spring:eval expression="project.workStarted" /></td>
 							<td><spring:eval expression="project.workCompleted" /></td>
 							<td><tags:yesno value="${project.isBioVUDataRequest}" /></td>
 							<td><spring:eval expression="project.bioVUDataDeliveryDate" /></td>

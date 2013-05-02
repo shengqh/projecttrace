@@ -81,16 +81,17 @@ public class ExportController extends RootController {
 		createCell(createHelper, headerStyle, row, 2, "Study PI");
 		createCell(createHelper, headerStyle, row, 3, "Faculty");
 		createCell(createHelper, headerStyle, row, 4, "Staff");
-		createCell(createHelper, headerStyle, row, 5, "Completed");
-		createCell(createHelper, headerStyle, row, 6, "BV-data?");
-		createCell(createHelper, headerStyle, row, 7, "BV-data to PI");
-		createCell(createHelper, headerStyle, row, 8, "BV-sample?");
-		createCell(createHelper, headerStyle, row, 9, "BV-redeposit");
-		createCell(createHelper, headerStyle, row, 10, "Granted?");
-		createCell(createHelper, headerStyle, row, 11, "Billed");
-		createCell(createHelper, headerStyle, row, 12, "Status");
-		createCell(createHelper, headerStyle, row, 13, "Budgeted");
-		createCell(createHelper, headerStyle, row, 14, "Billed");
+		createCell(createHelper, headerStyle, row, 5, "Started");
+		createCell(createHelper, headerStyle, row, 6, "Completed");
+		createCell(createHelper, headerStyle, row, 7, "BV-data?");
+		createCell(createHelper, headerStyle, row, 8, "BV-data to PI");
+		createCell(createHelper, headerStyle, row, 9, "BV-sample?");
+		createCell(createHelper, headerStyle, row, 10, "BV-redeposit");
+		createCell(createHelper, headerStyle, row, 11, "Granted?");
+		createCell(createHelper, headerStyle, row, 12, "Billed");
+		createCell(createHelper, headerStyle, row, 13, "Status");
+		createCell(createHelper, headerStyle, row, 14, "Budgeted");
+		createCell(createHelper, headerStyle, row, 15, "Billed");
 
 		int rowNo = 1;
 		for (Project project : projects) {
@@ -105,22 +106,22 @@ public class ExportController extends RootController {
 			createCell(createHelper, wrapStringStyle, row, 3,
 					project.getFacultyName());
 			createCell(createHelper, wrapStringStyle, row, 4, project.getStaffName());
-			createCell(createHelper, dateStyle, row, 5,
-					project.getWorkCompleted());
-			createCell(createHelper, bodyStyle, row, 6,
+			createCell(createHelper, dateStyle, row, 5,					project.getWorkStarted());
+			createCell(createHelper, dateStyle, row, 6,					project.getWorkCompleted());
+			createCell(createHelper, bodyStyle, row, 7,
 					project.getIsBioVUDataRequest());
-			createCell(createHelper, dateStyle, row, 7,
+			createCell(createHelper, dateStyle, row, 8,
 					project.getBioVUDataDeliveryDate());
-			createCell(createHelper, bodyStyle, row, 8,
+			createCell(createHelper, bodyStyle, row, 9,
 					project.getIsBioVUSampleRequest());
-			createCell(createHelper, dateStyle, row, 9,
+			createCell(createHelper, dateStyle, row, 10,
 					project.getBioVURedepositDate());
-			createCell(createHelper, bodyStyle, row, 10, project.getIsGranted());
-			createCell(createHelper, dateStyle, row, 11,
+			createCell(createHelper, bodyStyle, row, 11, project.getIsGranted());
+			createCell(createHelper, dateStyle, row, 12,
 					project.getBilledInCORES());
-			createCell(createHelper, bodyStyle, row, 12, project.getStatus());
-			createCell(createHelper, moneyStyle, row, 13, project.getQuoteAmount());
-			createCell(createHelper, moneyStyle, row, 14, project.getBilledAmount());
+			createCell(createHelper, bodyStyle, row, 13, project.getStatus());
+			createCell(createHelper, moneyStyle, row, 14, project.getQuoteAmount());
+			createCell(createHelper, moneyStyle, row, 15, project.getBilledAmount());
 			rowNo++;
 		}
 		sheet.autoSizeColumn(0);
@@ -136,12 +137,13 @@ public class ExportController extends RootController {
 		sheet.autoSizeColumn(8);
 		sheet.autoSizeColumn(9);
 		sheet.autoSizeColumn(10);
+		sheet.autoSizeColumn(11);
 
-		sheet.setColumnWidth(11, 13 * 256);
+		sheet.setColumnWidth(12, 13 * 256);
 
-		sheet.autoSizeColumn(12);
 		sheet.autoSizeColumn(13);
 		sheet.autoSizeColumn(14);
+		sheet.autoSizeColumn(15);
 
 		workbook.write(out);
 

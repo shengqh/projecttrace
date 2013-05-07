@@ -204,6 +204,9 @@ public class ProjectTechnologyModule implements Serializable {
 	}
 
 	public Integer getModuleType() {
+		if(moduleType == null){
+			return Module.DEFAULT_TYPE;
+		}
 		return moduleType;
 	}
 

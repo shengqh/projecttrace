@@ -268,21 +268,25 @@ public class ProjectController extends RootController {
 			@Valid @ModelAttribute("projectForm") ProjectForm form,
 			BindingResult result) {
 		if (!result.hasErrors()) {
-			if(Status.COMPLETE.equals(form.getProject().getStatus())){
-				if(StringUtils.isNullOrEmpty(form.getProject().getStudyPI())){
-					result.addError(new FieldError("Project","StudyPI","Study PI cannot be empty"));
+			if (Status.COMPLETE.equals(form.getProject().getStatus())) {
+				if (StringUtils.isNullOrEmpty(form.getProject().getStudyPI())) {
+					result.addError(new FieldError("Project", "StudyPI",
+							"Study PI cannot be empty"));
 				}
-				
-				if(null == form.getProject().getQuoteAmount() || 0.0 == form.getProject().getQuoteAmount()){
-					result.addError(new FieldError("Project","QuoteAmount","Quote amount cannot be zero"));
+
+				if (null == form.getProject().getQuoteAmount()
+						|| 0.0 == form.getProject().getQuoteAmount()) {
+					result.addError(new FieldError("Project", "QuoteAmount",
+							"Quote amount cannot be zero"));
 				}
-				
-				if(null == form.getFaculty() || form.getFaculty().size() == 0){
-					result.addError(new FieldError("Project","Faculty","Assigned to (faculty) cannot be empty"));
+
+				if (null == form.getFaculty() || form.getFaculty().size() == 0) {
+					result.addError(new FieldError("Project", "Faculty",
+							"Assigned to (faculty) cannot be empty"));
 				}
 			}
 		}
-		
+
 		if (result.hasErrors()) {
 			initializeProjectForm(form);
 			form.setUserType(getUserType(form.getProject().getId()));
@@ -597,6 +601,9 @@ public class ProjectController extends RootController {
 			int mindex = 0;
 			for (Long moduleid : form.getModules()) {
 				Module mod = service.findModule(moduleid);
+				if(mod == null){
+					continue;
+				}
 				mindex++;
 				boolean bfound = false;
 				for (ProjectTechnologyModule ptm : pt.getModules()) {
@@ -642,12 +649,13 @@ public class ProjectController extends RootController {
 					ptm.setModuleIndex(mindex);
 					ptm.setSampleNumber(pt.getSampleNumber());
 					ptm.setTechnology(pt);
-					
-					if (ptm.getModuleType().equals(ModuleType.PerUnit)
+
+					if (ptm.getModuleType() != null
+							&& ptm.getModuleType().equals(ModuleType.PerUnit)
 							&& ptm.getOtherUnit() == null) {
 						ptm.setOtherUnit(1);
 					}
-					
+
 					newModules.add(ptm);
 				}
 			}

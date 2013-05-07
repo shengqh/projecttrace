@@ -18,6 +18,8 @@ import edu.vanderbilt.cqs.ModuleType;
 @Table(name = "MODULE")
 public class Module implements Serializable {
 	private static final long serialVersionUID = -5487021755468142531L;
+	
+	public static Integer DEFAULT_TYPE = ModuleType.PerSample;
 
 	@Id
 	@GeneratedValue
@@ -37,7 +39,7 @@ public class Module implements Serializable {
 	private Double pricePerUnit;
 
 	@Column(name = "MODULETYPE")
-	private Integer moduleType = ModuleType.PerSample;
+	private Integer moduleType = DEFAULT_TYPE;
 
 	public Module() {
 	}
@@ -146,10 +148,18 @@ public class Module implements Serializable {
 	}
 
 	public Integer getModuleType() {
+		if(moduleType == null){
+			this.moduleType = DEFAULT_TYPE;
+		}
 		return moduleType;
 	}
 
 	public void setModuleType(Integer moduleType) {
-		this.moduleType = moduleType;
+		if(moduleType == null){
+			this.moduleType = DEFAULT_TYPE;
+		}
+		else{
+			this.moduleType = moduleType;
+		}
 	}
 }

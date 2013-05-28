@@ -129,10 +129,10 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional
 	@Override
-	public List<Project> listProject(Long userid) {
-		return projectDAO.getProjectByUser(userid);
+	public List<Project> listProject(Long userid, String orderby, Boolean ascending) {
+		return projectDAO.listProjectByUser(userid, orderby, ascending);
 	}
-
+	
 	@Transactional
 	@Override
 	public void removeProject(Long id) {
@@ -316,14 +316,6 @@ public class ProjectServiceImpl implements ProjectService {
 			}
 			return o1.getId().compareTo(o2.getId());
 		}
-	}
-
-	@Transactional
-	@Override
-	public List<Project> listProject() {
-		List<Project> result = projectDAO.findAll();
-		Collections.sort(result, new MyProjectComparable());
-		return result;
 	}
 
 	@Transactional

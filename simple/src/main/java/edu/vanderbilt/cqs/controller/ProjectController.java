@@ -150,12 +150,29 @@ public class ProjectController extends RootController {
 
 	@Secured({ Permission.ROLE_PROJECT_VIEW })
 	@RequestMapping("/project")
-	public String listProject(ModelMap model) {
+	public String listProject(
+			@RequestParam(value = "userid", required = false, defaultValue = "0") Long userid,
+			@RequestParam(value = "orderby", required = false, defaultValue = "id") String orderby,
+			@RequestParam(value = "ascending", required = false, defaultValue = "true") Boolean ascending,
+			ModelMap model) {
 		addUserLogInfo("list project.", false);
 
-		model.put("projectList", service.listProject());
+		model.put("projectList",
+				service.listProject(userid, orderby, ascending));
+		model.put("userid", userid);
+		model.put("orderby", orderby);
+		model.put("ascending", ascending);
 
 		return "/project/list";
+	}
+
+	@Secured({ Permission.ROLE_PROJECT_VIEW })
+	@RequestMapping("/myproject")
+	public String listMyProject(
+			@RequestParam(value = "orderby", required = false, defaultValue = "id") String orderby,
+			@RequestParam(value = "ascending", required = false, defaultValue = "true") Boolean ascending,
+			ModelMap model) {
+		return listProject(currentUser().getId(), orderby, ascending, model);
 	}
 
 	@RequestMapping("/addproject")
@@ -601,7 +618,7 @@ public class ProjectController extends RootController {
 			int mindex = 0;
 			for (Long moduleid : form.getModules()) {
 				Module mod = service.findModule(moduleid);
-				if(mod == null){
+				if (mod == null) {
 					continue;
 				}
 				mindex++;

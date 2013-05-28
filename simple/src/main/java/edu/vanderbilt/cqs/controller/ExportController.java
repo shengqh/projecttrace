@@ -42,8 +42,14 @@ public class ExportController extends RootController {
 
 	@RequestMapping("/export")
 	@Secured({ Role.ROLE_ADMIN, Role.ROLE_VANGARD_ADSTAFF })
-	public void export(HttpServletResponse response) throws IOException {
-		List<Project> projects = service.listProject();
+	public void export(
+			@RequestParam(value = "userid", required = false, defaultValue = "0") Long userid,
+			@RequestParam(value = "orderby", required = false, defaultValue = "id") String orderby,
+			@RequestParam(value = "ascending", required = false, defaultValue = "true") Boolean ascending,
+			HttpServletResponse response) throws IOException {
+		List<Project> projects = service
+				.listProject(userid, orderby, ascending);
+
 		String daystr = new SimpleDateFormat("yyyyMMdd").format(new Date());
 		String filename = "VANGARD_Project_To_" + daystr + ".xls";
 		String loginfo = "export project until " + daystr;
@@ -102,12 +108,16 @@ public class ExportController extends RootController {
 					project.getProjectName());
 
 			createCell(createHelper, bodyStyle, row, 1, project.getName());
-			createCell(createHelper, wrapStringStyle, row, 2, project.getStudyPI());
+			createCell(createHelper, wrapStringStyle, row, 2,
+					project.getStudyPI());
 			createCell(createHelper, wrapStringStyle, row, 3,
 					project.getFacultyName());
-			createCell(createHelper, wrapStringStyle, row, 4, project.getStaffName());
-			createCell(createHelper, dateStyle, row, 5,					project.getWorkStarted());
-			createCell(createHelper, dateStyle, row, 6,					project.getWorkCompleted());
+			createCell(createHelper, wrapStringStyle, row, 4,
+					project.getStaffName());
+			createCell(createHelper, dateStyle, row, 5,
+					project.getWorkStarted());
+			createCell(createHelper, dateStyle, row, 6,
+					project.getWorkCompleted());
 			createCell(createHelper, bodyStyle, row, 7,
 					project.getIsBioVUDataRequest());
 			createCell(createHelper, dateStyle, row, 8,
@@ -120,8 +130,10 @@ public class ExportController extends RootController {
 			createCell(createHelper, dateStyle, row, 12,
 					project.getBilledInCORES());
 			createCell(createHelper, bodyStyle, row, 13, project.getStatus());
-			createCell(createHelper, moneyStyle, row, 14, project.getQuoteAmount());
-			createCell(createHelper, moneyStyle, row, 15, project.getBilledAmount());
+			createCell(createHelper, moneyStyle, row, 14,
+					project.getQuoteAmount());
+			createCell(createHelper, moneyStyle, row, 15,
+					project.getBilledAmount());
 			rowNo++;
 		}
 		sheet.autoSizeColumn(0);
@@ -222,7 +234,8 @@ public class ExportController extends RootController {
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
 				"Contract date", dateStyle, project.getContractDate());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,
-				"Assigned to (faculty)", wrapStringStyle, project.getFacultyName());
+				"Assigned to (faculty)", wrapStringStyle,
+				project.getFacultyName());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle, "Study status",
 				stringStyle, project.getStatus());
 		rowNo = addRow(createHelper, sheet, rowNo, headerStyle,

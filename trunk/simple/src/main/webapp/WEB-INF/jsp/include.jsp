@@ -4,6 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/security/tags"
 	prefix="sec"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ page
 	import="org.springframework.security.core.context.SecurityContextHolder"%>

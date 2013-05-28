@@ -2,6 +2,7 @@
 
 <c:url value="home" var="homeUrl" />
 <c:url value="project" var="projectUrl" />
+<c:url value="myproject" var="myProjectUrl" />
 <c:url value="technology" var="technologyUrl" />
 <c:url value="estimateptms" var="estimationUrl" />
 <c:url value="showlog" var="logUrl" />
@@ -17,6 +18,7 @@
 		<sec:authorize
 			access="hasAnyRole('ROLE_PROJECT_VIEW', 'ROLE_PROJECT_EDIT')">
 			<li><a href="${projectUrl}">Project</a></li>
+			<li><a href="${myProjectUrl}">MyProject</a></li>
 			<li><a href="${technologyUrl}">Technology</a></li>
 		</sec:authorize>
 		<sec:authorize

@@ -16,7 +16,15 @@
 		</sec:authorize>
 		<sec:authorize
 			access="hasAnyRole('ROLE_VANGARD_ADSTAFF','ROLE_ADMIN')">
+			<c:choose>
+				<c:when test="${userid == 0}">
 			| <a href="export">Export</a>
+				</c:when>
+				<c:otherwise>
+			| <a href="export?userid=${userid}">Export</a>
+				</c:otherwise>
+			</c:choose>
+
 		</sec:authorize>
 	</h1>
 	<p>
@@ -26,7 +34,7 @@
 					<tr>
 						<th scope="col">ID</th>
 						<th scope="col">Study</th>
-						<th scope="col">Study PI</th>
+						<th scope="col"><a href="project?userid=${userid}&orderby=studyPI">Study PI</a></th>
 						<th scope="col">Faculty</th>
 						<th scope="col">Staff</th>
 						<th scope="col">Started</th>

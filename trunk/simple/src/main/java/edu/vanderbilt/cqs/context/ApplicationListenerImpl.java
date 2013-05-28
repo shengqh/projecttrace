@@ -288,7 +288,7 @@ public class ApplicationListenerImpl implements
 									0, 53.35) });
 		}
 
-		if (projectService.listProject().size() == 0) {
+		if (projectService.listProject(0L, "id", true).size() == 0) {
 			User admin = projectService
 					.findUserByEmail("yu.shyr@vanderbilt.edu");
 			User vfaculty = projectService
@@ -345,7 +345,7 @@ public class ApplicationListenerImpl implements
 	}
 
 	private void updateCostCenterToBill() {
-		List<Project> projects  =projectService.listProject();
+		List<Project> projects  =projectService.listProject(0L, "id", true);
 		for(Project p : projects){
 			if(p.getCostCenterToBill() != null && p.getCostCenterToBill().length() > 0){
 				ProjectCostCenter pcc = new ProjectCostCenter();

@@ -30,16 +30,14 @@ public interface ProjectService {
 	User findUserByEmail(String email);
 
 	// Project
-	List<Project> listProject();
+	List<Project> listProject(Long userid, String orderby, Boolean ascending);
 
 	Project findProject(Long id);
 
 	void addProject(Project project);
 
 	void updateProject(Project project);
-
-	List<Project> listProject(Long userid);
-
+	
 	void removeProject(Long id);
 
 	// Other

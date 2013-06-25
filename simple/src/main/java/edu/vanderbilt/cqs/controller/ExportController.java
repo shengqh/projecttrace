@@ -2,6 +2,7 @@ package edu.vanderbilt.cqs.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +48,14 @@ public class ExportController extends RootController {
 			@RequestParam(value = "orderby", required = false, defaultValue = "id") String orderby,
 			@RequestParam(value = "ascending", required = false, defaultValue = "true") Boolean ascending,
 			HttpServletResponse response) throws IOException {
+
+		ClassLoader classloader = org.apache.poi.poifs.filesystem.POIFSFileSystem.class
+				.getClassLoader();
+		URL res = classloader
+				.getResource("org/apache/poi/poifs/filesystem/POIFSFileSystem.class");
+		String path = res.getPath();
+		System.out.println("Core POI came from " + path);
+
 		List<Project> projects = service
 				.listProject(userid, orderby, ascending);
 

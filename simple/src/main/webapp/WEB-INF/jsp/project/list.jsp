@@ -34,7 +34,8 @@
 					<tr>
 						<th scope="col">ID</th>
 						<th scope="col">Study</th>
-						<th scope="col"><a href="project?userid=${userid}&orderby=studyPI">Study PI</a></th>
+						<th scope="col"><a
+							href="project?userid=${userid}&orderby=studyPI">Study PI</a></th>
 						<th scope="col">Faculty</th>
 						<th scope="col">Staff</th>
 						<th scope="col">Started</th>

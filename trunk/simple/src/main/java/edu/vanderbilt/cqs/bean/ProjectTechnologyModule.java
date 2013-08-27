@@ -33,10 +33,10 @@ public class ProjectTechnologyModule implements Serializable {
 	private Integer moduleIndex;
 
 	@Column(name = "SAMPLE_NUMBER")
-	private Integer sampleNumber;
+	private Double sampleNumber;
 
 	@Column(name = "OTHER_UNIT")
-	private Integer otherUnit;
+	private Double otherUnit;
 
 	@Column(name = "PRICEPERPROJECT")
 	private Double pricePerProject;
@@ -94,19 +94,19 @@ public class ProjectTechnologyModule implements Serializable {
 		this.moduleIndex = moduleIndex;
 	}
 
-	public Integer getSampleNumber() {
+	public Double getSampleNumber() {
 		return sampleNumber;
 	}
 
-	public void setSampleNumber(Integer sampleNumber) {
+	public void setSampleNumber(Double sampleNumber) {
 		this.sampleNumber = sampleNumber;
 	}
 
-	public Integer getOtherUnit() {
+	public Double getOtherUnit() {
 		return otherUnit;
 	}
 
-	public void setOtherUnit(Integer otherUnit) {
+	public void setOtherUnit(Double otherUnit) {
 		this.otherUnit = otherUnit;
 	}
 

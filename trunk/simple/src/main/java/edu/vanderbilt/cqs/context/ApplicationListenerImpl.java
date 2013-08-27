@@ -333,10 +333,10 @@ public class ApplicationListenerImpl implements
 			addProjectUser(project, vfaculty, UserType.VANGARD_FACULTY);
 			addProjectUser(project, vstaff, UserType.VANGARD_STAFF);
 
-			addProjectTechnology(project, "RNA-seq", "Illumina", 6);
-			addProjectTechnology(project, "Microarray", "agilentg4502a_07_3", 5);
+			addProjectTechnology(project, "RNA-seq", "Illumina", 6.0);
+			addProjectTechnology(project, "Microarray", "agilentg4502a_07_3", 5.0);
 			// ProjectTechnology pt =
-			addProjectTechnology(project, "Genotyping", "", 4);
+			addProjectTechnology(project, "Genotyping", "", 4.0);
 
 			projectService.addProject(project);
 			// pt.getModules().clear();
@@ -396,7 +396,7 @@ public class ApplicationListenerImpl implements
 	}
 
 	private ProjectTechnology addProjectTechnology(Project project,
-			String name, String platform, int sampleNumber) {
+			String name, String platform, Double sampleNumber) {
 		Technology rnaseq = projectService.findTechnologyByName(name);
 		ProjectTechnology pt = new ProjectTechnology();
 		pt.setProject(project);

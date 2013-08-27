@@ -43,7 +43,7 @@ public class ProjectTechnology implements Serializable {
 	private String platform;
 
 	@Column(name = "SAMPLENUMBER")
-	private Integer sampleNumber;
+	private Double sampleNumber;
 
 	@OneToMany(mappedBy = "technology", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OrderBy("moduleIndex")
@@ -97,11 +97,11 @@ public class ProjectTechnology implements Serializable {
 		this.technology = technology;
 	}
 
-	public Integer getSampleNumber() {
+	public Double getSampleNumber() {
 		return sampleNumber;
 	}
 
-	public void setSampleNumber(Integer sampleNumber) {
+	public void setSampleNumber(Double sampleNumber) {
 		this.sampleNumber = sampleNumber;
 	}
 

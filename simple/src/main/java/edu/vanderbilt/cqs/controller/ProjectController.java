@@ -291,11 +291,11 @@ public class ProjectController extends RootController {
 							"Study PI cannot be empty"));
 				}
 
-				if (null == form.getProject().getQuoteAmount()
-						|| 0.0 == form.getProject().getQuoteAmount()) {
-					result.addError(new FieldError("Project", "QuoteAmount",
-							"Quote amount cannot be zero"));
-				}
+//				if (null == form.getProject().getQuoteAmount()
+//						|| 0.0 == form.getProject().getQuoteAmount()) {
+//					result.addError(new FieldError("Project", "QuoteAmount",
+//							"Quote amount cannot be zero"));
+//				}
 
 				if (null == form.getFaculty() || form.getFaculty().size() == 0) {
 					result.addError(new FieldError("Project", "Faculty",
@@ -636,7 +636,7 @@ public class ProjectController extends RootController {
 
 						if (ptm.getModuleType().equals(ModuleType.PerUnit)
 								&& ptm.getOtherUnit() == null) {
-							ptm.setOtherUnit(1);
+							ptm.setOtherUnit(1.0);
 						}
 
 						if (ptm.getPricePerProject() == null) {
@@ -670,7 +670,7 @@ public class ProjectController extends RootController {
 					if (ptm.getModuleType() != null
 							&& ptm.getModuleType().equals(ModuleType.PerUnit)
 							&& ptm.getOtherUnit() == null) {
-						ptm.setOtherUnit(1);
+						ptm.setOtherUnit(1.0);
 					}
 
 					newModules.add(ptm);

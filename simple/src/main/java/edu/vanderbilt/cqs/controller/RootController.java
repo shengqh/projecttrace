@@ -69,7 +69,7 @@ public class RootController {
 		LogTrace log = new LogTrace();
 		log.setLogDate(Calendar.getInstance().getTime());
 		log.setUser(username);
-		log.setAction(action);
+		log.setAction(action.substring(0, Math.min(action.length(), 250)));
 		log.setIpaddress(getIpAddress());
 		log.setLevel(level.ordinal());
 		log.setProjectId(projectId);

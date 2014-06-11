@@ -21,15 +21,14 @@
 			<li><a href="${myProjectUrl}">MyProject</a></li>
 			<li><a href="${technologyUrl}">Technology</a></li>
 		</sec:authorize>
-		<sec:authorize
-			access="hasAnyRole('ROLE_ESTIMATION')">
+		<sec:authorize access="hasAnyRole('ROLE_ESTIMATION')">
 			<li><a href="${estimationUrl}">Estimation</a></li>
 		</sec:authorize>
 		<sec:authorize access="hasAnyRole('ROLE_USER_VIEW', 'ROLE_USER_EDIT')">
 			<li><a href="${userUrl}">User</a></li>
-			<sec:authorize ifAnyGranted="ROLE_USER_EDIT">
-				<li><a href="${roleUrl}">Role</a></li>
-			</sec:authorize>
+		</sec:authorize>
+		<sec:authorize ifAnyGranted="ROLE_USER_EDIT">
+			<li><a href="${roleUrl}">Role</a></li>
 		</sec:authorize>
 		<sec:authorize ifAnyGranted="ROLE_ADMIN">
 			<li><a href="${logUrl}">Log</a></li>

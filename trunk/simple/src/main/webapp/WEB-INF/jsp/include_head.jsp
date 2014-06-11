@@ -4,6 +4,6 @@
 <script src="resources/js/jquery-1.8.1.js"></script>
 <script src="resources/js/dynamic_list_helper.js"></script>
 <script type="text/javascript">
-        var contexPath = "<%=request.getContextPath() %>";
+        var contexPath = "<%=request.getContextPath()%>";
 </script>
 <title>CQS/VUMC Project Trace System</title>
